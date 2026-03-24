@@ -569,9 +569,10 @@ tr:hover td {
 
 /* GHS / SGA Professional Label - CLP Redesign */
 .ghs-label {
-  --ghs-picto-size: 70px;
+  --ghs-picto-size: 60px;
   --ghs-col-right-width: 240px;
   --ghs-signal-font: 32px;
+  --ghs-title-font: 24px;
   width: 100%;
   max-width: 800px;
   margin: 20px auto;
@@ -596,8 +597,9 @@ tr:hover td {
 }
 
 .ghs-header h2 {
-  font-size: 28px;
+  font-size: var(--ghs-title-font);
   font-weight: 900;
+  line-height: 1.1;
   margin: 0;
   text-transform: uppercase;
   flex: 1;
@@ -703,13 +705,13 @@ tr:hover td {
 }
 
 /* CLP Sizes (Based on Table 4) */
-.ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 40px; --ghs-col-right-width: 140px; --ghs-signal-font: 18px; }
-.ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 55px; --ghs-col-right-width: 200px; --ghs-signal-font: 24px; }
-.ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 80px; --ghs-col-right-width: 300px; --ghs-signal-font: 32px; }
-.ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 100px; --ghs-col-right-width: 400px; --ghs-signal-font: 42px; }
+.ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 35px; --ghs-col-right-width: 140px; --ghs-signal-font: 16px; --ghs-title-font: 18px; }
+.ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 50px; --ghs-col-right-width: 200px; --ghs-signal-font: 22px; --ghs-title-font: 22px; }
+.ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 75px; --ghs-col-right-width: 300px; --ghs-signal-font: 30px; --ghs-title-font: 28px; }
+.ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 95px; --ghs-col-right-width: 400px; --ghs-signal-font: 40px; --ghs-title-font: 36px; }
 
 /* Art. 13 - Envases < 30ml (Minimalista) */
-.ghs-size-mini { width: 52mm; height: 35mm; --ghs-picto-size: 35px; --ghs-signal-font: 16px; }
+.ghs-size-mini { width: 52mm; height: 35mm; --ghs-picto-size: 32px; --ghs-signal-font: 14px; --ghs-title-font: 15px; }
 .ghs-mini-layout .ghs-body { display: block !important; }
 .ghs-mini-layout .ghs-col-left { display: none !important; }
 .ghs-mini-layout .ghs-col-right { border: none !important; padding: 0 !important; width: 100% !important; }

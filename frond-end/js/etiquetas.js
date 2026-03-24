@@ -475,9 +475,9 @@ document.addEventListener("DOMContentLoaded", function () {
             body { font-family: 'Inter', sans-serif; background: #fff; display: flex; justify-content: center; padding: 20px; }
             
             /* RELLENO DE ESTILOS PARA IMPRESIÓN SOLA */
-            .ghs-label { --ghs-picto-size: 70px; --ghs-col-right-width: 240px; --ghs-signal-font: 32px; border: 4px solid #cc0000; color:#000; padding:12px; display:flex; flex-direction:column; gap:8px; background:#fff; overflow:hidden; }
+            .ghs-label { --ghs-picto-size: 60px; --ghs-col-right-width: 240px; --ghs-signal-font: 32px; --ghs-title-font: 24px; border: 4px solid #cc0000; color:#000; padding:12px; display:flex; flex-direction:column; gap:8px; background:#fff; overflow:hidden; }
             .ghs-header { border-bottom: 2px solid #000; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; }
-            .ghs-header h2 { font-size: 28px; font-weight: 900; margin: 0; text-transform: uppercase; }
+            .ghs-header h2 { font-size: var(--ghs-title-font); font-weight: 900; line-height: 1.1; margin: 0; text-transform: uppercase; flex: 1; }
             .ghs-components { text-align: right; font-size: 10px; font-weight: 600; }
             .ghs-body { display: grid; grid-template-columns: 1fr var(--ghs-col-right-width); gap: 20px; }
             .ghs-col-left { display: flex; flex-direction: column; gap: 12px; }
@@ -492,11 +492,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .ghs-footer { margin-top: 10px; border-top: 2px solid #000; padding-top: 8px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; font-size: 9px; }
             
             /* TAMAÑOS CLP DYNAMICS */
-            .ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 40px; --ghs-col-right-width: 140px; --ghs-signal-font: 18px; }
-            .ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 55px; --ghs-col-right-width: 200px; --ghs-signal-font: 24px; }
-            .ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 80px; --ghs-col-right-width: 300px; --ghs-signal-font: 32px; }
-            .ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 100px; --ghs-col-right-width: 400px; --ghs-signal-font: 42px; }
-            .ghs-size-mini { width: 52mm; height: 35mm; --ghs-picto-size: 35px; --ghs-signal-font: 16px; }
+            .ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 35px; --ghs-col-right-width: 140px; --ghs-signal-font: 16px; --ghs-title-font: 18px; }
+            .ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 50px; --ghs-col-right-width: 200px; --ghs-signal-font: 22px; --ghs-title-font: 22px; }
+            .ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 75px; --ghs-col-right-width: 300px; --ghs-signal-font: 30px; --ghs-title-font: 28px; }
+            .ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 95px; --ghs-col-right-width: 400px; --ghs-signal-font: 40px; --ghs-title-font: 36px; }
+            .ghs-size-mini { width: 52mm; height: 35mm; --ghs-picto-size: 32px; --ghs-signal-font: 14px; --ghs-title-font: 15px; }
             
             /* MODOS REGULATORIOS */
             .ghs-black-border .ghs-picto-box { border-color: #000 !important; }
