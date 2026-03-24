@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+  const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
   const sdsTableBody = document.getElementById('sdsTableBody');
   const sdsSearchInput = document.getElementById('sdsSearchInput');
   const sdsStats = document.getElementById('sdsStats');
   
   let allFiles = [];
 
-  async function loadSDSFiles() {
+  // Función para cargar los archivos del servidor
+  async function cargarArchivosSDS() {
     try {
-      const response = await fetch('http://127.0.0.1:8000/fds/list-files');
+      const response = await fetch(`${API_URL}/fds/list-files`);
       const data = await response.json();
       
       if (data.files) {
@@ -59,10 +61,10 @@ document.addEventListener('DOMContentLoaded', function() {
           <td style="color: #6b7280;">${date}</td>
           <td>
             <div style="display:flex; gap: 8px;">
-                <a href="../../assets/${file.name}" target="_blank" class="btn btn-primary btn-sm" title="Visualizar">
+                <a href="${API_URL}/assets/${file.name}" target="_blank" class="btn btn-primary btn-sm" title="Visualizar">
                     <i class="fas fa-eye"></i>
                 </a>
-                <a href="../../assets/${file.name}" download="${file.name}" class="btn btn-outline btn-sm" title="Descargar">
+                <a href="${API_URL}/assets/${file.name}" download="${file.name}" class="btn btn-outline btn-sm" title="Descargar">
                     <i class="fas fa-download"></i>
                 </a>
             </div>
@@ -82,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Cargar al iniciar
-  loadSDSFiles();
+  cargarArchivosSDS(); // Corregido: antes decía loadSDSFiles
   
   // Exponer para recarga manual si es necesario
-  window.refreshSDSArchive = loadSDSFiles;
+  window.refreshSDSArchive = cargarArchivosSDS;
 });

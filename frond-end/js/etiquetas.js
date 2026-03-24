@@ -21,11 +21,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const btnUpload = document.getElementById("btnUpload");
   let lastFile = null;
 
+  const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
+
   // --------- Cargar datos del dashboard
   async function cargarDashboard() {
     try {
       // Cargar Etiquetas
-      const resEtiquetas = await fetch("http://127.0.0.1:8000/etiquetas");
+      const resEtiquetas = await fetch(`${API_URL}/etiquetas`);
       const dataEtiquetas = await resEtiquetas.json();
       const etiquetas = dataEtiquetas.etiquetas || [];
       
@@ -39,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
       renderEtiquetasTable(etiquetas);
 
       // Cargar SDS
-      const resSDS = await fetch("http://127.0.0.1:8000/fds");
+      const resSDS = await fetch(`${API_URL}/fds`);
       const dataSDS = await resSDS.json();
       const fds = dataSDS.fds || [];
       
@@ -50,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (trendSDS) trendSDS.textContent = "Fichas registradas";
 
       // Cargar Productos
-      const resProductos = await fetch("http://127.0.0.1:8000/productos");
+      const resProductos = await fetch(`${API_URL}/productos`);
       const dataProductos = await resProductos.json();
       const productos = dataProductos.productos || [];
       
@@ -114,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <i class="fas fa-eye"></i> Ver
           </button>
           ${pdfFile ? `
-            <a href="../../assets/${pdfFile}" target="_blank" class="btn btn-outline btn-sm" title="Descargar PDF Original">
+            <a href="${API_URL}/assets/${pdfFile}" target="_blank" class="btn btn-outline btn-sm" title="Descargar PDF Original">
               <i class="fas fa-file-pdf"></i> PDF
             </a>
           ` : `
@@ -141,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!confirm("¿Estás seguro de que deseas eliminar esta etiqueta de la base de datos?")) return;
     
     try {
-      const res = await fetch(`http://127.0.0.1:8000/etiquetas/${id}`, {
+      const res = await fetch(`${API_URL}/etiquetas/${id}`, {
         method: 'DELETE'
       });
       
@@ -161,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Exponer función de preview real
   window.previewEtiquetaParaEditar = async function(id) {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/etiquetas`);
+      const res = await fetch(`${API_URL}/etiquetas`);
       const data = await res.json();
       const eti = (data.etiquetas || []).find(e => e._id === id);
       
@@ -239,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.append("file", file);
 
     try {
-      const resp = await fetch("http://127.0.0.1:8000/extract_pdf_data", {
+      const resp = await fetch(`${API_URL}/extract_pdf_data`, {
         method: "POST",
         body: formData,
       });
@@ -448,7 +450,7 @@ document.addEventListener("DOMContentLoaded", function () {
             emergencia: "123 (Bomberos)"
           };
 
-          const res = await fetch("http://127.0.0.1:8000/etiquetas", {
+          const res = await fetch(`${API_URL}/etiquetas`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),

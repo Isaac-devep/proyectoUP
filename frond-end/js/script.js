@@ -143,11 +143,13 @@ document.addEventListener('DOMContentLoaded', function() {
     showSection('dashboard');
   }
 
+  const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
+
   // Función para cargar estadísticas y actividad del dashboard
   async function cargarDashboard() {
     try {
       // 1. Cargar conteo de etiquetas y actividad reciente
-      const respEtiquetas = await fetch('http://127.0.0.1:8000/etiquetas');
+      const respEtiquetas = await fetch(`${API_URL}/etiquetas`);
       const dataLabel = await respEtiquetas.json();
       if (dataLabel.etiquetas) {
          document.getElementById('stat-labels').textContent = dataLabel.etiquetas.length;
@@ -167,21 +169,21 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       // 2. Cargar conteo de FDS (Archivo SDS)
-      const respFds = await fetch('http://127.0.0.1:8000/fds/list-files');
+      const respFds = await fetch(`${API_URL}/fds/list-files`);
       const dataFds = await respFds.json();
       if (dataFds.files) {
          document.getElementById('stat-fds').textContent = dataFds.files.length;
       }
 
       // 3. Cargar conteo de Productos
-      const respProd = await fetch('http://127.0.0.1:8000/productos');
+      const respProd = await fetch(`${API_URL}/productos`);
       const dataProd = await respProd.json();
       if (dataProd.productos) {
          document.getElementById('stat-products').textContent = dataProd.productos.length;
       }
 
       // 4. Cargar conteo de Usuarios
-      const respUsers = await fetch('http://127.0.0.1:8000/usuarios');
+      const respUsers = await fetch(`${API_URL}/usuarios`);
       const dataUsers = await respUsers.json();
       if (dataUsers.usuarios) {
          document.getElementById('stat-users').textContent = dataUsers.usuarios.length;

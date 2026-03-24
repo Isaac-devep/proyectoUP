@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 
 // LIST FILES FROM ASSETS (Dynamic Discovery)
 router.get('/list-files', (req, res) => {
-  const assetsPath = path.join(__dirname, '../../frond-end/assets');
+  const assetsPath = path.join(__dirname, '../assets');
   
   fs.readdir(assetsPath, (err, files) => {
     if (err) {

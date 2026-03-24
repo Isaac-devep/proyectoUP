@@ -16,6 +16,7 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)

@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
     const formNuevoUsuario = document.getElementById('formNuevoUsuario');
     const usersTableBody = document.getElementById('usersTableBody');
 
     // Función para cargar lista de usuarios
     window.loadUsersList = async function() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/usuarios');
+            const response = await fetch(`${API_URL}/usuarios`);
             const data = await response.json();
             
             if (data.usuarios) {
