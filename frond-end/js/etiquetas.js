@@ -261,6 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function renderEditableForm(data) {
     try {
+      const user = JSON.parse(localStorage.getItem('usuario'));
       const getText = (v) => (typeof v === "string" ? v : "");
       const getArr = (v) => (Array.isArray(v) ? v : []);
       const preview = document.getElementById("previewEtiqueta");
