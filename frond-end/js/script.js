@@ -193,52 +193,62 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
 
-  // Función para cargar estadísticas y actividad del dashboard
+  // Función para cargar estadísticas y actividad del dashboard (HARDENED)
   async function cargarDashboard() {
     try {
+      console.log("🔄 [Dashboard] Cargando datos vivos...");
+      
       // 1. Cargar conteo de etiquetas y actividad reciente
       const respEtiquetas = await fetch(`${API_URL}/etiquetas`);
       const dataLabel = await respEtiquetas.json();
-      if (dataLabel.etiquetas) {
-         document.getElementById('stat-labels').textContent = dataLabel.etiquetas.length;
-         
-         // Renderizar actividad reciente (últimas 5)
-         const recent = dataLabel.etiquetas.slice(0, 5);
-         const recentBody = document.getElementById('recentActivityBody');
-         if (recentBody) {
-            recentBody.innerHTML = recent.length > 0 ? recent.map(et => `
-               <tr>
-                 <td style="font-weight:600;">${et.id_producto || "Etiqueta sin nombre"}</td>
-                 <td style="color:#64748b;">${new Date(et.createdAt || et.fecha || Date.now()).toLocaleDateString()}</td>
-                 <td><span class="badge badge-success" style="font-size:10px; padding:2px 8px;">Generada</span></td>
-               </tr>
-            `).join('') : '<tr><td colspan="3" style="text-align:center; padding:15px;">No hay actividad reciente</td></tr>';
-         }
+      const etiquetas = dataLabel.etiquetas || [];
+
+      // Actualizar stats de etiquetas (Sincronizar IDs)
+      const labelStats = [document.getElementById('stat-labels'), document.getElementById('stat-etiquetas')];
+      labelStats.forEach(el => { if (el) el.textContent = etiquetas.length; });
+      
+      // Renderizar tabla global si existe el body
+      if (typeof window.renderEtiquetasTable === 'function') {
+         window.renderEtiquetasTable(etiquetas);
+      }
+      
+      // Actividad Reciente (Dashboard)
+      const recentBody = document.getElementById('recentActivityBody');
+      if (recentBody) {
+         const recent = etiquetas.slice(0, 5);
+         recentBody.innerHTML = recent.length > 0 ? recent.map(et => `
+            <tr>
+              <td style="font-weight:600;">${et.id_producto || "Etiqueta sin nombre"}</td>
+              <td style="color:#64748b;">${new Date(et.createdAt || et.fecha || Date.now()).toLocaleDateString()}</td>
+              <td><span class="badge badge-success" style="font-size:10px; padding:2px 8px;">Generada</span></td>
+            </tr>
+         `).join('') : '<tr><td colspan="3" style="text-align:center; padding:15px;">No hay actividad reciente</td></tr>';
       }
 
       // 2. Cargar conteo de FDS (Archivo SDS)
       const respFds = await fetch(`${API_URL}/fds/list-files`);
       const dataFds = await respFds.json();
-      if (dataFds.files) {
-         document.getElementById('stat-fds').textContent = dataFds.files.length;
-      }
+      const files = dataFds.files || [];
+      const sdsStats = [document.getElementById('stat-fds'), document.getElementById('stat-sds')];
+      sdsStats.forEach(el => { if (el) el.textContent = files.length; });
 
       // 3. Cargar conteo de Productos
       const respProd = await fetch(`${API_URL}/productos`);
       const dataProd = await respProd.json();
-      if (dataProd.productos) {
-         document.getElementById('stat-products').textContent = dataProd.productos.length;
-      }
+      const prods = dataProd.productos || [];
+      const prodStats = [document.getElementById('stat-products'), document.getElementById('stat-productos')];
+      prodStats.forEach(el => { if (el) el.textContent = prods.length; });
 
-      // 4. Cargar conteo de Usuarios
-      const respUsers = await fetch(`${API_URL}/usuarios`);
-      const dataUsers = await respUsers.json();
-      if (dataUsers.usuarios) {
-         document.getElementById('stat-users').textContent = dataUsers.usuarios.length;
+      // 4. Cargar conteo de Usuarios (Solo si existe el elemento)
+      const statUsers = document.getElementById('stat-users');
+      if (statUsers) {
+         const respUsers = await fetch(`${API_URL}/usuarios`);
+         const dataUsers = await respUsers.json();
+         statUsers.textContent = (dataUsers.usuarios || []).length;
       }
 
     } catch (error) {
-      console.error("Error cargando dashboard:", error);
+      console.error("❌ [Dashboard] Error fatal:", error);
     }
   }
 

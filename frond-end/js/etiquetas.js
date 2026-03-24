@@ -24,51 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
 
-  // --------- Cargar datos del dashboard
-  async function cargarDashboard() {
-    try {
-      // Cargar Etiquetas
-      const resEtiquetas = await fetch(`${API_URL}/etiquetas`);
-      const dataEtiquetas = await resEtiquetas.json();
-      const etiquetas = dataEtiquetas.etiquetas || [];
-      
-      const statEtiquetas = document.getElementById("stat-etiquetas");
-      if (statEtiquetas) statEtiquetas.textContent = etiquetas.length.toLocaleString();
-      
-      const trendEtiquetas = document.getElementById("stat-etiquetas-trend");
-      if (trendEtiquetas) trendEtiquetas.textContent = "Total generado";
+  // REMOVIDO: cargarDashboard ahora es centralizado en script.js
 
-      // Cargar Tabla de Etiquetas
-      renderEtiquetasTable(etiquetas);
-
-      // Cargar SDS
-      const resSDS = await fetch(`${API_URL}/fds`);
-      const dataSDS = await resSDS.json();
-      const fds = dataSDS.fds || [];
-      
-      const statSDS = document.getElementById("stat-sds");
-      if (statSDS) statSDS.textContent = fds.length.toLocaleString();
-      
-      const trendSDS = document.getElementById("stat-sds-trend");
-      if (trendSDS) trendSDS.textContent = "Fichas registradas";
-
-      // Cargar Productos
-      const resProductos = await fetch(`${API_URL}/productos`);
-      const dataProductos = await resProductos.json();
-      const productos = dataProductos.productos || [];
-      
-      const statProductos = document.getElementById("stat-productos");
-      if (statProductos) statProductos.textContent = productos.length.toLocaleString();
-      
-      const trendProductos = document.getElementById("stat-productos-trend");
-      if (trendProductos) trendProductos.textContent = "Catálogo activo";
-
-    } catch (err) {
-      console.error("Error cargando dashboard:", err);
-    }
-  }
-
-  function renderEtiquetasTable(etiquetas) {
+  window.renderEtiquetasTable = function(etiquetas) {
     const tableBody = document.getElementById("etiquetasTableBody");
     if (!tableBody) return;
 
@@ -141,8 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }).join("");
   }
 
-  // Inicializar carga
-  cargarDashboard();
+  // El inicio ahora lo maneja script.js centralmente
 
   // Función para ELIMINAR etiqueta
   window.eliminarEtiqueta = async function(id) {
@@ -184,14 +141,18 @@ document.addEventListener("DOMContentLoaded", function () {
           pictogramas: eti.pictogramas
         };
         
-        // Cambiar a la sección de generador
-        if (window.showSection) window.showSection('generar-etiquetas');
+        // Cambiar a la sección de generador (Solo si existe, sino stay here)
+        const hasGenerator = document.getElementById('generar-etiquetas');
+        if (hasGenerator && window.showSection) {
+           window.showSection('generar-etiquetas');
+        } else {
+           // Si es empleado, el preview está al final de etiquetas-lista
+           const previewTop = document.getElementById('previewEtiqueta');
+           if (previewTop) previewTop.scrollIntoView({ behavior: 'smooth' });
+        }
         
         // Renderizar
         renderEditableForm(formattedData);
-        
-        // Scroll suave arriba
-        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (err) {
       console.error("Error cargando etiqueta para editar:", err);
