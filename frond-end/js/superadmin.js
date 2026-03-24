@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 1. Cargar Usuarios y Estadísticas
     window.loadUsersList = async function() {
         try {
+            // 1. Cargar Usuarios
             const response = await fetch(`${API_URL}/usuarios`);
             const data = await response.json();
             
@@ -18,10 +19,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 renderUsersTable(allUsers);
                 updateStats(allUsers);
             }
+
+            // 2. Cargar Etiquetas (para el contador)
+            const respEtiquetas = await fetch(`${API_URL}/etiquetas`);
+            const dataEt = await respEtiquetas.json();
+            if (dataEt.etiquetas) {
+                const countEl = document.getElementById('stat-labels-count');
+                if (countEl) countEl.textContent = dataEt.etiquetas.length.toLocaleString();
+            }
+
+            // 3. Cargar Archivos SDS (para el contador)
+            const respSds = await fetch(`${API_URL}/fds/list-files`);
+            const dataSds = await respSds.json();
+            if (dataSds.files) {
+                const countSds = document.getElementById('stat-sds-count');
+                if (countSds) countSds.textContent = dataSds.files.length.toLocaleString();
+            }
+
         } catch (error) {
-            console.error('Error al cargar usuarios:', error);
+            console.error('Error al cargar datos maestro:', error);
             if (usersTableBody) {
-                usersTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#ef4444;">Error de conexión</td></tr>';
+                usersTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#ef4444;">Error de sincronización</td></tr>';
             }
         }
     };

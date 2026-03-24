@@ -17,7 +17,7 @@
         <div class="sidebar-header">
             <div class="logo-container">
                 <a href="../../index.html">
-                    <img src="../../images/logo-eticol.png" alt="Eticol Logo" class="sidebar-logo">
+                    <img src="../../images/logo.png" alt="Eticol Logo" class="sidebar-logo">
                 </a>
             </div>
         </div>
@@ -25,11 +25,11 @@
         <div class="sidebar-menu">
             <div class="menu-category">
                 <h3>Acciones</h3>
-                <a href="#" class="menu-item active">
+                <a href="#dashboard" class="menu-item active">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#gestion-usuarios" class="menu-item">
+                <a href="#usuarios-gestion" class="menu-item">
                     <i class="fas fa-user-shield"></i>
                     <span>Gestión de Personal</span>
                 </a>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="user-info">
-            <div class="user-avatar" id="userInitial">CA</div>
+            <div class="user-avatar" id="userAvatar">CA</div>
             <div class="user-details">
                 <h4 id="nombreUsuario">Cristian Albor</h4>
                 <p id="rolUsuario">Super-Administrador</p>
@@ -52,7 +52,7 @@
     <main class="main-content">
         <div class="header">
             <div>
-                <h1>Panel de Control Maestro</h1>
+                <h1 id="mainHeaderTitle">Panel de Control Maestro</h1>
                 <p style="color:var(--text-muted); font-size: 14px; margin-top: 4px;">Gestión integral de la plataforma Eticol</p>
             </div>
             <div class="header-actions">
@@ -65,43 +65,47 @@
             </div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">Usuarios Sistema</span>
-                    <h2 id="totalUsersCount">0</h2>
-                    <p id="activeUsersTagline">Cargando...</p>
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span class="stat-label">Usuarios Sistema</span>
+                        <h2 id="totalUsersCount">0</h2>
+                        <p id="activeUsersTagline">Cargando...</p>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
                 </div>
-                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
-                    <i class="fas fa-users-cog"></i>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span class="stat-label">Etiquetas GHS</span>
+                        <h2 id="stat-labels-count">1,248</h2>
+                        <p style="color: #10b981;">+12% este mes</p>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span class="stat-label">Archivos SDS</span>
+                        <h2 id="stat-sds-count">568</h2>
+                        <p style="color: #8b5cf6;">+8% este mes</p>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">Etiquetas GHS</span>
-                    <h2>1,248</h2>
-                    <p style="color: #10b981;">+12% este mes</p>
-                </div>
-                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-                    <i class="fas fa-tags"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">Archivos SDS</span>
-                    <h2>568</h2>
-                    <p style="color: #8b5cf6;">+8% este mes</p>
-                </div>
-                <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-                    <i class="fas fa-file-medical"></i>
-                </div>
-            </div>
-        </div>
-
-        <section id="gestion-usuarios">
+        <!-- Personnel Management Section -->
+        <section id="usuarios-gestion" class="content-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                 <h2 style="font-size: 20px; font-weight: 700;">Gestión de Personal del Sistema</h2>
                 <button class="btn btn-outline" onclick="loadUsersList()">
