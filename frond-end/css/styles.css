@@ -569,22 +569,22 @@ tr:hover td {
 
 /* GHS / SGA Professional Label - CLP Redesign */
 .ghs-label {
-  --ghs-picto-size: 60px;
+  --ghs-picto-size: 50px;
   --ghs-col-right-width: 240px;
-  --ghs-signal-font: 32px;
-  --ghs-title-font: 24px;
+  --ghs-signal-font: 24px;
+  --ghs-title-font: 20px;
   width: 100%;
   max-width: 800px;
   margin: 20px auto;
   background: white;
   border: 4px solid #cc0000;
-  padding: 12px;
+  padding: 10px;
   color: #000;
   font-family: 'Inter', sans-serif;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   overflow: hidden;
 }
 
@@ -688,8 +688,8 @@ tr:hover td {
 
 .ghs-section ul {
   padding-left: 15px;
-  font-size: 11px;
-  line-height: 1.3;
+  font-size: 10px;
+  line-height: 1.25;
   list-style-type: disc;
 }
 
@@ -705,17 +705,17 @@ tr:hover td {
 }
 
 /* CLP Sizes (Based on Table 4) */
-.ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 35px; --ghs-col-right-width: 140px; --ghs-signal-font: 16px; --ghs-title-font: 18px; }
-.ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 50px; --ghs-col-right-width: 200px; --ghs-signal-font: 22px; --ghs-title-font: 22px; }
-.ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 75px; --ghs-col-right-width: 300px; --ghs-signal-font: 30px; --ghs-title-font: 28px; }
-.ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 95px; --ghs-col-right-width: 400px; --ghs-signal-font: 40px; --ghs-title-font: 36px; }
+.ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 32px; --ghs-col-right-width: 130px; --ghs-signal-font: 14px; --ghs-title-font: 16px; }
+.ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 45px; --ghs-col-right-width: 180px; --ghs-signal-font: 18px; --ghs-title-font: 18px; }
+.ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 65px; --ghs-col-right-width: 260px; --ghs-signal-font: 26px; --ghs-title-font: 24px; }
+.ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 85px; --ghs-col-right-width: 360px; --ghs-signal-font: 34px; --ghs-title-font: 32px; }
 
 /* Art. 13 - Envases < 30ml (Minimalista) */
-.ghs-size-mini { width: 52mm; height: 35mm; --ghs-picto-size: 32px; --ghs-signal-font: 14px; --ghs-title-font: 15px; }
+.ghs-size-mini { width: 52mm; height: 35mm; --ghs-picto-size: 28px; --ghs-signal-font: 12px; --ghs-title-font: 13px; }
 .ghs-mini-layout .ghs-body { display: block !important; }
 .ghs-mini-layout .ghs-col-left { display: none !important; }
 .ghs-mini-layout .ghs-col-right { border: none !important; padding: 0 !important; width: 100% !important; }
-.ghs-mini-layout .ghs-signal-word { text-align: center; margin: 2px 0 !important; }
+.ghs-mini-layout .ghs-signal-word { text-align: center; margin: 1px 0 !important; }
 .ghs-mini-layout .ghs-pictos { grid-template-columns: repeat(auto-fit, calc(var(--ghs-picto-size) * 1.42)) !important; gap: 4px !important; }
 .ghs-mini-layout .ghs-footer { display: none !important; }
 
