@@ -72,6 +72,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const tableBody = document.getElementById("etiquetasTableBody");
     if (!tableBody) return;
 
+    const user = JSON.parse(localStorage.getItem('usuario'));
+    const isEmployee = user && user.rol && user.rol.toLowerCase() === 'empleado';
+
     if (etiquetas.length === 0) {
       tableBody.innerHTML = `
         <tr>
@@ -85,9 +88,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     tableBody.innerHTML = etiquetas.map(eti => {
       const nombre = eti.id_producto || "";
-      // Lógica de búsqueda de PDF en assets (nombres conocidos)
       let pdfFile = "";
       const n = nombre.toLowerCase();
+      // ... (lógica de mapeo de PDF omitida por brevedad en el diff si es posible, pero debo incluirla para no borrarla)
       if (n.includes("propano")) pdfFile = "aoc-hds-proveedores-propano.pdf";
       else if (n.includes("glp")) pdfFile = "FDS-GAS-LICUADO-DE-PETROLEO.pdf";
       else if (n.includes("butano")) pdfFile = "FICHAS-DE-DATOS-DE-SEGURIDAD-BUTANO.pdf";
@@ -114,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>${eti.fecha ? new Date(eti.fecha).toLocaleDateString() : "---"}</td>
         <td>
           <button class="btn btn-primary btn-sm" onclick="window.previewEtiquetaParaEditar('${eti._id}')" title="Ver Etiqueta">
-            <i class="fas fa-eye"></i> Ver
+            <i class="fas fa-eye"></i> ${isEmployee ? 'Visualizar' : 'Ver'}
           </button>
           ${pdfFile ? `
             <a href="${API_URL}/assets/${pdfFile}" target="_blank" class="btn btn-outline btn-sm" title="Descargar PDF Original">
@@ -125,11 +128,13 @@ document.addEventListener("DOMContentLoaded", function () {
               <i class="fas fa-minus-circle"></i> PDF
             </button>
           `}
-          <button class="btn btn-outline btn-sm" title="Eliminar de DB" 
-                  style="color:#ef4444; border-color:#fee2e2;"
-                  onclick="window.eliminarEtiqueta('${eti._id}')">
-            <i class="fas fa-trash-alt"></i>
-          </button>
+          ${!isEmployee ? `
+            <button class="btn btn-outline btn-sm" title="Eliminar de DB" 
+                    style="color:#ef4444; border-color:#fee2e2;"
+                    onclick="window.eliminarEtiqueta('${eti._id}')">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          ` : ''}
         </td>
       </tr>
       `;
@@ -400,11 +405,14 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="form-group">
               <label>Nombre del producto *</label>
               <input name="nombre_producto" value="${escapeHtml(getText(data.nombre_producto))}" class="form-control" 
+                     ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}
                      oninput="document.getElementById('lbl-nombre').textContent = this.value">
             </div>
             <div class="form-group">
               <label>Palabra de Advertencia</label>
-              <select name="palabra_advertencia" class="form-control" onchange="document.getElementById('lbl-signal').textContent = this.value; document.getElementById('lbl-signal').style.background = this.value === 'PELIGRO' ? '#ef4444' : '#eab308'">
+              <select name="palabra_advertencia" class="form-control" 
+                      ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'disabled' : ''}
+                      onchange="document.getElementById('lbl-signal').textContent = this.value; document.getElementById('lbl-signal').style.background = this.value === 'PELIGRO' ? '#ef4444' : '#eab308'">
                 <option value="PELIGRO" ${data.palabra_advertencia === 'PELIGRO' ? 'selected' : ''}>PELIGRO</option>
                 <option value="ATENCIÓN" ${data.palabra_advertencia === 'ATENCIÓN' ? 'selected' : ''}>ATENCIÓN</option>
               </select>
@@ -412,18 +420,26 @@ document.addEventListener("DOMContentLoaded", function () {
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
               <div class="form-group">
                 <label>Peligros (H)</label>
-                <textarea name="indicaciones_peligro" rows="3" class="form-control">${getArr(data.indicaciones_peligro).join("\n")}</textarea>
+                <textarea name="indicaciones_peligro" rows="3" class="form-control" ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}>${getArr(data.indicaciones_peligro).join("\n")}</textarea>
               </div>
               <div class="form-group">
                 <label>Prudencia (P)</label>
-                <textarea name="consejos_prudencia" rows="3" class="form-control">${getArr(data.consejos_prudencia).join("\n")}</textarea>
+                <textarea name="consejos_prudencia" rows="3" class="form-control" ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}>${getArr(data.consejos_prudencia).join("\n")}</textarea>
               </div>
             </div>
-            <div style="display:flex; gap:15px; margin-top:25px;">
-              <button type="button" class="btn btn-primary" id="btnGuardarEtiqueta">
-                 <i class="fas fa-save"></i> Guardar en Base de Datos
-              </button>
-            </div>
+            
+            ${user && user.rol && user.rol.toLowerCase() !== 'empleado' ? `
+              <div style="display:flex; gap:15px; margin-top:25px;">
+                <button type="button" class="btn btn-primary" id="btnGuardarEtiqueta">
+                   <i class="fas fa-save"></i> Guardar en Base de Datos
+                </button>
+              </div>
+            ` : `
+              <div style="margin-top:20px; padding:15px; background:#fef3c7; color:#92400e; border-radius:8px; font-size:13px; display:flex; gap:10px; align-items:center;">
+                <i class="fas fa-lock"></i>
+                Solo personal administrativo puede guardar cambios o emitir etiquetas nuevas.
+              </div>
+            `}
           </form>
         </div>
       `;
