@@ -484,9 +484,9 @@ document.addEventListener("DOMContentLoaded", function () {
             .ghs-col-right { display: flex; flex-direction: column; align-items: center; gap: 20px; border-left: 1px solid #eee; padding-left: 20px; }
             .ghs-signal-word { font-weight: 900; font-size: 32px; text-transform: uppercase; color: #cc0000; margin-top: 10px; }
             .ghs-signal-word.atencion { color: #f97316; }
-            .ghs-pictos { display: grid; grid-template-columns: repeat(2, 80px); gap: 15px; }
-            .ghs-picto-box { width: 80px; height: 80px; border: 2px solid #cc0000; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; }
-            .ghs-picto-box img { width: 130%; height: 130%; transform: rotate(-45deg); object-fit: contain; }
+            .ghs-pictos { display: grid; grid-template-columns: repeat(2, 100px); gap: 15px; }
+            .ghs-picto-box { width: 65px; height: 65px; border: 2px solid #cc0000; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; }
+            .ghs-picto-box img { width: 120%; height: 120%; transform: rotate(-45deg); object-fit: contain; }
             .ghs-section h4 { color: #cc0000; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
             .ghs-section ul { padding-left: 15px; font-size: 11px; list-style-type: disc; }
             .ghs-footer { margin-top: 10px; border-top: 2px solid #000; padding-top: 8px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; font-size: 9px; }

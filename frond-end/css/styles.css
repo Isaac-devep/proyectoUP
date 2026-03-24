@@ -643,14 +643,14 @@ tr:hover td {
 
 .ghs-pictos {
   display: grid;
-  grid-template-columns: repeat(2, 80px);
+  grid-template-columns: repeat(2, 100px);
   gap: 15px;
   justify-content: center;
 }
 
 .ghs-picto-box {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   border: 2px solid #cc0000;
   padding: 5px;
   display: flex;
@@ -662,8 +662,8 @@ tr:hover td {
 }
 
 .ghs-picto-box img {
-  width: 130%;
-  height: 130%;
+  width: 120%;
+  height: 120%;
   object-fit: contain;
   transform: rotate(-45deg);
 }
