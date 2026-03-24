@@ -36,18 +36,28 @@ document.addEventListener("DOMContentLoaded", function () {
                   "/frond-end/html/empleados/empleado.html";
                 break;
               default:
-                alert("Rol no reconocido: " + data.usuario.id_rol);
+                showToast("Rol no reconocido: " + data.usuario.id_rol, "error");
                 break;
             }
           } else {
-            alert(data.error || "Usuario o contraseña incorrectos");
+            showToast(data.error || "Usuario o contraseña incorrectos", "error");
           }
         })
         .catch((err) => {
           console.log("Error: ", err);
-          alert("Error al iniciar sesión: " + err.message);
+          showToast("Error al iniciar sesión: " + err.message, "error");
         });
     });
+  }
+
+  function showToast(msg, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if(!container) return alert(msg);
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(()=>toast.remove(), 400); }, 3000);
   }
 
   const inputs = document.querySelectorAll(

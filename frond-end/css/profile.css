@@ -1,154 +1,135 @@
-.user-info{
-    margin: 24px 0 0 0 ;
-    padding-left: 18px;
-    border-left: 3px solid #4a6fa5;
-    min-height: 55px;
+/* User Info & Avatar Refinement */
+.user-info {
+  margin-top: auto;
+  padding: 24px;
 }
 
-.user-info h4{
-    font-size: 1.09rem;
-    font-weight: bold;
-    margin: 0 0 3px 0;
-    color: #fff;
-    letter-spacing: 0.01em;
-    text-shadow: 0 1px 8px #001b3524, 0 1px 0 #001b3530;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    line-height: 1.2;
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
+  margin-bottom: 12px;
+  text-transform: uppercase;
 }
 
-.user-info p{
-    margin: 0;
-    font-size: 0.93rem;
-    color: #a4d4ff;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-shadow: 0 1px 0 #001b3530;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-/* estos estilos son para  */
-.user-avatar{
-    width: 46px;
-    height: 46px;
-    background: linear-gradient(135deg, #4a6fa5 75%, #003155 100%);
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700px;
-    font-size: 1.32rem;
-    letter-spacing: 0.02em;
-    box-shadow: 0 2px 8px #001b353a;
-    margin-right: 13px;
-    margin-left: 8px;
-    margin-top: 16px;
-    user-select: none;
-    text-transform: uppercase;
+.user-info h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-white);
+  margin-bottom: 4px;
 }
 
+.user-info p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
 
 /* CIERRE SESION */
 
 .logout-btn {
-    margin-top: 12px;
-    background: #ee4646;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 7px 18px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.2s;
-    font-size: 1rem;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #ff4757;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
-    background: #c93030;
+  background: rgba(255, 71, 87, 0.1);
+  border-color: #ff4757;
+  transform: translateY(-1px);
 }
 
 
 /* otros estilos de admin */
 /* Estilos específicos para la página de administrador */
+/* Content Sections */
 .content-section {
-  margin-bottom: 50px;
-  padding-top: 20px;
+  display: none; /* Hidden by default, script.js handles visibility */
+  animation: fadeIn 0.4s ease-out;
 }
 
-.upload-container {
-  background-color: var(--card-bg, #f9f9f9);
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.upload-area {
-  border: 2px dashed var(--border-color, #bdbdbd);
-  border-radius: 5px;
-  padding: 30px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s;
+.content-section.active {
+  display: block;
 }
 
-.upload-area:hover {
-  border-color: var(--primary-color, #0056a4);
-  background-color: rgba(74, 111, 165, 0.05);
+/* Section Titles */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.stats-card {
-  display: inline-block;
-  margin: 10px;
-  min-width: 220px;
-  vertical-align: top;
+.section-title i {
+  color: var(--primary);
 }
 
-.upload-icon {
-  font-size: 48px;
-  color: var(--primary-color, #0056a4);
-  margin-bottom: 15px;
-}
-
-.upload-button-container {
-  margin-top: 20px;
-}
-
+/* Specific styles for the "Etiquetas creadas" preview if needed */
 #previewEtiqueta .card {
-  padding: 30px;
+  padding: 32px;
+  margin-top: 24px;
 }
 
-#previewEtiqueta textarea {
-  width: 100%;
-}
-
+#previewEtiqueta textarea, 
 #previewEtiqueta input[type="text"] {
   width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
 #previewEtiqueta label {
   display: block;
-  margin-bottom: 10px;
-}
-
-#previewImprimir {
-  margin-top: 30px;
-  display: none;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-muted);
 }
 
 /* Estilos para la vista previa de impresión */
+/* Print Label Preview (Specific to Project) */
 .print-label {
+  background: #fff;
   border: 2px solid #b30000;
-  padding: 18px 30px;
-  max-width: 440px;
-  font-family: sans-serif;
+  padding: 24px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-lg);
+  color: #000;
 }
 
 .print-label h2 {
   text-align: center;
-  letter-spacing: 2px;
+  font-size: 24px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  color: #b30000;
 }
 
 .print-label .cas-number {
@@ -158,15 +139,22 @@
 
 .print-label .warning {
   color: #b30000;
-  font-weight: bold;
-}
-
-.print-label .pictograms {
-  margin: 14px 0;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 20px;
   text-align: center;
+  margin: 12px 0;
 }
 
-.print-label .pictograms img {
-  height: 60px;
-  margin: 4px;
+.pictograms {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.pictograms img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }
