@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const formNuevoUsuario = document.getElementById('formNuevoUsuario');
     const usersTableBody = document.getElementById('usersTableBody');
 
+    let allUsers = [];
+    let isEditing = false;
+    let currentEditId = null;
+
     // Función para cargar lista de usuarios
     window.loadUsersList = async function() {
         try {
@@ -10,7 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (data.usuarios) {
-                renderUsersTable(data.usuarios);
+                allUsers = data.usuarios;
+                renderUsersTable(allUsers);
             }
         } catch (error) {
             console.error('Error al cargar usuarios:', error);
@@ -64,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }).join('');
     }
 
-    // Manejar envío de formulario
+    // Manejar envío de formulario (CREAR O EDITAR)
     if (formNuevoUsuario) {
         formNuevoUsuario.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -79,9 +84,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 id_rol: document.getElementById('user-rol').value
             };
 
+            const url = isEditing ? `${API_URL}/usuarios/${currentEditId}` : `${API_URL}/usuarios/insertarusuarios`;
+            const method = isEditing ? 'PUT' : 'POST';
+
             try {
-                const response = await fetch('http://127.0.0.1:8000/usuarios/insertarusuarios', {
-                    method: 'POST',
+                console.log(`🚀 [FetchRequest] ${method} a: ${url}`);
+                const response = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(userData)
                 });
@@ -89,16 +98,82 @@ document.addEventListener('DOMContentLoaded', function() {
                 const res = await response.json();
                 
                 if (response.ok) {
-                    showToast("✅ Usuario registrado con éxito", "success");
-                    formNuevoUsuario.reset();
+                    showToast(isEditing ? "✅ Usuario actualizado" : "✅ Usuario registrado", "success");
+                    resetUserForm();
                     loadUsersList();
                 } else {
-                    showToast("❌ Error: " + res.error, "error");
+                    console.error("❌ Server Error:", res);
+                    showToast("❌ Error: " + (res.error || res.mensaje || "Fallo en el servidor"), "error");
                 }
             } catch (error) {
-                showToast("❌ Error de conexión", "error");
+                console.error("🔥 Connection Error:", error);
+                showToast("❌ Error de conexión: " + error.message, "error");
             }
         });
+    }
+
+    // Cambiar estado (Activar/Desactivar)
+    window.toggleUserStatus = async function(id, estadoActual) {
+        const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
+        if (!confirm(`¿Deseas ${nuevoEstado === 'activo' ? 'activar' : 'desactivar'} a este usuario?`)) return;
+
+        try {
+            const response = await fetch(`${API_URL}/usuarios/${id}/estado`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ estado: nuevoEstado })
+            });
+
+            if (response.ok) {
+                showToast(`✅ Usuario ${nuevoEstado === 'activo' ? 'activado' : 'desactivado'}`, "success");
+                loadUsersList();
+            }
+        } catch (error) {
+            showToast("❌ Error al cambiar estado", "error");
+        }
+    };
+
+    // Función para editar (Cargar datos en el formulario)
+    window.editUser = function(id) {
+        const user = allUsers.find(u => u.id_usuario === id);
+        if (!user) return;
+
+        isEditing = true;
+        currentEditId = id;
+
+        // Llenar campos
+        document.getElementById('user-id').value = user.id_usuario;
+        document.getElementById('user-usu').value = user.usu;
+        document.getElementById('user-nombre').value = user.nombre;
+        document.getElementById('user-apellido').value = user.apellido;
+        document.getElementById('user-correo').value = user.correo;
+        document.getElementById('user-contra').value = ""; // No mostrar contra actual
+        document.getElementById('user-rol').value = user.id_rol;
+
+        // Cambiar UI
+        document.getElementById('userFormTitle').textContent = "Editar Usuario";
+        document.getElementById('userFormSubmitText').textContent = "GUARDAR CAMBIOS";
+        document.getElementById('userFormSubmitBtn').classList.replace('btn-primary', 'btn-success');
+        
+        // El ID no debería editarse si es la llave primaria en el backend por ID
+        document.getElementById('user-id').disabled = true;
+
+        showToast("✏️ Editando usuario: " + user.usu, "info");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    function resetUserForm() {
+        if (formNuevoUsuario) formNuevoUsuario.reset();
+        isEditing = false;
+        currentEditId = null;
+
+        document.getElementById('user-id').disabled = false;
+        document.getElementById('userFormTitle').textContent = "Registrar Nuevo Usuario";
+        document.getElementById('userFormSubmitText').textContent = "CREAR USUARIO";
+        if (document.getElementById('userFormSubmitBtn')) {
+            document.getElementById('userFormSubmitBtn').classList.remove('btn-success');
+            document.getElementById('userFormSubmitBtn').classList.add('btn-primary');
+        }
     }
 
     // Cargar al iniciar

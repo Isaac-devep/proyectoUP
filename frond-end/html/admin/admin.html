@@ -258,7 +258,7 @@
       <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
         <!-- FORMULARIO CREAR -->
         <div class="card">
-          <h3>Registrar Nuevo Usuario</h3>
+          <h3 id="userFormTitle">Registrar Nuevo Usuario</h3>
           <form id="formNuevoUsuario" style="margin-top: 20px;">
             <div class="form-group">
               <label>Identificación / ID</label>
@@ -292,8 +292,8 @@
                 <option value="Super administrador">Super administrador</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary w-full" style="margin-top: 20px;">
-              <i class="fas fa-user-plus"></i> CREAR USUARIO
+            <button type="submit" id="userFormSubmitBtn" class="btn btn-primary w-full" style="margin-top: 20px;">
+              <i class="fas fa-user-plus"></i> <span id="userFormSubmitText">CREAR USUARIO</span>
             </button>
           </form>
         </div>

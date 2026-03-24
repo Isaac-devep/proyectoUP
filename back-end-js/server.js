@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 
@@ -16,7 +17,21 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// RUTA ESPECIAL PARA SERVIR ASSETS (PDFs) CON LOGGING Y DECODE
+app.get('/assets/:filename', (req, res) => {
+    const filename = decodeURIComponent(req.params.filename);
+    const filePath = path.join(__dirname, 'assets', filename);
+    
+    console.log(`📂 [FileRequest] Intentando servir: ${filePath}`);
+    
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        console.error(`❌ [FileRequest] Archivo no encontrado: ${filePath}`);
+        res.status(404).json({ error: "Archivo no encontrado en el servidor" });
+    }
+});
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)

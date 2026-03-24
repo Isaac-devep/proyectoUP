@@ -3,9 +3,10 @@ window.addEventListener(
   "submit",
   function (ev) {
     if (
-      ev.target.tagName === "FORM" &&
+      (ev.target.tagName === "FORM" &&
       ev.target.id &&
-      ev.target.id.startsWith("formEtiqueta-")
+      ev.target.id.startsWith("formEtiqueta-")) ||
+      ev.target.id === "formNuevoUsuario"
     )
       return;
     ev.preventDefault();

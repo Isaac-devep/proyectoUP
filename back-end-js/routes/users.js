@@ -35,6 +35,33 @@ router.post('/insertarusuarios', async (req, res) => {
   }
 });
 
+// Update full user profile
+router.put('/:id_usuario', async (req, res) => {
+  try {
+    const { contra, ...updateData } = req.body;
+    
+    // If password is provided, we need to find the user first to trigger the pre-save hook 
+    // or manually hash it. Using findOne + save is safest for the bcrypt hook.
+    const user = await User.findOne({ id_usuario: req.params.id_usuario });
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    // Update fields
+    Object.keys(updateData).forEach(key => {
+        user[key] = updateData[key];
+    });
+
+    if (contra && contra.trim() !== "") {
+        user.contra = contra;
+    }
+
+    await user.save();
+    res.json({ mensaje: "Usuario actualizado correctamente" });
+  } catch (err) {
+    console.error("Error actualizando usuario:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Delete user
 router.delete('/:id', async (req, res) => {
   try {
