@@ -35,8 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             window.location.href = "/html/admin/admin.html";
                             break;
                         case "Empleado":
-                            // El empleado ahora usa la misma interfaz admin pero con restricciones (RBAC)
-                            window.location.href = "/html/admin/admin.html";
+                            // Redirigir a la pantalla específica de empleado
+                            window.location.href = "/html/empleados/empleado.html";
                             break;
                         default:
                             showToast("Rol no reconocido", "error");
