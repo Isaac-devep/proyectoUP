@@ -567,91 +567,145 @@ tr:hover td {
   background: var(--bg-main);
 }
 
-/* GHS / SGA Professional Label */
+/* GHS / SGA Professional Label - CLP Redesign */
 .ghs-label {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   margin: 20px auto;
   background: white;
-  border: 4px solid #ef4444; /* Rojo GHS */
-  border-radius: 4px;
-  padding: 20px;
+  border: 4px solid #cc0000; /* Rojo GHS Intenso */
+  padding: 15px;
   color: #000;
   font-family: 'Inter', sans-serif;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
 }
 
 .ghs-header {
   border-bottom: 2px solid #000;
-  padding-bottom: 12px;
-  margin-bottom: 16px;
+  padding-bottom: 8px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .ghs-header h2 {
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 900;
   margin: 0;
-  color: #000;
   text-transform: uppercase;
+  flex: 1;
+}
+
+.ghs-components {
+  text-align: right;
+  font-size: 10px;
+  font-weight: 600;
+  max-width: 200px;
+}
+
+.ghs-body {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 20px;
+  flex: 1;
+}
+
+.ghs-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ghs-col-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  border-left: 1px solid #eee;
+  padding-left: 20px;
 }
 
 .ghs-signal-word {
-  background: #ef4444;
-  color: white;
-  padding: 4px 12px;
-  font-weight: 800;
-  font-size: 18px;
-  border-radius: 2px;
+  font-weight: 900;
+  font-size: 32px;
+  text-transform: uppercase;
+  color: #cc0000;
+  margin-top: 10px;
+}
+
+.ghs-signal-word.atencion {
+  color: #f97316; /* Orange for Atencion */
 }
 
 .ghs-pictos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 80px);
+  gap: 15px;
   justify-content: center;
 }
 
 .ghs-picto-box {
-  border: 1px solid #ddd;
-  padding: 8px;
-  background: #f9f9f9;
-  border-radius: 4px;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #cc0000;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(45deg);
+  overflow: hidden;
+  background: #fff;
 }
 
 .ghs-picto-box img {
-  height: 60px;
-  width: auto;
-}
-
-.ghs-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  font-size: 12px;
-  line-height: 1.4;
+  width: 130%;
+  height: 130%;
+  object-fit: contain;
+  transform: rotate(-45deg);
 }
 
 .ghs-section h4 {
-  font-size: 13px;
+  color: #cc0000;
+  font-size: 12px;
   font-weight: 800;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 4px;
-  margin-bottom: 8px;
   text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.ghs-section ul {
+  padding-left: 15px;
+  font-size: 11px;
+  line-height: 1.3;
+  list-style-type: disc;
 }
 
 .ghs-footer {
-  margin-top: 20px;
+  margin-top: 10px;
   border-top: 2px solid #000;
-  padding-top: 10px;
-  font-size: 10px;
-  display: flex;
-  justify-content: space-between;
-  color: #666;
+  padding-top: 8px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+  font-size: 9px;
+  font-weight: 500;
+}
+
+/* CLP Sizes (Based on Table 4) */
+.ghs-size-s { width: 74mm; height: 52mm; }
+.ghs-size-m { width: 105mm; height: 74mm; }
+.ghs-size-l { width: 148mm; height: 105mm; }
+.ghs-size-xl { width: 210mm; height: 148mm; }
+
+@media print {
+  .ghs-label {
+    box-shadow: none;
+    margin: 0;
+    border: 4px solid #cc0000 !important;
+  }
 }
 
 /* Matrix Table Premium Styling - Pastel Refactor */

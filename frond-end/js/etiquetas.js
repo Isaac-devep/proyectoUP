@@ -270,50 +270,16 @@ document.addEventListener("DOMContentLoaded", function () {
       let pictos = getArr(data.pictogramas);
       let pictosHtml = pictos.length > 0 
         ? pictos.map((pic) => {
-            // 1. Limpieza básica
             let s = pic.toString().toLowerCase().trim().replace(/\s+/g, '-');
-            
-            // 2. Mapeo de sinónimos o nombres cortos a archivos reales
             const pictoSwap = {
-               'gas': 'gas-presurizado',
-               'cilindro': 'gas-presurizado',
-               'llama': 'inflamable',
-               'inflamable': 'inflamable',
-               'liquido-inflamable': 'inflamable',
-               'solido-inflamable': 'inflamable',
-               'combustible-espontaneo': 'inflamable',
-               'peligroso-humedo': 'explosivo',
-               'oxidante': 'oxidante',
-               'comburente': 'oxidante',
-               'peroxido': 'oxidante',
-               'toxico': 'toxico',
-               'toxica': 'toxico',
-               'veneno': 'toxico',
-               'calavera': 'toxico',
-               'corrosivo': 'corrosivo',
-               'corrosiva': 'corrosivo',
-               'ácida': 'corrosivo',
-               'base': 'corrosivo',
-               'salud': 'peligro-salud',
-               'cancerigena': 'peligro-salud',
-               'cancerígena': 'peligro-salud',
-               'irritante': 'irritante',
-               'irritación': 'irritante',
-               'exclamacion': 'irritante',
-               'exclamación': 'irritante',
-               'ambiente': 'daño-ambiente',
-               'acuatico': 'daño-ambiente',
-               'acuático': 'daño-ambiente'
+               'gas': 'gas-presurizado', 'cilindro': 'gas-presurizado',
+               'llama': 'inflamable', 'inflamable': 'inflamable',
+               'oxidante': 'oxidante', 'toxico': 'toxico', 'calavera': 'toxico',
+               'corrosivo': 'corrosivo', 'salud': 'peligro-salud',
+               'irritante': 'irritante', 'ambiente': 'daño-ambiente'
             };
-            
             if (pictoSwap[s]) s = pictoSwap[s];
-
-            return `
-              <div class="ghs-picto-box">
-                <img src="../../images/${s}.png" alt="${s}" title="${s}" 
-                     onerror="this.src='../../images/default-pictogram.png';">
-              </div>
-            `;
+            return `<div class="ghs-picto-box"><img src="../../images/${s}.png" alt="${s}" onerror="this.src='../../images/default-pictogram.png';"></div>`;
           }).join("")
         : '<div style="color:#666;">No hay pictogramas</div>';
 
@@ -322,71 +288,101 @@ document.addEventListener("DOMContentLoaded", function () {
       preview.innerHTML = `
         <div class="card" style="padding:25px; background: #f8fafc; border: 1px dashed var(--primary);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-            <h3 style="margin:0;">Vista Prévia Profesional SGA</h3>
-            <button class="btn btn-primary btn-sm" onclick="window.imprimirEtiquetaIndependiente('printableLabel')">
-               <i class="fas fa-print"></i> Imprimir Etiqueta
-            </button>
+            <h3 style="margin:0;">Vista Prévia Profesional SGA (CLP)</h3>
+            <div style="display:flex; gap:10px;">
+               <select id="labelSizeSelect" class="form-control" style="width: auto; height: 38px;" onchange="document.getElementById('printableLabel').className = 'ghs-label ' + this.value">
+                 <option value="ghs-size-m">Tamaño: M (Envase 3-50L)</option>
+                 <option value="ghs-size-s">Tamaño: S (Hasta 3L)</option>
+                 <option value="ghs-size-l">Tamaño: L (Envase 50-500L)</option>
+                 <option value="ghs-size-xl">Tamaño: XL (Más de 500L)</option>
+               </select>
+               <button class="btn btn-primary btn-sm" onclick="window.imprimirEtiquetaIndependiente('printableLabel')">
+                 <i class="fas fa-print"></i> Imprimir
+               </button>
+            </div>
           </div>
 
-          <!-- LA ETIQUETA BONITA -->
-          <div class="ghs-label" id="printableLabel">
+          <!-- LA ETIQUETA BONITA (NUEVO LAYOUT 2 COLUMNAS) -->
+          <div class="ghs-label ghs-size-m" id="printableLabel">
             <div class="ghs-header">
               <h2 id="lbl-nombre">${escapeHtml(getText(data.nombre_producto)) || "NOMBRE DEL PRODUCTO"}</h2>
-              <div class="ghs-signal-word" id="lbl-signal">${getText(data.palabra_advertencia) || "PELIGRO"}</div>
-            </div>
-
-            <div class="ghs-pictos" id="lbl-pictos">
-              ${pictosHtml}
-            </div>
-
-            <div class="ghs-grid">
-              <div class="ghs-section">
-                <h4>Indicaciones de Peligro (H)</h4>
-                <ul id="lbl-frasesH" style="padding-left:15px; margin:0;">
-                  ${getArr(data.indicaciones_peligro).map(h => `<li>${escapeHtml(h)}</li>`).join("")}
-                </ul>
+              <div class="ghs-components" id="lbl-meta">
+                ${data.cas ? `Identificación: <br> ${escapeHtml(data.cas)}` : 'Componentes / CAS: <br> ---'}
               </div>
-              <div class="ghs-section">
-                <h4>Consejos de Prudencia (P)</h4>
-                <ul id="lbl-frasesP" style="padding-left:15px; margin:0;">
-                  ${getArr(data.consejos_prudencia).map(p => `<li>${escapeHtml(p)}</li>`).join("")}
-                </ul>
+            </div>
+
+            <div class="ghs-body">
+              <div class="ghs-col-left">
+                <div class="ghs-section">
+                  <h4>INDICACIONES DE PELIGRO</h4>
+                  <ul id="lbl-frasesH">
+                    ${getArr(data.indicaciones_peligro).map(h => `<li>${escapeHtml(h)}</li>`).join("")}
+                  </ul>
+                </div>
+                <div class="ghs-section">
+                  <h4>CONSEJOS DE PRUDENCIA</h4>
+                  <ul id="lbl-frasesP">
+                    ${getArr(data.consejos_prudencia).map(p => `<li>${escapeHtml(p)}</li>`).join("")}
+                  </ul>
+                </div>
+              </div>
+
+              <div class="ghs-col-right">
+                <div class="ghs-signal-word ${data.palabra_advertencia === 'ATENCIÓN' ? 'atencion' : ''}" id="lbl-signal">
+                   ${getText(data.palabra_advertencia) || "PELIGRO"}
+                </div>
+                <div class="ghs-pictos" id="lbl-pictos">
+                  ${pictosHtml}
+                </div>
               </div>
             </div>
 
             <div class="ghs-footer">
-              <div id="lbl-cas">CAS: ${escapeHtml(getText(data.cas)) || "N/A"}</div>
-              <div id="lbl-emer">EMERGENCIA: 123 (Bomberos)</div>
+              <div>
+                Consultar la Guía de Respuesta en caso de Emergencia <strong>GRE 127</strong> <br>
+                <strong>CONTACTO DE EMERGENCIA:</strong> 123 (Bomberos)
+              </div>
+              <div style="text-align: right;">
+                Para mayor información, revisar la Ficha de Datos de Seguridad (FDS) antes de utilizar el producto.
+              </div>
             </div>
           </div>
 
-          <!-- FORMULARIO DE EDICIÓN (DEBAJO PARA AJUSTES) -->
+          <!-- FORMULARIO DE EDICIÓN -->
           <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
           <h4 style="margin-bottom: 15px;">Ajustar Información</h4>
           <form id="${formId}" autocomplete="off">
-            <div class="form-group">
-              <label>Nombre del producto *</label>
-              <input name="nombre_producto" value="${escapeHtml(getText(data.nombre_producto))}" class="form-control" 
-                     ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}
-                     oninput="document.getElementById('lbl-nombre').textContent = this.value">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+              <div class="form-group">
+                <label>Nombre del producto *</label>
+                <input name="nombre_producto" value="${escapeHtml(getText(data.nombre_producto))}" class="form-control" 
+                       ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}
+                       oninput="document.getElementById('lbl-nombre').textContent = this.value">
+              </div>
+              <div class="form-group">
+                <label>Identificación de Componentes (CAS / Otros)</label>
+                <input name="cas" value="${escapeHtml(getText(data.cas))}" class="form-control" 
+                       ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}
+                       oninput="document.getElementById('lbl-meta').innerHTML = 'Identificación: <br> ' + this.value">
+              </div>
             </div>
             <div class="form-group">
               <label>Palabra de Advertencia</label>
               <select name="palabra_advertencia" class="form-control" 
                       ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'disabled' : ''}
-                      onchange="document.getElementById('lbl-signal').textContent = this.value; document.getElementById('lbl-signal').style.background = this.value === 'PELIGRO' ? '#ef4444' : '#eab308'">
+                      onchange="const s = document.getElementById('lbl-signal'); s.textContent = this.value; s.className = 'ghs-signal-word ' + (this.value === 'ATENCIÓN' ? 'atencion' : '')">
                 <option value="PELIGRO" ${data.palabra_advertencia === 'PELIGRO' ? 'selected' : ''}>PELIGRO</option>
                 <option value="ATENCIÓN" ${data.palabra_advertencia === 'ATENCIÓN' ? 'selected' : ''}>ATENCIÓN</option>
               </select>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
               <div class="form-group">
-                <label>Peligros (H)</label>
-                <textarea name="indicaciones_peligro" rows="3" class="form-control" ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}>${getArr(data.indicaciones_peligro).join("\n")}</textarea>
+                <label>Indicaciones de Peligro (H)</label>
+                <textarea name="indicaciones_peligro" rows="4" class="form-control" ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}>${getArr(data.indicaciones_peligro).join("\n")}</textarea>
               </div>
               <div class="form-group">
-                <label>Prudencia (P)</label>
-                <textarea name="consejos_prudencia" rows="3" class="form-control" ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}>${getArr(data.consejos_prudencia).join("\n")}</textarea>
+                <label>Consejos de Prudencia (P)</label>
+                <textarea name="consejos_prudencia" rows="4" class="form-control" ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}>${getArr(data.consejos_prudencia).join("\n")}</textarea>
               </div>
             </div>
             
@@ -397,9 +393,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 </button>
               </div>
             ` : `
-              <div style="margin-top:20px; padding:15px; background:#fef3c7; color:#92400e; border-radius:8px; font-size:13px; display:flex; gap:10px; align-items:center;">
-                <i class="fas fa-lock"></i>
-                Solo personal administrativo puede guardar cambios o emitir etiquetas nuevas.
+              <div class="badge badge-warning" style="width:100%; justify-content:center; padding:15px; margin-top:15px;">
+                <i class="fas fa-lock"></i> Solo personal administrativo puede guardar o emitir etiquetas.
               </div>
             `}
           </form>
@@ -453,105 +448,63 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Función de Impresión de Etiqueta Sola
   window.imprimirEtiquetaIndependiente = function(eleId) {
     const original = document.getElementById(eleId);
-    if (!original) {
-      showToast("❌ No se encontró la etiqueta para imprimir", "error");
-      return;
-    }
+    if (!original) return showToast("❌ Error al imprimir", "error");
 
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    
-    // Obtener los estilos críticos de la etiqueta para que salgan bien al imprimir
-    const labelHtml = original.innerHTML;
+    const printWindow = window.open('', '_blank', 'width=1000,height=800');
+    const labelHtml = original.outerHTML;
+    const labelClass = original.className;
     
     printWindow.document.write(`
       <html>
         <head>
-          <title>Imprimir Etiqueta SGA - Eticol</title>
+          <title>Imprimir SGA - Eticol</title>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+            body { font-family: 'Inter', sans-serif; background: #fff; display: flex; justify-content: center; padding: 20px; }
             
-            body { font-family: 'Inter', sans-serif; margin: 0; padding: 40px; display:flex; justify-content:center; background: #fff; }
+            /* RELLENO DE ESTILOS PARA IMPRESIÓN SOLA */
+            .ghs-label { border: 4px solid #cc0000 !important; color:#000; padding:15px; display:flex; flex-direction:column; gap:10px; background:#fff; overflow:hidden; }
+            .ghs-header { border-bottom: 2px solid #000; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; }
+            .ghs-header h2 { font-size: 28px; font-weight: 900; margin: 0; text-transform: uppercase; }
+            .ghs-components { text-align: right; font-size: 10px; font-weight: 600; }
+            .ghs-body { display: grid; grid-template-columns: 1fr 220px; gap: 20px; }
+            .ghs-col-left { display: flex; flex-direction: column; gap: 15px; }
+            .ghs-col-right { display: flex; flex-direction: column; align-items: center; gap: 20px; border-left: 1px solid #eee; padding-left: 20px; }
+            .ghs-signal-word { font-weight: 900; font-size: 32px; text-transform: uppercase; color: #cc0000; margin-top: 10px; }
+            .ghs-signal-word.atencion { color: #f97316; }
+            .ghs-pictos { display: grid; grid-template-columns: repeat(2, 80px); gap: 15px; }
+            .ghs-picto-box { width: 80px; height: 80px; border: 2px solid #cc0000; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; }
+            .ghs-picto-box img { width: 130%; height: 130%; transform: rotate(-45deg); object-fit: contain; }
+            .ghs-section h4 { color: #cc0000; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+            .ghs-section ul { padding-left: 15px; font-size: 11px; list-style-type: disc; }
+            .ghs-footer { margin-top: 10px; border-top: 2px solid #000; padding-top: 8px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; font-size: 9px; }
             
-            .ghs-label {
-              width: 100%;
-              max-width: 600px;
-              border: 3px solid #000;
-              padding: 25px;
-              background: #fff;
-              color: #000;
-              box-shadow: none;
-            }
-
-            .ghs-header {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              border-bottom: 2px solid #000;
-              padding-bottom: 12px;
-              margin-bottom: 20px;
-            }
-
-            .ghs-header h2 { font-size: 26px; font-weight: 800; margin: 0; text-transform: uppercase; color: #000; }
-
-            .ghs-signal-word {
-              background: #ef4444 !important; color: #fff !important;
-              padding: 6px 18px; border-radius: 4px;
-              font-weight: 800; text-transform: uppercase; font-size: 15px;
-              -webkit-print-color-adjust: exact;
-            }
-
-            .ghs-pictos { display: flex; gap: 20px; justify-content: center; margin: 25px 0; }
-            .ghs-picto-box { 
-              width: 100px; height: 100px; 
-              border: 2px solid #000; 
-              padding: 5px; 
-              display: flex; align-items: center; justify-content: center; 
-              transform: rotate(45deg); 
-              overflow: hidden; 
-              background: #fff; 
-            }
-            .ghs-picto-box img { width: 100%; height: 100%; object-fit: contain; transform: rotate(-45deg); }
-
-            .ghs-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 12px; margin-top: 20px; }
-            .ghs-info-grid h4 { font-weight: 800; margin-bottom: 8px; text-transform: uppercase; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-            .ghs-info-grid ul { padding-left: 18px; margin: 0; list-style-type: square; }
+            /* TAMAÑOS CLP */
+            .ghs-size-s { width: 74mm; height: 52mm; }
+            .ghs-size-m { width: 105mm; height: 74mm; }
+            .ghs-size-l { width: 148mm; height: 105mm; }
+            .ghs-size-xl { width: 210mm; height: 148mm; }
             
-            .ghs-footer {
-              margin-top: 25px;
-              padding-top: 12px;
-              border-top: 1px solid #000;
-              display: flex;
-              justify-content: space-between;
-              font-size: 10px;
-              color: #333;
-            }
-
             @media print {
               body { padding: 0; }
-              .ghs-label { border: 3px solid #000 !important; width: 100%; max-width: none; }
-              * { -webkit-print-color-adjust: exact; }
+              .ghs-label { border: 4px solid #cc0000 !important; -webkit-print-color-adjust: exact; }
+              * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             }
           </style>
         </head>
         <body>
-          <div class="ghs-label">
-            ${labelHtml}
-          </div>
+          ${labelHtml}
           <script>
             window.onload = function() {
-              setTimeout(() => {
-                window.print();
-                window.close();
-              }, 500);
+              setTimeout(() => { window.print(); window.close(); }, 500);
             }
           </script>
         </body>
       </html>
     `);
-
     printWindow.document.close();
   };
 });
