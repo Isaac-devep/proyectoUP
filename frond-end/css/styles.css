@@ -668,6 +668,11 @@ tr:hover td {
   transform: rotate(-45deg);
 }
 
+/* Art. 12 - Borde Negro para Uso Interno */
+.ghs-black-border .ghs-picto-box {
+  border-color: #000 !important;
+}
+
 .ghs-section h4 {
   color: #cc0000;
   font-size: 12px;
@@ -699,6 +704,16 @@ tr:hover td {
 .ghs-size-m { width: 105mm; height: 74mm; }
 .ghs-size-l { width: 148mm; height: 105mm; }
 .ghs-size-xl { width: 210mm; height: 148mm; }
+
+/* Art. 13 - Envases < 30ml (Minimalista) */
+.ghs-size-mini { width: 52mm; height: 35mm; }
+.ghs-mini-layout .ghs-body { display: block !important; }
+.ghs-mini-layout .ghs-col-left { display: none !important; }
+.ghs-mini-layout .ghs-col-right { border: none !important; padding: 0 !important; width: 100% !important; }
+.ghs-mini-layout .ghs-signal-word { font-size: 20px !important; margin: 5px 0 !important; }
+.ghs-mini-layout .ghs-pictos { grid-template-columns: repeat(auto-fit, 40px) !important; gap: 5px !important; }
+.ghs-mini-layout .ghs-picto-box { width: 40px !important; height: 40px !important; }
+.ghs-mini-layout .ghs-footer { display: none !important; }
 
 @media print {
   .ghs-label {

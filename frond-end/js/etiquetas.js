@@ -289,9 +289,19 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="card" style="padding:25px; background: #f8fafc; border: 1px dashed var(--primary);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
             <h3 style="margin:0;">Vista Prévia Profesional SGA (CLP)</h3>
-            <div style="display:flex; gap:10px;">
-               <select id="labelSizeSelect" class="form-control" style="width: auto; height: 38px;" onchange="document.getElementById('printableLabel').className = 'ghs-label ' + this.value">
+            <div style="display:flex; gap:10px; align-items:center;">
+               <label style="font-size: 11px; font-weight:700; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; gap:5px;">
+                 <input type="checkbox" id="checkInternalUse" onchange="document.getElementById('printableLabel').classList.toggle('ghs-black-border', this.checked)">
+                 USO INTERNO (Art. 12)
+               </label>
+               <select id="labelSizeSelect" class="form-control" style="width: auto; height: 38px;" 
+                 onchange="
+                   const lbl = document.getElementById('printableLabel');
+                   lbl.className = 'ghs-label ' + this.value + (document.getElementById('checkInternalUse').checked ? ' ghs-black-border' : '');
+                   lbl.classList.toggle('ghs-mini-layout', this.value === 'ghs-size-mini');
+                 ">
                  <option value="ghs-size-m">Tamaño: M (Envase 3-50L)</option>
+                 <option value="ghs-size-mini">Tamaño: MINI (< 30ml / Art. 13)</option>
                  <option value="ghs-size-s">Tamaño: S (Hasta 3L)</option>
                  <option value="ghs-size-l">Tamaño: L (Envase 50-500L)</option>
                  <option value="ghs-size-xl">Tamaño: XL (Más de 500L)</option>
@@ -454,7 +464,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const printWindow = window.open('', '_blank', 'width=1000,height=800');
     const labelHtml = original.outerHTML;
-    const labelClass = original.className;
     
     printWindow.document.write(`
       <html>
@@ -466,7 +475,7 @@ document.addEventListener("DOMContentLoaded", function () {
             body { font-family: 'Inter', sans-serif; background: #fff; display: flex; justify-content: center; padding: 20px; }
             
             /* RELLENO DE ESTILOS PARA IMPRESIÓN SOLA */
-            .ghs-label { border: 4px solid #cc0000 !important; color:#000; padding:15px; display:flex; flex-direction:column; gap:10px; background:#fff; overflow:hidden; }
+            .ghs-label { border: 4px solid #cc0000; color:#000; padding:15px; display:flex; flex-direction:column; gap:10px; background:#fff; overflow:hidden; }
             .ghs-header { border-bottom: 2px solid #000; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; }
             .ghs-header h2 { font-size: 28px; font-weight: 900; margin: 0; text-transform: uppercase; }
             .ghs-components { text-align: right; font-size: 10px; font-weight: 600; }
@@ -487,10 +496,21 @@ document.addEventListener("DOMContentLoaded", function () {
             .ghs-size-m { width: 105mm; height: 74mm; }
             .ghs-size-l { width: 148mm; height: 105mm; }
             .ghs-size-xl { width: 210mm; height: 148mm; }
+            .ghs-size-mini { width: 52mm; height: 35mm; }
+            
+            /* MODOS REGULATORIOS */
+            .ghs-black-border .ghs-picto-box { border-color: #000 !important; }
+            .ghs-mini-layout .ghs-body { display: block !important; }
+            .ghs-mini-layout .ghs-col-left { display: none !important; }
+            .ghs-mini-layout .ghs-col-right { border: none !important; padding: 0 !important; width: 100% !important; }
+            .ghs-mini-layout .ghs-signal-word { font-size: 20px !important; margin: 5px 0 !important; }
+            .ghs-mini-layout .ghs-pictos { grid-template-columns: repeat(auto-fit, 40px) !important; gap: 5px !important; }
+            .ghs-mini-layout .ghs-picto-box { width: 40px !important; height: 40px !important; }
+            .ghs-mini-layout .ghs-footer { display: none !important; }
             
             @media print {
               body { padding: 0; }
-              .ghs-label { border: 4px solid #cc0000 !important; -webkit-print-color-adjust: exact; }
+              .ghs-label { -webkit-print-color-adjust: exact; }
               * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             }
           </style>
