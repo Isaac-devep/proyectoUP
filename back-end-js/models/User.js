@@ -13,14 +13,13 @@ const UserSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Pre-save hook to hash password
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('contra')) return next();
+UserSchema.pre('save', async function() {
+  if (!this.isModified('contra')) return;
   try {
     const salt = await bcrypt.genSalt(10);
     this.contra = await bcrypt.hash(this.contra, salt);
-    next();
   } catch (err) {
-    next(err);
+    throw err;
   }
 });
 
