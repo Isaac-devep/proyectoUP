@@ -1,32 +1,44 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 // Login
 router.post('/login', async (req, res) => {
   try {
     const { usu, contra } = req.body;
-    const user = await User.findOne({ usu, contra });
+    const user = await User.findOne({ usu });
     
     if (user) {
-      if (user.estado !== 'activo' && user.estado !== 'active') {
-        return res.json({ login: false, error: "Usuario inactivo" });
-      }
+      // First try bcrypt compare (for hashed passwords)
+      let isMatch = await bcrypt.compare(contra, user.contra);
       
-      return res.json({
-        login: true,
-        usuario: {
-          id_usuario: user.id_usuario,
-          nombre: user.nombre,
-          apellido: user.apellido,
-          rol: user.id_rol, // The frontend expects 'rol' for the switch case
-          id_rol: user.id_rol // And also uses id_rol for localStorage
+      // Fallback for legacy plain-text passwords (only for initial migration)
+      if (!isMatch && contra === user.contra) {
+        isMatch = true;
+      }
+
+      if (isMatch) {
+        if (user.estado !== 'activo' && user.estado !== 'active') {
+          return res.json({ login: false, error: "Usuario inactivo" });
         }
-      });
-    } else {
-      return res.json({ login: false, error: "Credenciales incorrectas" });
+        
+        return res.json({
+          login: true,
+          usuario: {
+            id_usuario: user.id_usuario,
+            nombre: user.nombre,
+            apellido: user.apellido,
+            rol: user.id_rol,
+            id_rol: user.id_rol
+          }
+        });
+      }
     }
+    
+    return res.json({ login: false, error: "Credenciales incorrectas" });
   } catch (err) {
+    console.error("Login error:", err);
     res.status(500).json({ error: err.message });
   }
 });
