@@ -1,128 +1,189 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
+    const formNuevoUsuario = document.getElementById('formNuevoUsuario');
+    const usersTableBody = document.getElementById('usersTableBody');
+    
+    let allUsers = [];
+    let isEditing = false;
+    let currentEditId = null;
 
-  // 1. Registrar Usuario
+    // 1. Cargar Usuarios y Estadísticas
+    window.loadUsersList = async function() {
+        try {
+            const response = await fetch(`${API_URL}/usuarios`);
+            const data = await response.json();
+            
+            if (data.usuarios) {
+                allUsers = data.usuarios;
+                renderUsersTable(allUsers);
+                updateStats(allUsers);
+            }
+        } catch (error) {
+            console.error('Error al cargar usuarios:', error);
+            if (usersTableBody) {
+                usersTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#ef4444;">Error de conexión</td></tr>';
+            }
+        }
+    };
 
-  document.getElementById("createUserForm").addEventListener("submit", function (e) {
-    e.preventDefault(); 
-
-    const id = document.getElementById("userId").value;
-    const user = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const email = document.getElementById("email").value;
-    const nombre = document.getElementById("firstName").value;
-    const apellido = document.getElementById("lastName").value;
-    const rol = document.getElementById("role").value;
-    const status = document.querySelector('input[name="status"]:checked').value;
-
-    console.log("Datos a enviar:", {
-      id_usuario: id,
-      usu: user,
-      contra: password,
-      correo: email,
-      nombre: nombre,
-      apellido: apellido,
-      id_rol: rol,
-      estado: status === "active" ? "activo" : "inactivo", // formato correcto
-    });
-
-    axios({
-      method: "POST",
-      url: "http://127.0.0.1:8000/insertarusuarios",
-      data: {
-        id_usuario: id,
-        usu: user,
-        contra: password,
-        correo: email,
-        nombre: nombre,
-        apellido: apellido,
-        id_rol: rol,
-        estado: status === "active" ? "activo" : "inactivo",
-      },
-    })
-      .then(function (response) {
-        console.log("Respuesta del servidor:", response);
-        alert("Usuario agregado");
-        window.location.href = "/frond-end/html/super/superadmin.html";
-      })
-      .catch((err) => {
-        console.error("Error:", err);
-        alert("Error al agregar usuario: " + err.message);
-      });
-  });
-
-  // 2. Tabla dinámica de usuarios y contador en tiempo real
-  cargarUsuarios();
-
-  function cargarUsuarios() {
-    axios.get("http://127.0.0.1:8000/usuarios")
-      .then(response => {
-        const usuarios = response.data.usuarios || [];
-        const tbody = document.getElementById('tbodyUsuarios');
-        tbody.innerHTML = "";
-
-        const adminsEmpleados = usuarios
-          .filter(
-            u => u.id_rol && 
-            (u.id_rol.toLowerCase() === 'administrador' || u.id_rol.toLowerCase() === 'empleado')
-          );
-
-        const total = adminsEmpleados.length;
-        document.getElementById("usuariosRegistrados").textContent = total;
-
-        const activos = adminsEmpleados.filter(u => u.estado === 'activo').length;
-        document.getElementById("usuariosActivos").textContent = `${activos} activos hoy`;
-
+    function updateStats(usuarios) {
+        const total = usuarios.length;
+        const activos = usuarios.filter(u => u.estado === 'activo' || u.estado === 'active').length;
         
-         adminsEmpleados.forEach(u =>{
-            const tr = document.createElement('tr');
-            const isAdmin = u.id_rol.toLowerCase() === 'administrador';
-            const badgeCLass = isAdmin ? 'badge-admin' : 'badge-employee';
-            const badgeLabel = u.id_rol;
-            const isActivo = u.estado === 'activo';
-            const badgeEstado = isActivo ? 'badge-succes' : 'badge-danger';
-            const iconEstado = isActivo ? 'fa-eye' : 'fa-eye-slash';
-            const titleEstado = isActivo ? 'Activo' : 'Inactivo';
-            tr.innerHTML = `
-                <td>${u.id_usuario}</td>
-                <td>${u.nombre}</td>
-                <td>${u.apellido}</td>
-                <td>${u.usu}</td>
-                
-                <td> <span class="badge ${badgeCLass}">${badgeLabel}</span> </td>
-                <td>
-                    <span class="badge ${badgeEstado}">${u.estado.charAt(0).toUpperCase() + u.estado.slice(1)}</span>
-                    <button class="btn-icon btn-estado" title="${titleEstado}" data-id="${u.id_usuario}" data-estado="${u.estado}">
-                        <i class="fas ${iconEstado}"></i>
-                    </button>
-                </td>
+        document.getElementById("totalUsersCount").textContent = total;
+        const tagline = document.getElementById("activeUsersTagline");
+        if (tagline) tagline.textContent = `${activos} activos en el sistema`;
+    }
+
+    function renderUsersTable(usuarios) {
+        if (!usersTableBody) return;
+        
+        usersTableBody.innerHTML = usuarios.map(u => {
+            const isActivo = u.estado === 'activo' || u.estado === 'active';
+            const estadoColor = isActivo ? '#10b981' : '#ef4444';
+            const rolClass = u.id_rol === 'Super administrador' ? 'badge-warning' : (u.id_rol === 'Administrador' ? 'badge-primary' : 'badge-outline');
+
+            return `
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div class="user-avatar" style="width:36px; height:36px; font-size:13px; margin-bottom:0; box-shadow:none;">
+                                ${u.nombre.charAt(0)}${u.apellido.charAt(0)}
+                            </div>
+                            <div>
+                                <div style="font-weight:700; font-size:14px;">${u.nombre} ${u.apellido}</div>
+                                <div style="font-size:11px; color:var(--text-muted);">${u.usu}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge ${rolClass}">${u.id_rol}</span>
+                    </td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:${estadoColor}; text-transform:uppercase;">
+                            <span style="width:8px; height:8px; border-radius:50%; background:${estadoColor}; box-shadow: 0 0 8px ${estadoColor}80;"></span>
+                            ${u.estado}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display:flex; gap:8px;">
+                            <button class="action-btn" style="width:32px; height:32px; font-size:14px;" title="Editar" onclick="window.editUser('${u.id_usuario}')">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="action-btn" style="width:32px; height:32px; font-size:14px; color:#ef4444;" title="Cambiar Estado" onclick="window.toggleUserStatus('${u.id_usuario}', '${u.estado}')">
+                                <i class="fas fa-power-off"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
             `;
-            tbody.appendChild(tr);
-          });
+        }).join('');
+    }
 
-          // asignar eventos a los botones de cambiar estado
-          document.querySelectorAll('.btn-icon').forEach(btn => {
-            btn.addEventListener('click', function() {
-              const id_usuario = this.getAttribute('data-id');
-              const estadoActual = this.getAttribute('data-estado');
-              cambiarEstadoUsuario(id_usuario, estadoActual);
-            })
-          });
-      })
-      .catch(err => {
-        alert("Error al cargar usuarios: " + err.message);
-      });
-  }
+    // 2. Manejar Formulario (Crear/Editar)
+    if (formNuevoUsuario) {
+        formNuevoUsuario.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userData = {
+                id_usuario: document.getElementById('user-id').value,
+                usu: document.getElementById('user-usu').value,
+                nombre: document.getElementById('user-nombre').value,
+                apellido: document.getElementById('user-apellido').value,
+                correo: document.getElementById('user-correo').value,
+                contra: document.getElementById('user-contra').value,
+                id_rol: document.getElementById('user-rol').value,
+                estado: "activo"
+            };
 
-  // 3. Cambiar estado de usuario
+            const url = isEditing ? `${API_URL}/usuarios/${currentEditId}` : `${API_URL}/usuarios/insertarusuarios`;
+            const method = isEditing ? 'PUT' : 'POST';
 
-  window.cambiarEstadoUsuario = function(id_usuario, estadoActual) {
-    const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
-    axios.patch(`http://127.0.0.1:8000/usuarios/${id_usuario}/estado`, { estado: nuevoEstado })
-      .then(res => {
-        cargarUsuarios();
-      })
-      .catch(err => {
-        alert("Error al cambiar estado: " + err.message);
-      });
-  }
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.ok) {
+                    showToast(isEditing ? "✨ Perfil actualizado" : "👤 Usuario creado", "success");
+                    resetUserForm();
+                    loadUsersList();
+                } else {
+                    const res = await response.json();
+                    showToast("❌ Error: " + (res.error || "Fallo en el servidor"), "error");
+                }
+            } catch (error) {
+                showToast("❌ Error de conexión", "error");
+            }
+        });
+    }
+
+    window.editUser = function(id) {
+        const user = allUsers.find(u => u.id_usuario === id);
+        if (!user) return;
+
+        isEditing = true;
+        currentEditId = id;
+
+        document.getElementById('user-id').value = user.id_usuario;
+        document.getElementById('user-usu').value = user.usu;
+        document.getElementById('user-nombre').value = user.nombre;
+        document.getElementById('user-apellido').value = user.apellido;
+        document.getElementById('user-correo').value = user.correo;
+        document.getElementById('user-contra').value = ""; 
+        document.getElementById('user-rol').value = user.id_rol;
+
+        document.getElementById('userFormTitle').textContent = "✏️ Editando: " + user.usu;
+        document.getElementById('userFormSubmitText').textContent = "GUARDAR CAMBIOS";
+        document.getElementById('userFormSubmitBtn').classList.replace('btn-primary', 'btn-success');
+        document.getElementById('btnCancelEdit').style.display = "flex";
+        
+        document.getElementById('user-id').disabled = true;
+        window.scrollTo({ top: 300, behavior: 'smooth' });
+    };
+
+    window.toggleUserStatus = async function(id, estadoActual) {
+        const nuevoEstado = (estadoActual === 'activo' || estadoActual === 'active') ? 'inactivo' : 'activo';
+        try {
+            const response = await fetch(`${API_URL}/usuarios/${id}/estado`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ estado: nuevoEstado })
+            });
+
+            if (response.ok) {
+                showToast(`✅ Usuario ${nuevoEstado}`, "success");
+                loadUsersList();
+            }
+        } catch (error) {
+            showToast("❌ Error de comunicación", "error");
+        }
+    };
+
+    window.resetUserForm = function() {
+        formNuevoUsuario.reset();
+        isEditing = false;
+        currentEditId = null;
+        document.getElementById('user-id').disabled = false;
+        document.getElementById('userFormTitle').textContent = "Registrar Nuevo Usuario";
+        document.getElementById('userFormSubmitText').textContent = "CREAR USUARIO";
+        const btn = document.getElementById('userFormSubmitBtn');
+        if (btn) btn.classList.remove('btn-success'), btn.classList.add('btn-primary');
+        document.getElementById('btnCancelEdit').style.display = "none";
+    };
+
+    window.showToast = function(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `stat-card toast toast-${type}`;
+        toast.style.cssText = `margin-bottom:10px; padding:15px 25px; min-width:250px; background:var(--card-bg); border-left:4px solid ${type === 'success' ? '#10b981' : '#f59e0b'}; box-shadow:var(--shadow-lg); animation: slideIn 0.3s ease;`;
+        toast.innerHTML = `<span style="font-weight:600;">${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    };
+
+    loadUsersList();
 });
