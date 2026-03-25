@@ -314,6 +314,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // 8. Tooltips y Toggle de Referencia (NUEVO)
+    const toggleRef = document.getElementById('toggleRefMatrix');
+    const refContent = document.getElementById('refMatrixContent');
+    const refIcon = document.getElementById('refMatrixIcon');
+
+    if (toggleRef) {
+        toggleRef.onclick = () => {
+            const isHidden = refContent.style.display === 'none';
+            refContent.style.display = isHidden ? 'block' : 'none';
+            refIcon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+        };
+    }
+
     // 6. Matriz Referencial (Guía Original)
     const refMatrixBody = document.getElementById('matrixGridBody');
     if (refMatrixBody) {
