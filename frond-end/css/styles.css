@@ -980,3 +980,113 @@ tr:hover td {
   transform: translateX(120%);
   opacity: 0;
 }
+
+/* Multi-Product Compatibility UI */
+.multi-select-list {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.comp-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.comp-item:hover {
+  background: rgba(0,0,0,0.02);
+}
+
+.comp-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.comp-item span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.comp-item .picto-previews {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.comp-item .picto-previews img {
+  height: 16px;
+  opacity: 0.6;
+}
+
+/* Dynamic Storage Matrix Table */
+.storage-dynamic-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+
+.storage-dynamic-table th, 
+.storage-dynamic-table td {
+  padding: 8px;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.storage-dynamic-table th {
+  background: var(--bg-main);
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.storage-dynamic-table .cell-name {
+  text-align: left;
+  background: var(--bg-main);
+  font-weight: 700;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+}
+
+.storage-dynamic-table .cell-result {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+}
+
+/* Global Safety Alert Styles */
+#global-safety-alert.safe { background: rgba(34, 197, 94, 0.1); color: #166534; border: 1px solid #bbf7d0; display: block !important; }
+#global-safety-alert.warning { background: rgba(234, 179, 8, 0.1); color: #854d0e; border: 1px solid #fef08a; display: block !important; }
+#global-safety-alert.danger { background: rgba(239, 68, 68, 0.1); color: #991b1b; border: 1px solid #fecaca; display: block !important; }
+
+/* Hazard Note Cards */
+.hazard-note-card {
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+  background: rgba(0,0,0,0.01);
+}
+
+.hazard-note-card h5 {
+  font-size: 11px;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.hazard-note-card p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
