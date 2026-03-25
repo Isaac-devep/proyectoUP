@@ -73,15 +73,33 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        productListContainer.innerHTML = filtered.map(p => `
-            <div class="comp-item" data-id="${p._id}">
-                <input type="checkbox" ${selectedProductIds.has(p._id) ? 'checked' : ''} onclick="event.stopPropagation()">
-                <span>${p.id_producto}</span>
-                <div class="picto-previews">
-                    ${(p.pictogramas || []).map(pic => `<img src="../../images/${pic}.png">`).join('')}
+        productListContainer.innerHTML = filtered.map(p => {
+            const pictos = (p.pictogramas || []).map(pic => {
+                let s = pic.toString().toLowerCase().trim().replace(/\s+/g, '-');
+                const pictoSwap = {
+                   'gas': 'gas-presurizado', 'ghs04': 'gas-presurizado', 'cilindro': 'gas-presurizado',
+                   'llama': 'inflamable', 'ghs02': 'inflamable', 'inflamable': 'inflamable',
+                   'oxidante': 'ghs03', 'ghs03': 'oxidante', 'oxidante-orig': 'oxidante',
+                   'toxico': 'toxico', 'ghs06': 'toxico', 'calavera': 'toxico',
+                   'corrosivo': 'corrosivo', 'ghs05': 'corrosivo',
+                   'salud': 'peligro-salud', 'ghs08': 'peligro-salud',
+                   'irritante': 'irritante', 'ghs07': 'irritante',
+                   'ambiente': 'daño-ambiente', 'ghs09': 'daño-ambiente'
+                };
+                if (pictoSwap[s]) s = pictoSwap[s];
+                return `<img src="../../images/${s}.png" alt="${s}" onerror="this.src='../../images/default-pictogram.png';">`;
+            }).join('');
+
+            return `
+                <div class="comp-item" data-id="${p._id}">
+                    <input type="checkbox" ${selectedProductIds.has(p._id) ? 'checked' : ''} onclick="event.stopPropagation()">
+                    <span>${p.id_producto}</span>
+                    <div class="picto-previews">
+                        ${pictos}
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         // Listeners para toda la fila
         productListContainer.querySelectorAll('.comp-item').forEach(item => {
