@@ -1027,14 +1027,15 @@ tr:hover td {
 
 /* Dynamic Storage Matrix Table */
 .storage-dynamic-table {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   border-collapse: separate;
   border-spacing: 2px;
 }
 
 .storage-dynamic-table th, 
 .storage-dynamic-table td {
-  padding: 8px;
+  padding: 10px;
   text-align: center;
   border-radius: 4px;
   font-size: 11px;
@@ -1045,24 +1046,36 @@ tr:hover td {
   color: var(--text-muted);
   font-weight: 700;
   text-transform: uppercase;
-  max-width: 80px;
+  max-width: 70px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .storage-dynamic-table .cell-name {
   text-align: left;
-  background: var(--bg-main);
-  font-weight: 700;
+  background: var(--bg-card) !important;
+  color: var(--text-main);
+  font-weight: 800;
   position: sticky;
   left: 0;
-  z-index: 10;
+  z-index: 20;
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-right: 2px solid var(--border);
 }
 
 .storage-dynamic-table .cell-result {
-  width: 40px;
-  height: 40px;
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
   font-size: 14px;
 }
 
