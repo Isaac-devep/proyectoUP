@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. Estado Global
     let dbProductos = [];
     let selectedProductIds = new Set();
+    let storageLocations = JSON.parse(localStorage.getItem('eticol_locations')) || [];
 
     // Selectores UI
     const productListContainer = document.getElementById('comp-product-list');
@@ -41,6 +42,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedCountSpan = document.getElementById('comp-selected-count');
     const tipsArea = document.getElementById('storage-tips-area');
     const hazardNotes = document.getElementById('storage-hazard-notes');
+    
+    // Selectores de Ubicación
+    const locationSelect = document.getElementById('storage-location-select');
+    const btnManageLoc = document.getElementById('btnManageLocations');
+    const modalLoc = document.getElementById('modalLocations');
+    const formNewLoc = document.getElementById('formNewLocation');
+    const locationListDiv = document.getElementById('locationList');
+    const matrixTitle = document.getElementById('storage-matrix-title');
+    const locationLabel = document.getElementById('storage-location-label');
 
     // 3. Cargar y Clasificar Productos
     async function cargarInventario() {
@@ -222,6 +232,85 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicialización
     cargarInventario();
+    renderLocDropdown();
+
+    // 7. Gestión de Ubicaciones (NUEVO)
+    function renderLocDropdown() {
+        locationSelect.innerHTML = '<option value="manual">-- Selección Manual --</option>' + 
+            storageLocations.map(loc => `<option value="${loc.id}">${loc.name}</option>`).join('');
+    }
+
+    function renderLocList() {
+        if (storageLocations.length === 0) {
+            locationListDiv.innerHTML = '<p style="padding:15px; text-align:center; font-size:12px; color:var(--text-muted);">No hay lugares guardados.</p>';
+            return;
+        }
+
+        locationListDiv.innerHTML = storageLocations.map(loc => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border);">
+                <div>
+                    <h5 style="font-size:13px; margin:0;">${loc.name}</h5>
+                    <p style="font-size:11px; color:var(--text-muted); margin:0;">${loc.productIds.length} productos asignados</p>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="window.deleteLocation('${loc.id}')" style="color:#ef4444; border-color:#fee2e2;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    window.deleteLocation = (id) => {
+        if (!confirm("¿Seguro que desea eliminar este lugar de almacenamiento?")) return;
+        storageLocations = storageLocations.filter(l => l.id !== id);
+        saveAndSync();
+    };
+
+    function saveAndSync() {
+        localStorage.setItem('eticol_locations', JSON.stringify(storageLocations));
+        renderLocDropdown();
+        renderLocList();
+    }
+
+    btnManageLoc.onclick = () => {
+        renderLocList();
+        modalLoc.style.display = 'flex';
+    };
+
+    formNewLoc.onsubmit = (e) => {
+        e.preventDefault();
+        const name = document.getElementById('newLocationName').value;
+        if (selectedProductIds.size === 0) return showToast("Primero seleccione productos en la lista.", "error");
+
+        const newLoc = {
+            id: 'loc-' + Date.now(),
+            name: name,
+            productIds: Array.from(selectedProductIds)
+        };
+
+        storageLocations.push(newLoc);
+        saveAndSync();
+        document.getElementById('newLocationName').value = '';
+        showToast(`✅ Lugar "${name}" creado exitosamente.`, "success");
+    };
+
+    locationSelect.onchange = (e) => {
+        const val = e.target.value;
+        if (val === 'manual') {
+            matrixTitle.innerText = "Matriz de Almacenamiento";
+            locationLabel.innerText = "Selección personalizada";
+            return;
+        }
+
+        const loc = storageLocations.find(l => l.id === val);
+        if (loc) {
+            selectedProductIds = new Set(loc.productIds);
+            renderProductChecklist();
+            selectedCountSpan.innerText = `${selectedProductIds.size} productos seleccionados`;
+            matrixTitle.innerText = `Matriz: ${loc.name}`;
+            locationLabel.innerText = "Controlado por ubicación guardada";
+            generateMatrix(); // Auto-generar
+        }
+    };
 
     // 6. Matriz Referencial (Guía Original)
     const refMatrixBody = document.getElementById('matrixGridBody');

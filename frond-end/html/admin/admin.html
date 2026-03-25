@@ -174,10 +174,23 @@
     <section id="compatibilidad" class="content-section">
       <div style="display: grid; grid-template-columns: 350px 1fr; gap: 25px;">
         <!-- Panel de Selección Lateral -->
-        <div class="card" style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="card" style="display: flex; flex-direction: column; gap: 15px;">
           <div>
             <h3 style="margin-bottom: 5px;">Validador de Almacenamiento</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">Seleccione los productos que conviven en el mismo lugar.</p>
+            <p style="font-size: 13px; color: var(--text-muted);">Organice productos por lugar físico para validar su convivencia.</p>
+          </div>
+
+          <!-- Selector de Ubicación -->
+          <div class="form-group" style="padding-bottom:10px; border-bottom:1px solid var(--border);">
+             <label style="font-size:11px; text-transform:uppercase; color:var(--primary);">Punto de Almacenamiento</label>
+             <div style="display:flex; gap:8px; margin-top:5px;">
+                <select id="storage-location-select" class="form-control" style="flex:1;">
+                   <option value="manual">-- Selección Manual --</option>
+                </select>
+                <button class="btn btn-outline btn-sm" id="btnManageLocations" title="Configurar Lugares">
+                   <i class="fas fa-edit"></i>
+                </button>
+             </div>
           </div>
 
           <div class="search-box" style="position:relative;">
@@ -209,15 +222,18 @@
 
         <!-- Área de la Matriz Dinámica -->
         <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-             <h3>Matriz Detallada de Almacenamiento</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+             <div>
+                <h3 id="storage-matrix-title">Matriz de Almacenamiento</h3>
+                <p id="storage-location-label" style="font-size: 12px; color: var(--text-muted);">Selección personalizada</p>
+             </div>
              <span id="comp-selected-count" class="badge">0 productos seleccionados</span>
           </div>
           
-          <div id="storage-matrix-container" class="table-container" style="background: var(--bg-main); border-radius: 12px; min-height: 300px; display: flex; align-items: center; justify-content: center;">
+          <div id="storage-matrix-container" class="table-container" style="background: var(--bg-main); border-radius: 12px; min-height: 300px; display: flex; align-items: center; justify-content: center; position:relative;">
              <div class="empty-state" style="text-align:center; color: var(--text-muted);">
-                <i class="fas fa-th" style="font-size: 48px; opacity:0.2; margin-bottom:15px;"></i>
-                <p>Seleccione productos y haga clic en <b>Generar Matriz</b> <br> para evaluar el área de almacenamiento.</p>
+                <i class="fas fa-warehouse" style="font-size: 48px; opacity:0.2; margin-bottom:15px;"></i>
+                <p>Elija una ubicación o seleccione productos <br> para evaluar el área de almacenamiento.</p>
              </div>
           </div>
 
@@ -226,6 +242,30 @@
              <div id="storage-hazard-notes" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;"></div>
           </div>
         </div>
+      </div>
+
+      <!-- MODAL/PANEL DE GESTIÓN DE UBICACIONES -->
+      <div id="modalLocations" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+         <div class="card" style="width:500px; max-width:90%; padding:25px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+               <h3>Gestión de Lugares de Almacenamiento</h3>
+               <button class="btn btn-outline btn-sm" onclick="document.getElementById('modalLocations').style.display='none'"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <form id="formNewLocation" style="display:flex; gap:10px; margin-bottom:20px;">
+               <input type="text" id="newLocationName" class="form-control" placeholder="Nombre (ej: Bodega A)" required>
+               <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Crear</button>
+            </form>
+
+            <div id="locationList" style="max-height:300px; overflow-y:auto; border:1px solid var(--border); border-radius:8px;">
+               <!-- Lista de ubicaciones -->
+            </div>
+
+            <div style="margin-top:20px; text-align:right;">
+               <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">* Al crear un lugar, se guardará la selección de productos actual.</p>
+               <button class="btn btn-outline" onclick="document.getElementById('modalLocations').style.display='none'">Cerrar</button>
+            </div>
+         </div>
       </div>
 
       <!-- MATRIZ REFERENCIAL SGA (Original) -->
