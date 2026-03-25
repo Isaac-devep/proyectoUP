@@ -74,22 +74,22 @@ document.addEventListener("DOMContentLoaded", function () {
         <td><code>${eti.inf_cas || eti.id_etiqueta || "---"}</code></td>
         <td>${eti.fecha ? new Date(eti.fecha).toLocaleDateString() : "---"}</td>
         <td>
-          <button class="btn btn-primary btn-sm" onclick="window.previewEtiquetaParaEditar('${eti._id}')" title="Ver Etiqueta">
-            <i class="fas fa-eye"></i> ${isEmployee ? 'Visualizar' : 'Ver'}
+          <button class="action-btn" onclick="window.previewEtiquetaParaEditar('${eti._id}')" title="Editar/Ver Etiqueta">
+            <i class="fas fa-edit"></i>
           </button>
+          
           ${pdfFile ? `
-            <a href="${API_URL}/assets/${pdfFile}" target="_blank" class="btn btn-outline btn-sm" title="Descargar PDF Original">
-              <i class="fas fa-file-pdf"></i> PDF
+            <a href="${API_URL}/assets/${pdfFile}" target="_blank" class="action-btn" title="Descargar PDF Original" style="color:var(--primary);">
+              <i class="fas fa-file-pdf"></i>
             </a>
           ` : `
-            <button class="btn btn-outline btn-sm" disabled title="No hay PDF original asociado">
-              <i class="fas fa-minus-circle"></i> PDF
+            <button class="action-btn" disabled style="opacity:0.3;" title="Sin PDF">
+              <i class="fas fa-file-pdf"></i>
             </button>
           `}
+
           ${!isEmployee ? `
-            <button class="btn btn-outline btn-sm" title="Eliminar de DB" 
-                    style="color:#ef4444; border-color:#fee2e2;"
-                    onclick="window.eliminarEtiqueta('${eti._id}')">
+            <button class="action-btn" style="color:#ef4444;" title="Eliminar" onclick="window.eliminarEtiqueta('${eti._id}')">
               <i class="fas fa-trash-alt"></i>
             </button>
           ` : ''}

@@ -52,15 +52,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const matrixTitle = document.getElementById('storage-matrix-title');
     const locationLabel = document.getElementById('storage-location-label');
 
+    const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
+
     // 3. Cargar y Clasificar Productos
     async function cargarInventario() {
         try {
-            const res = await fetch("http://127.0.0.1:8000/etiquetas");
+            const res = await fetch(`${API_URL}/etiquetas`);
             const data = await res.json();
             dbProductos = (data.etiquetas || []).map(p => {
                 // Auto-inferir clase si no existe (Basado en lógica previa)
                 let clase = '9';
-                const n = p.id_producto.toLowerCase();
+                const n = (p.id_producto || "").toLowerCase();
                 if (n.includes('propano') || n.includes('glp')) clase = '2.1';
                 else if (n.includes('nitrogeno') || n.includes('gas')) clase = '2.2';
                 else if (n.includes('thinner') || n.includes('solvente')) clase = '3';
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderProductChecklist();
         } catch (err) {
             console.error("Error cargando inventario:", err);
-            productListContainer.innerHTML = '<p class="error">Error al conectar con el servidor.</p>';
+            productListContainer.innerHTML = `<p class="error" style="text-align:center; padding:10px; color:#ef4444; font-size:12px;">Error al conectar con el servidor.<br><small>${err.message}</small></p>`;
         }
     }
 
