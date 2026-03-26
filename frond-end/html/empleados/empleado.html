@@ -168,20 +168,23 @@
 
         <!-- MATRIZ DE COMPATIBILIDAD -->
         <section id="compatibilidad" class="content-section">
-            <div class="dashboard" style="grid-template-columns: 1fr 2fr;">
-                <div class="card">
-                    <h3>Matriz GHS de Compatibilidad</h3>
+            <div style="display: grid; grid-template-columns: 350px 1fr; gap: 20px; height: 100%;">
+                <div class="card" style="display: flex; flex-direction: column; gap: 15px; height: 100%; overflow-y: auto;">
+                    <h3 style="margin-bottom: 5px;">Validador de Almacenamiento</h3>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Use esta guía para el almacenamiento seguro de sustancias.</p>
-                    <div class="table-container">
-                        <table class="matrix-table"><tbody id="matrixGridBody"></tbody></table>
+                    
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+                      <div class="table-container" style="flex: 1; border: 1px solid var(--border); border-radius: 12px; overflow-y: auto;">
+                          <table class="matrix-table"><tbody id="matrixGridBody"></tbody></table>
+                      </div>
                     </div>
                 </div>
-                <div class="card">
-                    <h3>Información de Seguridad</h3>
-                    <p>Consulte las hojas de seguridad para mayor detalle sobre la manipulación segura.</p>
-                    <button class="btn btn-primary" onclick="window.showSection('sds-archivo')" style="margin-top:20px;">
-                        <i class="fas fa-search-plus"></i> VER ARCHIVO SDS COMPLETO
-                    </button>
+
+                <div class="card matrix-card-full">
+                    <h3 style="margin-bottom: 15px;">Información de Seguridad</h3>
+                    <div id="safety-details" style="flex: 1; overflow-y: auto; padding-right: 10px;">
+                        <p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Haga clic en una celda de la matriz para ver los consejos de almacenamiento.</p>
+                    </div>
                 </div>
             </div>
         </section>

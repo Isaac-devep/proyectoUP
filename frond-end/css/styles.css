@@ -244,13 +244,56 @@ body {
   .main-content { padding: 20px; }
 }
 
-.card {
-  background: var(--card-bg);
+/* Full Viewport Matrix Styles */
+#compatibilidad.content-section {
+  max-width: 100% !important;
+  height: calc(100vh - 100px);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#compatibilidad > div {
+  height: 100%;
+}
+
+.matrix-card-full {
+  display: flex !important;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+#storage-matrix-container {
+  flex: 1;
+  overflow: auto;
   border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 30px;
+  border-radius: 12px;
+  background: white;
+  padding: 0; /* Clear previous padding */
+}
+
+/* Ensure table header is sticky if possible */
+#storage-matrix-container table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#storage-matrix-container thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f8fafc;
+  box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);
+}
+
+#storage-matrix-container tbody th:first-child,
+#storage-matrix-container tbody td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: white;
+  border-right: 2px solid var(--border);
 }
 
 /* Badges */
