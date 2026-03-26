@@ -130,9 +130,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // 6. Lógica de Secciones y Navegación
+  // 6. Lógica de Secciones y Navegación (SPA Reactor)
   const menuItems = document.querySelectorAll('.menu-item');
-  const sections = document.querySelectorAll('.content-section');
+  const navPills = document.querySelectorAll('.nav-pill');
 
   const sectionTitles = {
     'dashboard': 'Panel de Administrador',
@@ -144,55 +144,52 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   function showSection(sectionId) {
+    if (!sectionId) return;
     let id = sectionId.startsWith('#') ? sectionId.slice(1) : sectionId;
     
     // Redirección para compatibilidad con links viejos
     if (id === 'etiquetas') id = 'generar-etiquetas';
 
-    // LIMPIEZA TOTAL (Asegurarse de ocultar todos los que tengan la clase)
+    // 1. Ocultar todas las secciones
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     
+    // 2. Mostrar la sección destino
     const target = document.getElementById(id);
     if (target) {
       target.classList.add('active');
       
-      // Actualizar hash de la URL sin recargar para sincronía
-      if (window.location.hash !== '#' + id) {
-        history.pushState(null, null, '#' + id);
-      }
-      
-      // Actualizar título dinámicamente
+      // 3. Actualizar título dinámicamente
       const mainTitle = document.getElementById('mainHeaderTitle');
       if (mainTitle && sectionTitles[id]) {
         mainTitle.textContent = sectionTitles[id];
       }
 
-      // Sincronizar el menú (Sidebar y Bottom Nav)
-      const allNavItems = document.querySelectorAll('.menu-item, .nav-pill');
-      allNavItems.forEach(item => {
-        const href = item.getAttribute('href');
-        if (href === '#' + id) {
-          allNavItems.forEach(i => i.classList.remove('active'));
-          item.classList.add('active');
-          // Sincronizar ambos si existen (ej. si el link está en sidebar y bottom nav)
-          document.querySelectorAll(`[href="#${id}"]`).forEach(el => el.classList.add('active'));
-        }
+      // 4. Sincronizar estado "active" en todos los menús
+      const allLinks = document.querySelectorAll('.menu-item, .nav-pill');
+      allLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        link.classList.toggle('active', href === '#' + id);
       });
+
+      // 5. Scroll al inicio si es necesario
+      const mainContent = document.querySelector('.main-content');
+      if (mainContent) mainContent.scrollTop = 0;
+
+      // 6. Carga automática de datos especiales
+      if (id === 'dashboard' && typeof window.cargarDashboard === 'function') {
+        window.cargarDashboard();
+      }
     }
   }
 
   // Hacerla global para otros archivos
   window.showSection = showSection;
 
-  // Carga inicial
-  if (window.location.hash) {
-    showSection(window.location.hash);
-    menuItems.forEach(item => {
-      item.classList.toggle('active', item.getAttribute('href') === window.location.hash);
-    });
-  } else {
-    showSection('dashboard');
-  }
+  // --- ESCUCHADOR GLOBAL DE NAVEGACIÓN (SPA Core) ---
+  window.addEventListener('hashchange', () => {
+    const id = window.location.hash || '#dashboard';
+    showSection(id);
+  });
 
   const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
 
@@ -258,29 +255,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Hacerla global
   window.cargarDashboard = cargarDashboard;
 
-  // Eventos de clic en menú
-  menuItems.forEach(item => {
-    item.addEventListener('click', function() {
-      const href = this.getAttribute('href');
-      if (href.startsWith('#')) {
-        menuItems.forEach(i => i.classList.remove('active'));
-        this.classList.add('active');
-        showSection(href);
-        
-        // Recargar datos si es el dashboard
-        if (href === '#dashboard') cargarDashboard();
-      }
-    });
-  });
-
-  // Carga inicial
-  if (window.location.hash) {
-    showSection(window.location.hash);
-    if (window.location.hash === '#dashboard') cargarDashboard();
-  } else {
-    showSection('dashboard');
-    cargarDashboard();
-  }
+  // Carga inicial al entrar a la página
+  const initialHash = window.location.hash || '#dashboard';
+  showSection(initialHash);
 });
 
 /**
