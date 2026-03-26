@@ -763,19 +763,64 @@ tr:hover td {
   font-weight: 500;
 }
 
-/* CLP Sizes (Based on Table 4) */
-.ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 32px; --ghs-col-right-width: 130px; --ghs-signal-font: 14px; --ghs-title-font: 16px; }
-.ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 45px; --ghs-col-right-width: 180px; --ghs-signal-font: 18px; --ghs-title-font: 18px; }
-.ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 65px; --ghs-col-right-width: 260px; --ghs-signal-font: 26px; --ghs-title-font: 24px; }
-.ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 85px; --ghs-col-right-width: 360px; --ghs-signal-font: 34px; --ghs-title-font: 32px; }
+/* CLP Sizes (Based on Table 4) - Optimized for 100% Content Visibility */
+.ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 24px; --ghs-col-right-width: 100px; --ghs-signal-font: 12px; --ghs-title-font: 14px; --ghs-micro-font: 7px; }
+.ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 45px; --ghs-col-right-width: 180px; --ghs-signal-font: 18px; --ghs-title-font: 18px; --ghs-micro-font: 9px; }
+.ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 65px; --ghs-col-right-width: 260px; --ghs-signal-font: 26px; --ghs-title-font: 24px; --ghs-micro-font: 12px; }
+.ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 85px; --ghs-col-right-width: 360px; --ghs-signal-font: 34px; --ghs-title-font: 32px; --ghs-micro-font: 14px; }
 
-/* Art. 13 - Envases < 30ml (Minimalista) */
-.ghs-size-mini { width: 52mm; height: 35mm; --ghs-picto-size: 28px; --ghs-signal-font: 12px; --ghs-title-font: 13px; }
-.ghs-mini-layout .ghs-body { display: block !important; }
-.ghs-mini-layout .ghs-col-left { display: none !important; }
-.ghs-mini-layout .ghs-col-right { border: none !important; padding: 0 !important; width: 100% !important; }
-.ghs-mini-layout .ghs-signal-word { text-align: center; margin: 1px 0 !important; }
-.ghs-mini-layout .ghs-pictos { grid-template-columns: repeat(auto-fit, calc(var(--ghs-picto-size) * 1.42)) !important; gap: 4px !important; }
+/* Art. 13 - Envases < 30ml (Escalado de Alta Fidelidad - V2) */
+.ghs-size-mini { 
+  width: 52mm; 
+  height: auto;
+  min-height: 40mm; 
+  --ghs-picto-size: 18px; 
+  --ghs-col-right-width: 60px; 
+  --ghs-signal-font: 10px; 
+  --ghs-title-font: 11px; 
+  --ghs-micro-font: 6.5px; 
+}
+
+/* Forzar que el texto use la micro-fuente en tamaños pequeños con mejor legibilidad */
+.ghs-size-mini .ghs-section ul, 
+.ghs-size-s .ghs-section ul { 
+  font-size: var(--ghs-micro-font) !important; 
+  font-weight: 700; 
+  padding-left: 10px !important;
+  margin: 0 !important;
+}
+.ghs-size-mini .ghs-section h4, 
+.ghs-size-s .ghs-section h4 { 
+  font-size: calc(var(--ghs-micro-font) + 1px) !important; 
+  margin-bottom: 1px !important; 
+  margin-top: 3px !important;
+}
+
+/* El layout MINI ahora es ultra-denso sin ocultar nada */
+.ghs-mini-layout .ghs-body { 
+  display: block !important; 
+  overflow: visible !important;
+}
+.ghs-mini-layout .ghs-col-left { 
+  display: block !important; 
+  margin-bottom: 2px;
+}
+.ghs-mini-layout .ghs-col-right { 
+  display: flex !important; 
+  flex-direction: row !important; 
+  justify-content: space-between;
+  align-items: center;
+  border-left: none !important; 
+  border-top: 1px solid #000;
+  padding: 2px 0 0 0 !important; 
+  width: 100% !important; 
+}
+.ghs-mini-layout .ghs-signal-word { font-size: 9px !important; margin: 0 !important; }
+.ghs-mini-layout .ghs-pictos { 
+  display: flex !important; 
+  gap: 2px !important; 
+}
+.ghs-mini-layout .ghs-picto-box { width: 16px; height: 16px; padding: 1px; }
 .ghs-mini-layout .ghs-footer { display: none !important; }
 
 @media print {
