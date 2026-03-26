@@ -859,13 +859,13 @@ tr:hover td {
 }
 
 .matrix-table th {
-  background: var(--bg-main);
+  background: #ffffff !important;
   padding: 10px 5px;
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  color: #000000;
   text-transform: uppercase;
-  border-radius: 6px;
+  border: 1px solid #000000 !important;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -881,11 +881,11 @@ tr:hover td {
 .matrix-table td {
   padding: 12px 6px;
   text-align: center;
-  border-radius: 6px;
   font-size: 14px;
-  transition: all 0.2s ease;
+  font-weight: 800;
   cursor: pointer;
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid #000000 !important;
+  transition: none;
 }
 
 .matrix-table td:hover {
@@ -895,19 +895,20 @@ tr:hover td {
 }
 
 /* Pastel Tokens (Expert Recommendation) */
+/* Solid Technical Tokens */
 .cell-green {
-  background: #ecfdf5 !important;
-  color: #065f46 !important;
+  background: #92d050 !important;
+  color: #000000 !important;
 }
 
 .cell-yellow {
-  background: #fffbeb !important;
-  color: #92400e !important;
+  background: #ffff00 !important;
+  color: #000000 !important;
 }
 
 .cell-red {
-  background: #fef2f2 !important;
-  color: #991b1b !important;
+  background: #c00000 !important;
+  color: #ffffff !important;
 }
 
 /* Tooltip style cell */
