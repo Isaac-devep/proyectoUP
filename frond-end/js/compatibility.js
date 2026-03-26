@@ -164,14 +164,22 @@ document.addEventListener('DOMContentLoaded', function() {
         let globalStatus = 'G'; // G, Y, R
         let hazardsFound = new Set();
 
-        let html = '<table class="storage-dynamic-table"><thead><tr><th class="cell-name">Clase UN</th>';
-        // Fila de Pictogramas (Header Superior)
+        // Decidir si usamos modo compacto (Vista Pájaro)
+        const isCompact = selected.length > 10;
+        const tableClass = isCompact ? 'matrix-table compact' : 'matrix-table';
+
+        let html = `<table class="${tableClass}" style="width:100%; border-collapse:collapse; background:#fff;">`;
+        html += '<thead><tr><th class="cell-name">SGA</th>';
+        // Headers Pictogramas (X)
         selected.forEach(p => {
             html += `<th style="text-align:center; padding:10px 5px;">${getUnPictoHtml(p.compClass)}</th>`;
         });
         html += '</tr><tr><th class="cell-name">Producto</th>';
-        // Headers Nombres (X)
-        selected.forEach(p => html += `<th title="${p.id_producto}">${p.id_producto.substring(0,8)}...</th>`);
+        // Headers Nombres (X) con wrapping para rotación si es compacto
+        selected.forEach(p => {
+            const shortName = p.id_producto.length > 10 ? p.id_producto.substring(0, 10) + '...' : p.id_producto;
+            html += `<th title="${p.id_producto}"><span>${shortName}</span></th>`;
+        });
         html += '</tr></thead><tbody>';
         
         selected.forEach(rowP => {
@@ -185,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
             selected.forEach(colP => {
                 // Diagonal (Mismo producto)
                 if (rowP._id === colP._id) {
-                    html += '<td style="background:#f1f5f9; color:#cbd5e1; text-align:center;"><i class="fas fa-slash"></i></td>';
+                    html += '<td style="background:#ffffff; border:1px solid #000 !important; color:#cbd5e1; text-align:center;"><i class="fas fa-slash"></i></td>';
                     return;
                 }
 

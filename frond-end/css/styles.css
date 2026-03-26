@@ -911,6 +911,42 @@ tr:hover td {
   color: #ffffff !important;
 }
 
+/* ---------------------------------------------------------
+   NUEVO: MODO COMPACTO (VISTA PÁJARO)
+   Optimizado para 15+ productos sin necesidad de ZOOM 50%
+--------------------------------------------------------- */
+.matrix-table.compact th:not(.cell-name) {
+  height: 120px;
+  vertical-align: bottom;
+  padding: 5px 2px !important;
+  font-size: 9px !important;
+  white-space: nowrap;
+}
+
+.matrix-table.compact th:not(.cell-name) > span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  display: inline-block;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.matrix-table.compact td {
+  padding: 4px 2px !important;
+  font-size: 10px !important;
+  min-width: 28px;
+  height: 28px;
+}
+
+.matrix-table.compact td i {
+  font-size: 10px !important;
+}
+
+.matrix-table.compact .un-diamond {
+  width: 20px !important;
+  height: 20px !important;
+}
+
 /* Tooltip style cell */
 .matrix-table td .fa-info-circle {
   position: absolute;
