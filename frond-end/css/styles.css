@@ -1440,10 +1440,32 @@ th .un-picto-mini {
     padding: 0 !important;
   }
 
-  /* Optimización de Tabla en Impresión */
+
+  /* Optimización de Tabla en Impresión (Compactación Extrema) */
   .matrix-table {
     width: 100% !important;
     border: 2px solid #000 !important;
+    font-size: 8px !important;
+  }
+
+  .matrix-table.compact th:not(.cell-name) {
+    height: 85px !important; /* Ganamos 35px */
+    font-size: 8px !important;
+  }
+
+  .matrix-table.compact td {
+    height: 22px !important; /* Ganamos 6px por fila = ~150px en 25 filas */
+    padding: 2px !important;
+    font-size: 9px !important;
+  }
+
+  .matrix-table.compact td i {
+    font-size: 9px !important;
+  }
+
+  .matrix-table.compact .un-diamond {
+    width: 16px !important;
+    height: 16px !important;
   }
 
   .matrix-table th, .matrix-table td {
@@ -1454,14 +1476,17 @@ th .un-picto-mini {
   /* Asegurar que el el logo y cabeceras de reporte se vean bien */
   .print-report-header {
     display: block !important;
-    margin-bottom: 20px;
+    margin-bottom: 10px !important;
   }
 
-  /* Forzar saltos de página controlados */
-  .page-break {
-    page-break-before: always;
-  }
+  .print-report-header h1 { font-size: 18px !important; }
+  .print-report-header h2 { font-size: 15px !important; }
 
+  /* Escalar contenedor si es muy grande */
+  #storage-matrix-container {
+    zoom: 0.9;
+    width: 100% !important;
+  }
 
   /* Ocultar elementos de la interfaz que no pertenecen al reporte profesional */
   #matrix-legend,
@@ -1475,8 +1500,8 @@ th .un-picto-mini {
   /* Mostrar solo el clon del legend inyectado por JS */
   #print-legend-clone {
     display: block !important;
-    margin-top: 30px !important;
+    margin-top: 15px !important;
     border-top: 2px solid #000 !important;
-    padding-top: 15px !important;
+    padding-top: 10px !important;
   }
 }

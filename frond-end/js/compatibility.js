@@ -375,16 +375,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const printHeader = document.createElement('div');
         printHeader.className = 'print-report-header'; // New class for targeted styling
         printHeader.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid #000; padding-bottom:15px; margin-bottom:25px;">
-                <img src="../../assets/logo.png" style="height:60px; filter: grayscale(1) contrast(1.2);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:15px;">
+                <img src="../../assets/logo.png" style="height:50px; filter: grayscale(1) contrast(1.2);">
                 <div style="text-align:right;">
-                    <h1 style="margin:0; font-size:24px; color:#000; letter-spacing:1px;">REPORTE DE COMPATIBILIDAD QUÍMICA</h1>
-                    <p style="margin:0; font-size:11px; text-transform:uppercase; color:#333;">Generado por Sistema SAGA • ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+                    <h1 style="margin:0; font-size:22px; color:#000; letter-spacing:1px;">REPORTE DE COMPATIBILIDAD QUÍMICA</h1>
+                    <p style="margin:0; font-size:10px; text-transform:uppercase; color:#333;">Generado por Sistema SAGA • ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
                 </div>
             </div>
-            <div style="margin-bottom:25px;">
-                <h2 style="margin:0; font-size:18px; color:#1e40af;">${matrixTitle.innerText.toUpperCase()}</h2>
-                <p style="margin:5px 0 0 0; font-size:12px; color:#333;">Este documento certifica la validación técnica de almacenamiento y segregación de sustancias para la ubicación seleccionada.</p>
+            <div style="margin-bottom:15px;">
+                <h2 style="margin:0; font-size:16px; color:#1e40af;">${matrixTitle.innerText.toUpperCase()}</h2>
+                <p style="margin:3px 0 0 0; font-size:11px; color:#333;">Este documento certifica la validación técnica de almacenamiento y segregación de sustancias para la ubicación seleccionada.</p>
             </div>
         `;
         
