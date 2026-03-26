@@ -21,20 +21,20 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     const unPictos = {
-        '2.1': { color: '#ef4444', symbol: '🔥', label: '2.1' }, // Inflamable
-        '2.2': { color: '#22c55e', symbol: '🧪', label: '2.2' }, // No inflamable
-        '3':   { color: '#ef4444', symbol: '🔥', label: '3' },   // Líquido Inflamable
-        '5.1': { color: '#eab308', symbol: '⭕', label: '5.1' }, // Oxidante
-        '8A':  { color: '#334155', symbol: '🧪', label: '8' },   // Corrosivo
-        '8B':  { color: '#334155', symbol: '🧪', label: '8' },   // Corrosivo
-        '9':   { color: '#94a3b8', symbol: '!', label: '9' }    // Misceláneos
+        '2.1': { color: '#ef4444', icon: 'inflamable', label: '2.1' },     // Inflamable
+        '2.2': { color: '#22c55e', icon: 'gas-presurizado', label: '2.2' }, // Gas
+        '3':   { color: '#ef4444', icon: 'inflamable', label: '3' },       // Líquido Inflamable
+        '5.1': { color: '#eab308', icon: 'oxidante', label: '5.1' },      // Oxidante
+        '8A':  { color: '#334155', icon: 'corrosivo', label: '8' },        // Corrosivo
+        '8B':  { color: '#334155', icon: 'corrosivo', label: '8' },        // Corrosivo
+        '9':   { color: '#94a3b8', icon: 'daño-ambiente', label: '9' }     // Misceláneos
     };
 
     function getUnPictoHtml(clase) {
         const p = unPictos[clase] || unPictos['9'];
         return `
-            <div class="un-diamond" style="background:${p.color}; width:24px; height:24px; transform: rotate(45deg); display:flex; align-items:center; justify-content:center; margin: 0 auto; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <span style="transform: rotate(-45deg); color:white; font-size:9px; font-weight:bold;">${p.label}</span>
+            <div class="un-diamond" style="background:${p.color}; width:28px; height:28px; transform: rotate(45deg); display:flex; align-items:center; justify-content:center; margin: 0 auto; border: 1.5px solid rgba(255,255,255,0.4); box-shadow: 0 2px 5px rgba(0,0,0,0.2); overflow:hidden;">
+                <img src="../../images/${p.icon}.png" style="width:130%; height:130%; transform: rotate(-45deg); object-fit: contain;" onerror="this.src='../../images/default-pictogram.png';">
             </div>
         `;
     }
