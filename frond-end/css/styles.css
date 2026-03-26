@@ -175,10 +175,10 @@ body {
 /* Layout Core */
 .main-content {
   flex: 1;
-  padding: 40px;
+  padding: 30px;
   width: 100%;
-  max-width: 1440px;
-  margin: 0 auto 100px; /* Space for bottom nav */
+  margin: 0;
+  margin-bottom: 110px; /* Space for fixed bottom nav */
 }
 
 .stats-grid {
