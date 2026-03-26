@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
             selected.forEach(colP => {
                 // Diagonal (Mismo producto)
                 if (rowP._id === colP._id) {
-                    html += '<td style="background:#ffffff; border:1px solid #000 !important; color:#cbd5e1; text-align:center;"><i class="fas fa-slash"></i></td>';
+                    html += '<td style="background:#92d050; border:1px solid #000 !important; color:#000000; text-align:center;"><i class="fas fa-check"></i></td>';
                     return;
                 }
 
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (status === 'Y') {
             icon.className = 'fas fa-exclamation-triangle';
             title.innerText = "Almacenamiento Condicional";
-            desc.innerText = "Existen productos que requieren medidas preventivas o segregación parcial.";
+            desc.innerText = "Existen productos que requieren medidas preventivas o segregación parcial (verificar la sección 7 y 11 de la hoja de seguridad).";
         } else {
             icon.className = 'fas fa-skull-crossbones';
             title.innerText = "ALERTA: INCOMPATIBLE";
