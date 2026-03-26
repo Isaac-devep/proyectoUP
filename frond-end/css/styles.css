@@ -1452,27 +1452,24 @@ th .un-picto-mini {
     border: 2px solid #000 !important;
     font-size: 8px !important;
   }
-
   .matrix-table.compact th:not(.cell-name) {
-    height: 70px !important; /* Ganamos 50px total vs original */
-    font-size: 8px !important;
+    height: 55px !important; /* Ganamos mucho espacio vertical */
+    font-size: 7.5px !important;
   }
 
   .matrix-table.compact td {
-    height: 19px !important;
-    min-width: 18px !important; /* Ganamos 10px por columna */
-    width: 18px !important;
-    padding: 1px 2px !important;
-    font-size: 8px !important;
+    height: 16px !important; /* Ganamos mucho espacio vertical */
+    padding: 0px 2px !important;
+    font-size: 7.5px !important;
   }
 
   .matrix-table.compact td i {
-    font-size: 9px !important;
+    font-size: 7.5px !important;
   }
 
   .matrix-table.compact .un-diamond {
-    width: 16px !important;
-    height: 16px !important;
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .matrix-table th, .matrix-table td {
@@ -1483,15 +1480,17 @@ th .un-picto-mini {
   /* Asegurar que el el logo y cabeceras de reporte se vean bien */
   .print-report-header {
     display: block !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 5px !important;
   }
 
-  .print-report-header h1 { font-size: 18px !important; }
-  .print-report-header h2 { font-size: 15px !important; }
+  .print-report-header h1 { font-size: 16px !important; }
+  .print-report-header h2 { font-size: 14px !important; }
 
-  /* Ajustar contenedor para impresión */
+  /* Escalar contenedor para que quepa en el alto de landscape */
   #storage-matrix-container {
+    zoom: 0.82;
     width: 100% !important;
+    transform-origin: top left;
   }
 
   /* Ocultar elementos de la interfaz que no pertenecen al reporte profesional */
