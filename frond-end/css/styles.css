@@ -264,7 +264,7 @@ body {
 }
 
 /* Full Viewport Matrix Styles */
-#compatibilidad.content-section {
+#compatibilidad.content-section.active {
   max-width: 100% !important;
   height: 100%;
   padding: 0; 
