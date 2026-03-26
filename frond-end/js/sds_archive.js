@@ -7,21 +7,21 @@ document.addEventListener('DOMContentLoaded', function() {
   let allFiles = [];
 
   // Función para cargar los archivos del servidor
-  async function cargarArchivosSDS() {
+  async function cargarArchivosFDS() {
     try {
       const response = await fetch(`${API_URL}/fds/list-files`);
       const data = await response.json();
       
       if (data.files) {
         allFiles = data.files;
-        renderSDSFiles(allFiles);
+        renderSDSFiles(allFiles); // Keep internal function name or change both
         
         if (sdsStats) {
             sdsStats.textContent = `${allFiles.length} documentos encontrados`;
         }
       }
     } catch (error) {
-      console.error('Error loading SDS files:', error);
+      console.error('Error loading FDS files:', error);
       if (sdsTableBody) {
           sdsTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem; color: #ef4444;">Error al cargar el archivo de seguridad. Asegúrate de que el servidor backend esté corriendo.</td></tr>';
       }

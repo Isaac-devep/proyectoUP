@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
     'generar-etiquetas': 'Generador de Etiquetas SGA',
     'compatibilidad': 'Matriz de Compatibilidad',
     'etiquetas-lista': 'Consulta de Etiquetas',
-    'sds-archivo': 'Archivo de Seguridad SDS',
+    'sds-archivo': 'Archivo de Seguridad FDS',
     'usuarios-gestion': 'Gestión de Personal del Sistema'
   };
 

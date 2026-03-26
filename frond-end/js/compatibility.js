@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 6. Matriz Referencial (Guía Original)
     const refMatrixBody = document.getElementById('matrixGridBody');
     if (refMatrixBody) {
-        let html = '<tr><th style="font-size:10px;">GHS</th>' + ghsClasses.map(c => `<th title="${c.name}">${c.id}</th>`).join('') + '</tr>';
+        let html = '<tr><th style="font-size:10px;">ONU</th>' + ghsClasses.map(c => `<th title="${c.name}">${c.id}</th>`).join('') + '</tr>';
         ghsClasses.forEach(row => {
             html += `<tr><td style="font-weight:800; font-size:11px; background:var(--bg-main);" title="${row.name}">${row.id}</td>`;
             ghsClasses.forEach(col => {
