@@ -1134,3 +1134,111 @@ tr:hover td {
     background-color: var(--bg-card);
     color: white;
 }
+
+/* UN Transport Pictogram Styling for Matrix */
+.un-picto-mini {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+th .un-picto-mini {
+  display: block;
+  margin: 0 auto 5px;
+  width: 30px;
+  height: 30px;
+}
+
+/* Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .sidebar, .header, #btnManageLocations, #btnClearCompSelection, #btnGenStorageMatrix, .search-box, .product-checklist-container, .sidebar-menu, .user-info, .header-actions {
+    display: none !important;
+  }
+  #compatibilidad .card:nth-child(2), #compatibilidad .card:nth-child(2) * {
+    visibility: visible;
+  }
+  #compatibilidad .card:nth-child(2) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+  }
+  .table-container {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+  .storage-dynamic-table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    transform: scale(0.85); /* Fit large matrices */
+    transform-origin: top left;
+  }
+  .storage-dynamic-table td, .storage-dynamic-table th {
+    border: 1px solid #ddd !important;
+    padding: 4px !important;
+    font-size: 10px !important;
+  }
+  #matrix-legend {
+    visibility: visible !important;
+    display: block !important;
+    margin-top: 20px !important;
+  }
+  #matrix-legend * {
+    visibility: visible !important;
+  }
+}
+
+/* Size Selector Pills for Generator */
+.size-selector-pills {
+  display: flex;
+  background: var(--bg-main);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  gap: 2px;
+}
+
+.size-pill {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.size-pill:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--primary);
+}
+
+.size-pill.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dark-mode .size-pill:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+#labelSizeGroup {
+  margin-right: 10px;
+}
+
+@media print {
+  #labelSizeGroup, .theme-toggle, #themeToggle, #checkInternalUse {
+    display: none !important;
+  }
+}

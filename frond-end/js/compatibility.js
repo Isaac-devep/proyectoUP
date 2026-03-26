@@ -20,6 +20,25 @@ document.addEventListener('DOMContentLoaded', function() {
         '9':   { '2.1':'G', '2.2':'G', '3':'G',   '5.1':'R', '8B':'G', '8A':'G', '9':'G' }
     };
 
+    const unPictos = {
+        '2.1': { color: '#ef4444', symbol: '🔥', label: '2.1' }, // Inflamable
+        '2.2': { color: '#22c55e', symbol: '🧪', label: '2.2' }, // No inflamable
+        '3':   { color: '#ef4444', symbol: '🔥', label: '3' },   // Líquido Inflamable
+        '5.1': { color: '#eab308', symbol: '⭕', label: '5.1' }, // Oxidante
+        '8A':  { color: '#334155', symbol: '🧪', label: '8' },   // Corrosivo
+        '8B':  { color: '#334155', symbol: '🧪', label: '8' },   // Corrosivo
+        '9':   { color: '#94a3b8', symbol: '!', label: '9' }    // Misceláneos
+    };
+
+    function getUnPictoHtml(clase) {
+        const p = unPictos[clase] || unPictos['9'];
+        return `
+            <div class="un-diamond" style="background:${p.color}; width:24px; height:24px; transform: rotate(45deg); display:flex; align-items:center; justify-content:center; margin: 0 auto; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <span style="transform: rotate(-45deg); color:white; font-size:9px; font-weight:bold;">${p.label}</span>
+            </div>
+        `;
+    }
+
     const detailRules = {
         '2.1-3': 'Segregar por gabinete o barrera. Riesgo de explosión por calor.',
         '5.1-3': 'PELIGRO: Separación mínima de 3m. Ignición espontánea.',
@@ -89,14 +108,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const pictos = (p.pictogramas || []).map(pic => {
                 let s = pic.toString().toLowerCase().trim().replace(/\s+/g, '-');
                 const pictoSwap = {
-                   'gas': 'gas-presurizado', 'ghs04': 'gas-presurizado', 'cilindro': 'gas-presurizado',
-                   'llama': 'inflamable', 'ghs02': 'inflamable', 'inflamable': 'inflamable',
-                   'oxidante': 'ghs03', 'ghs03': 'oxidante', 'oxidante-orig': 'oxidante',
-                   'toxico': 'toxico', 'ghs06': 'toxico', 'calavera': 'toxico',
-                   'corrosivo': 'corrosivo', 'ghs05': 'corrosivo',
-                   'salud': 'peligro-salud', 'ghs08': 'peligro-salud',
-                   'irritante': 'irritante', 'ghs07': 'irritante',
-                   'ambiente': 'daño-ambiente', 'ghs09': 'daño-ambiente'
+                   'ghs01': 'explosivo', 'explosivo': 'explosivo',
+                   'ghs02': 'inflamable', 'llama': 'inflamable', 'inflamable': 'inflamable',
+                   'ghs03': 'oxidante', 'oxidante': 'oxidante', 'comburente': 'oxidante',
+                   'ghs04': 'gas-presurizado', 'gas': 'gas-presurizado', 'cilindro': 'gas-presurizado',
+                   'ghs05': 'corrosivo', 'corrosivo': 'corrosivo',
+                   'ghs06': 'toxico', 'toxico': 'toxico', 'calavera': 'toxico',
+                   'ghs07': 'irritante', 'irritante': 'irritante', 'exclamacion': 'irritante',
+                   'ghs08': 'peligro-salud', 'salud': 'peligro-salud',
+                   'ghs09': 'daño-ambiente', 'ambiente': 'daño-ambiente'
                 };
                 if (pictoSwap[s]) s = pictoSwap[s];
                 return `<img src="../../images/${s}.png" alt="${s}" onerror="this.src='../../images/default-pictogram.png';">`;
@@ -144,17 +164,28 @@ document.addEventListener('DOMContentLoaded', function() {
         let globalStatus = 'G'; // G, Y, R
         let hazardsFound = new Set();
 
-        let html = '<table class="storage-dynamic-table"><thead><tr><th class="cell-name">Producto</th>';
-        // Headers (X)
-        selected.forEach(p => html += `<th title="${p.id_producto}">${p.id_producto.substring(0,6)}...</th>`);
+        let html = '<table class="storage-dynamic-table"><thead><tr><th class="cell-name">Clase UN</th>';
+        // Fila de Pictogramas (Header Superior)
+        selected.forEach(p => {
+            html += `<th style="text-align:center; padding:10px 5px;">${getUnPictoHtml(p.compClass)}</th>`;
+        });
+        html += '</tr><tr><th class="cell-name">Producto</th>';
+        // Headers Nombres (X)
+        selected.forEach(p => html += `<th title="${p.id_producto}">${p.id_producto.substring(0,8)}...</th>`);
         html += '</tr></thead><tbody>';
-
+        
         selected.forEach(rowP => {
-            html += `<tr><td class="cell-name">${rowP.id_producto}</td>`;
+            html += `<tr>
+                <td class="cell-name" style="padding-left:10px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        ${getUnPictoHtml(rowP.compClass)}
+                        <span style="font-weight:600;">${rowP.id_producto}</span>
+                    </div>
+                </td>`;
             selected.forEach(colP => {
                 // Diagonal (Mismo producto)
                 if (rowP._id === colP._id) {
-                    html += '<td style="background:#f1f5f9; color:#cbd5e1;"><i class="fas fa-slash"></i></td>';
+                    html += '<td style="background:#f1f5f9; color:#cbd5e1; text-align:center;"><i class="fas fa-slash"></i></td>';
                     return;
                 }
 
@@ -171,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const cellClass = rule === 'G' ? 'cell-green' : (rule === 'Y' ? 'cell-yellow' : 'cell-red');
                 const icon = rule === 'G' ? 'fa-check' : (rule === 'Y' ? 'fa-exclamation' : 'fa-times');
                 
-                html += `<td class="cell-result ${cellClass}" title="${rowP.id_producto} vs ${colP.id_producto}">
+                html += `<td class="cell-result ${cellClass}" title="${rowP.id_producto} vs ${colP.id_producto}" style="text-align:center;">
                     <i class="fas ${icon}"></i>
                 </td>`;
             });
@@ -326,6 +357,31 @@ document.addEventListener('DOMContentLoaded', function() {
             refIcon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
         };
     }
+
+    // 9. Impresión de Matriz
+    window.printStorageMatrix = () => {
+        if (selectedProductIds.size === 0) return showToast("No hay una matriz cargada para imprimir.", "error");
+        
+        // Agregar info extra antes de imprimir
+        const container = document.getElementById('storage-matrix-container');
+        const printHeader = document.createElement('div');
+        printHeader.className = 'only-print';
+        printHeader.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:2px solid #333; padding-bottom:10px;">
+                <img src="../../images/logo.png" style="height:50px;">
+                <div style="text-align:right;">
+                    <h2 style="margin:0;">REPORTE DE COMPATIBILIDAD</h2>
+                    <p style="margin:0; font-size:12px;">Fecha: ${new Date().toLocaleString()}</p>
+                </div>
+            </div>
+            <h3 style="color:#2563eb;">${matrixTitle.innerText}</h3>
+            <p style="font-size:14px; margin-bottom:20px;">Este documento certifica la validación de convivencia química para el área especificada.</p>
+        `;
+        
+        container.prepend(printHeader);
+        window.print();
+        printHeader.remove(); // Limpiar después de imprimir
+    };
 
     // 6. Matriz Referencial (Guía Original)
     const refMatrixBody = document.getElementById('matrixGridBody');

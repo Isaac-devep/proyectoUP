@@ -272,11 +272,15 @@ document.addEventListener("DOMContentLoaded", function () {
         ? pictos.map((pic) => {
             let s = pic.toString().toLowerCase().trim().replace(/\s+/g, '-');
             const pictoSwap = {
-               'gas': 'gas-presurizado', 'cilindro': 'gas-presurizado',
-               'llama': 'inflamable', 'inflamable': 'inflamable',
-               'oxidante': 'oxidante', 'toxico': 'toxico', 'calavera': 'toxico',
-               'corrosivo': 'corrosivo', 'salud': 'peligro-salud',
-               'irritante': 'irritante', 'ambiente': 'daño-ambiente'
+               'ghs01': 'explosivo', 'explosivo': 'explosivo',
+               'ghs02': 'inflamable', 'llama': 'inflamable', 'inflamable': 'inflamable',
+               'ghs03': 'oxidante', 'oxidante': 'oxidante', 'comburente': 'oxidante',
+               'ghs04': 'gas-presurizado', 'gas': 'gas-presurizado', 'cilindro': 'gas-presurizado',
+               'ghs05': 'corrosivo', 'corrosivo': 'corrosivo',
+               'ghs06': 'toxico', 'toxico': 'toxico', 'calavera': 'toxico',
+               'ghs07': 'irritante', 'irritante': 'irritante', 'exclamacion': 'irritante',
+               'ghs08': 'peligro-salud', 'salud': 'peligro-salud',
+               'ghs09': 'daño-ambiente', 'ambiente': 'daño-ambiente'
             };
             if (pictoSwap[s]) s = pictoSwap[s];
             return `<div class="ghs-picto-box"><img src="../../images/${s}.png" alt="${s}" onerror="this.src='../../images/default-pictogram.png';"></div>`;
@@ -294,18 +298,13 @@ document.addEventListener("DOMContentLoaded", function () {
                  <input type="checkbox" id="checkInternalUse" onchange="document.getElementById('printableLabel').classList.toggle('ghs-black-border', this.checked)">
                  USO INTERNO (Art. 12)
                </label>
-               <select id="labelSizeSelect" class="form-control" style="width: auto; height: 38px;" 
-                 onchange="
-                   const lbl = document.getElementById('printableLabel');
-                   lbl.className = 'ghs-label ' + this.value + (document.getElementById('checkInternalUse').checked ? ' ghs-black-border' : '');
-                   lbl.classList.toggle('ghs-mini-layout', this.value === 'ghs-size-mini');
-                 ">
-                 <option value="ghs-size-m">Tamaño: M (Envase 3-50L)</option>
-                 <option value="ghs-size-mini">Tamaño: MINI (< 30ml / Art. 13)</option>
-                 <option value="ghs-size-s">Tamaño: S (Hasta 3L)</option>
-                 <option value="ghs-size-l">Tamaño: L (Envase 50-500L)</option>
-                 <option value="ghs-size-xl">Tamaño: XL (Más de 500L)</option>
-               </select>
+                <div class="size-selector-pills" id="labelSizeGroup">
+                  <button type="button" class="size-pill" data-size="ghs-size-mini" title="Articulo 13: Envases < 30ml">MINI</button>
+                  <button type="button" class="size-pill" data-size="ghs-size-s" title="Envases hasta 3 Litros">S</button>
+                  <button type="button" class="size-pill active" data-size="ghs-size-m" title="Envases 3 a 50 Litros">M</button>
+                  <button type="button" class="size-pill" data-size="ghs-size-l" title="Envases 50 a 500 Litros">L</button>
+                  <button type="button" class="size-pill" data-size="ghs-size-xl" title="Envases más de 500 Litros">XL</button>
+                </div>
                <button class="btn btn-primary btn-sm" onclick="window.imprimirEtiquetaIndependiente('printableLabel')">
                  <i class="fas fa-print"></i> Imprimir
                </button>
@@ -410,6 +409,22 @@ document.addEventListener("DOMContentLoaded", function () {
           </form>
         </div>
       `;
+
+      // Logic for size pills (NUEVO)
+      const pills = preview.querySelectorAll('.size-pill');
+      pills.forEach(pill => {
+        pill.onclick = function() {
+          pills.forEach(p => p.classList.remove('active'));
+          this.classList.add('active');
+          
+          const sizeClass = this.dataset.size;
+          const lbl = document.getElementById('printableLabel');
+          const isInternal = document.getElementById('checkInternalUse').checked;
+          
+          lbl.className = 'ghs-label ' + sizeClass + (isInternal ? ' ghs-black-border' : '');
+          lbl.classList.toggle('ghs-mini-layout', sizeClass === 'ghs-size-mini');
+        };
+      });
 
       function escapeHtml(unsafe) {
         if (!unsafe) return '';
