@@ -1449,14 +1449,14 @@ th .un-picto-mini {
   }
 
   .matrix-table.compact th:not(.cell-name) {
-    height: 85px !important; /* Ganamos 35px */
+    height: 70px !important; /* Ganamos 50px total vs original */
     font-size: 8px !important;
   }
 
   .matrix-table.compact td {
-    height: 22px !important; /* Ganamos 6px por fila = ~150px en 25 filas */
-    padding: 2px !important;
-    font-size: 9px !important;
+    height: 19px !important; /* Ganamos 9px por fila = ~225px en 25 filas */
+    padding: 1px 2px !important;
+    font-size: 8px !important;
   }
 
   .matrix-table.compact td i {
