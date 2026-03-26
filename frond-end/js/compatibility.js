@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. Estado Global
     let dbProductos = [];
     let selectedProductIds = new Set();
-    let storageLocations = JSON.parse(localStorage.getItem('eticol_locations')) || [];
+    let storageLocations = JSON.parse(localStorage.getItem('saga_locations')) || [];
 
     // Selectores UI
     const productListContainer = document.getElementById('comp-product-list');
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function saveAndSync() {
-        localStorage.setItem('eticol_locations', JSON.stringify(storageLocations));
+        localStorage.setItem('saga_locations', JSON.stringify(storageLocations));
         renderLocDropdown();
         renderLocList();
     }
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img src="../../images/logo.png" style="height:60px; filter: grayscale(1) contrast(1.2);">
                 <div style="text-align:right;">
                     <h1 style="margin:0; font-size:24px; color:#000; letter-spacing:1px;">REPORTE DE COMPATIBILIDAD QUÍMICA</h1>
-                    <p style="margin:0; font-size:11px; text-transform:uppercase; color:#333;">Generado por Sistema Eticol • ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+                    <p style="margin:0; font-size:11px; text-transform:uppercase; color:#333;">Generado por Sistema SAGA • ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
                 </div>
             </div>
             <div style="margin-bottom:25px;">

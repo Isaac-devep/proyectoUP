@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Cargar al iniciar
-  cargarArchivosSDS(); // Corregido: antes decía loadSDSFiles
+  cargarArchivosFDS(); 
   
   // Exponer para recarga manual si es necesario
-  window.refreshSDSArchive = cargarArchivosSDS;
+  window.refreshFDSArchive = cargarArchivosFDS;
 });

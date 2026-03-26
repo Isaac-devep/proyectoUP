@@ -483,7 +483,7 @@ document.addEventListener("DOMContentLoaded", function () {
     printWindow.document.write(`
       <html>
         <head>
-          <title>Imprimir SGA - Eticol</title>
+          <title>Imprimir SGA - SAGA</title>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
