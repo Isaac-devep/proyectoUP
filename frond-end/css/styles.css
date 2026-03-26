@@ -866,6 +866,7 @@ tr:hover td {
   color: #000000;
   text-transform: uppercase;
   border: 1px solid #000000 !important;
+  border-radius: 0 !important;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -885,6 +886,7 @@ tr:hover td {
   font-weight: 800;
   cursor: pointer;
   border: 1px solid #000000 !important;
+  border-radius: 0 !important;
   transition: none;
 }
 
