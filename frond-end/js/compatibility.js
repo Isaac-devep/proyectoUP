@@ -184,10 +184,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         selected.forEach(rowP => {
             html += `<tr>
-                <td class="cell-name" style="padding: 10px 15px;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                        <span style="font-weight:600;">${rowP.id_producto}</span>
-                        ${getUnPictoHtml(rowP.compClass)}
+                <td class="cell-name" style="padding: 6px 15px;">
+                    <div style="display:flex; align-items:center; gap:10px; width:100%;">
+                        <span style="font-weight:600; flex:1; white-space: normal;">${rowP.id_producto}</span>
+                        <div style="min-width:40px; width:40px; display:flex; justify-content:center; align-items:center;">
+                            ${getUnPictoHtml(rowP.compClass)}
+                        </div>
                     </div>
                 </td>`;
             selected.forEach(colP => {

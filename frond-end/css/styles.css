@@ -1283,8 +1283,8 @@ tr:hover td {
   width: 24px;
   height: 24px;
   object-fit: contain;
-  margin-right: 8px;
-  vertical-align: middle;
+  display: block;
+  margin: 0 auto;
 }
 
 th .un-picto-mini {
