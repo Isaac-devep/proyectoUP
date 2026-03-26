@@ -182,7 +182,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 25px;
+  padding: 25px 25px 110px 25px; /* Added 110px bottom padding for floating nav */
   width: 100%;
   margin: 0;
   overflow: hidden; /* Avoid double scrollbars */
@@ -1209,48 +1209,105 @@ th .un-picto-mini {
   height: 30px;
 }
 
-/* Print Styles */
+/* --- New Optimized Print Styles --- */
 @media print {
+  /* Hide everything by default */
   body * {
     visibility: hidden;
   }
-  .sidebar, .header, #btnManageLocations, #btnClearCompSelection, #btnGenStorageMatrix, .search-box, .product-checklist-container, .sidebar-menu, .user-info, .header-actions {
+
+  /* Specific elements to hide entirely to avoid layout shifts */
+  .app-header, 
+  .floating-bottom-nav, 
+  #toast-container, 
+  .sidebar, 
+  .header-actions,
+  .action-btn,
+  #themeToggle,
+  .search-box,
+  #btnGenStorageMatrix,
+  #btnClearCompSelection,
+  #btnManageLocations,
+  .sidebar-menu,
+  .user-info,
+  .header {
     display: none !important;
   }
-  #compatibilidad .card:nth-child(2), #compatibilidad .card:nth-child(2) * {
+
+  /* Identify the report container and make it visible */
+  #compatibilidad .card.matrix-card-full,
+  #compatibilidad .card.matrix-card-full * {
     visibility: visible;
   }
-  #compatibilidad .card:nth-child(2) {
+
+  /* Reset the container to take the full page */
+  #compatibilidad .card.matrix-card-full {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
-    box-shadow: none;
-    border: none;
-    padding: 0;
-  }
-  .table-container {
-    overflow: visible !important;
-    max-height: none !important;
-  }
-  .storage-dynamic-table {
-    border-collapse: collapse !important;
     width: 100% !important;
-    transform: scale(0.85); /* Fit large matrices */
-    transform-origin: top left;
+    height: auto !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
   }
-  .storage-dynamic-table td, .storage-dynamic-table th {
-    border: 1px solid #ddd !important;
-    padding: 4px !important;
-    font-size: 10px !important;
+
+  .main-content {
+    padding: 0 !important;
+    margin: 0 !important;
   }
+
+  /* Standardize table for paper */
+  #storage-matrix-container {
+    overflow: visible !important;
+    height: auto !important;
+    border: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    background: white !important;
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  th, td {
+    border: 1px solid #333 !important;
+    padding: 6px !important;
+    color: black !important;
+  }
+
+  /* Scale the table if it's too wide */
+  table {
+    font-size: 10pt !important;
+  }
+
+  /* Ensure pictograms are visible and high quality */
+  .un-picto-mini {
+    filter: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Legend stays at bottom */
   #matrix-legend {
     visibility: visible !important;
-    display: block !important;
-    margin-top: 20px !important;
+    border-top: 2px solid #333 !important;
+    margin-top: 30px !important;
+    page-break-before: auto;
   }
-  #matrix-legend * {
-    visibility: visible !important;
+
+  /* Force landscape if possible (not all browsers support this) */
+  @page {
+    size: A4 portrait;
+    margin: 1cm;
   }
 }
 

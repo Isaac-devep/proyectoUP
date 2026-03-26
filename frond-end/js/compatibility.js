@@ -365,17 +365,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Agregar info extra antes de imprimir
         const container = document.getElementById('storage-matrix-container');
         const printHeader = document.createElement('div');
-        printHeader.className = 'only-print';
+        printHeader.className = 'print-report-header'; // New class for targeted styling
         printHeader.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:2px solid #333; padding-bottom:10px;">
-                <img src="../../images/logo.png" style="height:50px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid #000; padding-bottom:15px; margin-bottom:25px;">
+                <img src="../../images/logo.png" style="height:60px; filter: grayscale(1) contrast(1.2);">
                 <div style="text-align:right;">
-                    <h2 style="margin:0;">REPORTE DE COMPATIBILIDAD</h2>
-                    <p style="margin:0; font-size:12px;">Fecha: ${new Date().toLocaleString()}</p>
+                    <h1 style="margin:0; font-size:24px; color:#000; letter-spacing:1px;">REPORTE DE COMPATIBILIDAD QUÍMICA</h1>
+                    <p style="margin:0; font-size:11px; text-transform:uppercase; color:#333;">Generado por Sistema Eticol • ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
                 </div>
             </div>
-            <h3 style="color:#2563eb;">${matrixTitle.innerText}</h3>
-            <p style="font-size:14px; margin-bottom:20px;">Este documento certifica la validación de convivencia química para el área especificada.</p>
+            <div style="margin-bottom:25px;">
+                <h2 style="margin:0; font-size:18px; color:#1e40af;">${matrixTitle.innerText.toUpperCase()}</h2>
+                <p style="margin:5px 0 0 0; font-size:12px; color:#333;">Este documento certifica la validación técnica de almacenamiento y segregación de sustancias para la ubicación seleccionada.</p>
+            </div>
         `;
         
         container.prepend(printHeader);
