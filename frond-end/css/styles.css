@@ -1392,8 +1392,81 @@ th .un-picto-mini {
   margin-right: 10px;
 }
 
+
+/* =========================================================
+   REPORTES Y ESTILOS DE IMPRESIÓN (PRO)
+   Optimizado para Reportes de Seguridad SAGA
+========================================================= */
 @media print {
-  #labelSizeGroup, .theme-toggle, #themeToggle, #checkInternalUse {
+  /* Forzar colores de fondo en la impresión */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Ocultar elementos de navegación e interfaz */
+  .app-header, 
+  .sidebar, 
+  .bottom-nav, 
+  .btn, 
+  #toast-container,
+  .no-print {
     display: none !important;
+  }
+
+  /* Ajustar contenedor principal */
+  body {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .content-section {
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  /* Optimización de Tabla en Impresión */
+  .matrix-table {
+    width: 100% !important;
+    border: 2px solid #000 !important;
+  }
+
+  .matrix-table th, .matrix-table td {
+    border: 1px solid #000 !important;
+    border-radius: 0 !important;
+  }
+
+  /* Asegurar que el el logo y cabeceras de reporte se vean bien */
+  .print-report-header {
+    display: block !important;
+    margin-bottom: 20px;
+  }
+
+  /* Forzar saltos de página controlados */
+  .page-break {
+    page-break-before: always;
+  }
+
+  /* Mantener el legend visible */
+  #matrix-legend {
+    display: block !important;
+    margin-top: 30px !important;
+    border-top: 2px solid #000 !important;
+    padding-top: 15px !important;
   }
 }

@@ -389,8 +389,22 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         
         container.prepend(printHeader);
+
+        // Clonar leyenda para que aparezca en el reporte
+        const originalLegend = document.getElementById('matrix-legend');
+        let printLegend = null;
+        if (originalLegend) {
+            printLegend = originalLegend.cloneNode(true);
+            printLegend.style.display = 'block';
+            printLegend.id = 'print-legend-clone'; // Evitar colisión de IDs
+            container.appendChild(printLegend);
+        }
+
         window.print();
-        printHeader.remove(); // Limpiar después de imprimir
+        
+        // Limpiar después de imprimir
+        printHeader.remove();
+        if (printLegend) printLegend.remove();
     };
 
     // 6. Matriz Referencial (Guía Original)
