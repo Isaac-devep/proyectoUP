@@ -1462,8 +1462,18 @@ th .un-picto-mini {
     page-break-before: always;
   }
 
-  /* Mantener el legend visible */
-  #matrix-legend {
+
+  /* Ocultar elementos de la interfaz que no pertenecen al reporte profesional */
+  #matrix-legend,
+  #storage-tips-area,
+  .matrix-card-full > div:first-child,
+  .location-controls,
+  #global-safety-alert {
+    display: none !important;
+  }
+
+  /* Mostrar solo el clon del legend inyectado por JS */
+  #print-legend-clone {
     display: block !important;
     margin-top: 30px !important;
     border-top: 2px solid #000 !important;
