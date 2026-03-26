@@ -13,48 +13,53 @@
 </head>
 <body>
     <!-- Sidebar Navigation -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-container">
-                <a href="../../index.html">
-                    <img src="../../images/logo.png" alt="Eticol Logo" class="sidebar-logo">
-                </a>
+    <!-- App Header (Top Bar) -->
+    <header class="app-header">
+        <div class="header-left">
+            <a href="../../index.html"><img src="../../images/logo.png" alt="Eticol Logo" class="app-logo"></a>
+            <div class="header-title-box">
+                <h1 id="mainHeaderTitle">Cargando...</h1>
+                <p id="subHeaderStatus" style="font-size:10px; color:#22c55e;">● Sesión Empleado</p>
             </div>
         </div>
         
-        <div class="sidebar-menu">
-            <div class="menu-category">
-                <h3>Consultas</h3>
-                <a href="#dashboard" class="menu-item active">
-                    <i class="fas fa-columns"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#etiquetas-lista" class="menu-item">
-                    <i class="fas fa-tags"></i>
-                    <span>Visualizar etiquetas</span>
-                </a>
-                <a href="#sds-archivo" class="menu-item">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Consultar SDS</span>
-                </a>
-                <a href="#compatibilidad" class="menu-item">
-                    <i class="fas fa-th"></i>
-                    <span>Matriz Compatibilidad</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="user-info">
-            <div id="userAvatar" class="user-avatar"></div>
-            <div class="user-details">
-                <h4 id="nombreUsuario">Cargando...</h4>
-                <p id="rolUsuario">Cargando...</p>
-            </div>
-            <button id="logoutBtn" class="logout-btn-icon" title="Cerrar sesión">
-                <i class="fas fa-sign-out-alt"></i>
+        <div class="header-right">
+            <button class="action-btn" id="themeToggle" title="Cambiar Tema" style="background: var(--bg-main); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+                <i class="fas fa-moon"></i>
             </button>
+
+            <button class="action-btn" title="Notificaciones" style="background: var(--bg-main); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+                <i class="fas fa-bell"></i>
+            </button>
+
+            <div class="user-profile-pill">
+                <div id="userAvatar" class="user-avatar-circle"></div>
+                <div class="user-details" style="display: flex; flex-direction: column;">
+                    <h4 id="nombreUsuario" style="margin:0; font-size:13px;">Cargando...</h4>
+                    <p id="rolUsuario" style="margin:0; font-size:10px; color:var(--text-muted); text-transform:uppercase;">Empleado</p>
+                </div>
+                <button id="logoutBtn" class="action-btn" title="Cerrar sesión" style="color:var(--text-muted); margin-left: 10px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
         </div>
-    </div>
+    </header>
+
+    <!-- Floating Bottom Navigation -->
+    <nav class="floating-bottom-nav">
+        <a href="#dashboard" class="nav-pill active" title="Dashboard">
+            <i class="fas fa-columns"></i>
+        </a>
+        <a href="#etiquetas-lista" class="nav-pill" title="Visualizar Etiquetas">
+            <i class="fas fa-tags"></i>
+        </a>
+        <a href="#sds-archivo" class="nav-pill" title="Consultar SDS">
+            <i class="fas fa-file-alt"></i>
+        </a>
+        <a href="#compatibilidad" class="nav-pill" title="Matriz Compatibilidad">
+            <i class="fas fa-th"></i>
+        </a>
+    </nav>
 
     <!-- Main Content -->
     <main class="main-content">

@@ -13,58 +13,49 @@
 </head>
 <body class="bg-main">
     <!-- Sidebar Navigation -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-container">
-                <a href="../../index.html">
-                    <img src="../../images/logo.png" alt="Eticol Logo" class="sidebar-logo">
-                </a>
+    <!-- App Header (Top Bar) -->
+    <header class="app-header">
+        <div class="header-left">
+            <a href="../../index.html"><img src="../../images/logo.png" alt="Eticol Logo" class="app-logo"></a>
+            <div class="header-title-box">
+                <h1 id="mainHeaderTitle">Panel Maestro</h1>
+                <p id="subHeaderStatus" style="font-size:10px; color:#f59e0b;">● Sesión Super-Admin</p>
             </div>
         </div>
         
-        <div class="sidebar-menu">
-            <div class="menu-category">
-                <h3>Acciones</h3>
-                <a href="#dashboard" class="menu-item active">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#usuarios-gestion" class="menu-item">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Gestión de Personal</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="user-info">
-            <div class="user-avatar" id="userAvatar">CA</div>
-            <div class="user-details">
-                <h4 id="nombreUsuario">Cristian Albor</h4>
-                <p id="rolUsuario">Super-Administrador</p>
-            </div>
-            <button id="logoutBtn" class="logout-btn-icon" title="Cerrar sesión">
-                <i class="fas fa-sign-out-alt"></i>
+        <div class="header-right">
+            <button class="action-btn" id="themeToggle" title="Cambiar Tema" style="background: var(--bg-main); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+                <i class="fas fa-moon"></i>
             </button>
-        </div>
-    </div>
 
+            <button class="action-btn" title="Notificaciones" style="background: var(--bg-main); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+                <i class="fas fa-bell"></i>
+            </button>
+
+            <div class="user-profile-pill">
+                <div id="userAvatar" class="user-avatar-circle">CA</div>
+                <div class="user-details" style="display: flex; flex-direction: column;">
+                    <h4 id="nombreUsuario" style="margin:0; font-size:13px;">Cristian Albor</h4>
+                    <p id="rolUsuario" style="margin:0; font-size:10px; color:var(--text-muted); text-transform:uppercase;">Super-Admin</p>
+                </div>
+                <button id="logoutBtn" class="action-btn" title="Cerrar sesión" style="color:var(--text-muted); margin-left: 10px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Floating Bottom Navigation -->
+    <nav class="floating-bottom-nav">
+        <a href="#dashboard" class="nav-pill active" title="Dashboard">
+            <i class="fas fa-columns"></i>
+        </a>
+        <a href="#usuarios-gestion" class="nav-pill" title="Gestión de Personal">
+            <i class="fas fa-user-shield"></i>
+        </a>
+    </nav>
     <!-- Main Content -->
     <main class="main-content">
-        <div class="header">
-            <div>
-                <h1 id="mainHeaderTitle">Panel de Control Maestro</h1>
-                <p style="color:var(--text-muted); font-size: 14px; margin-top: 4px;">Gestión integral de la plataforma Eticol</p>
-            </div>
-            <div class="header-actions">
-                <button class="action-btn" id="themeToggle" title="Cambiar Tema">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <div class="mobile-menu-toggle" id="mobileMenuToggle">
-                    <i class="fas fa-bars"></i>
-                </div>
-            </div>
-        </div>
-
         <!-- Dashboard Section -->
         <section id="dashboard" class="content-section active">
             <!-- Stats Grid -->

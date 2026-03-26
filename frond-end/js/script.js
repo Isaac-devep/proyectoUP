@@ -167,12 +167,15 @@ document.addEventListener('DOMContentLoaded', function() {
         mainTitle.textContent = sectionTitles[id];
       }
 
-      // Sincronizar el menú lateral (hacerlo "active")
-      menuItems.forEach(item => {
+      // Sincronizar el menú (Sidebar y Bottom Nav)
+      const allNavItems = document.querySelectorAll('.menu-item, .nav-pill');
+      allNavItems.forEach(item => {
         const href = item.getAttribute('href');
         if (href === '#' + id) {
-          menuItems.forEach(i => i.classList.remove('active'));
+          allNavItems.forEach(i => i.classList.remove('active'));
           item.classList.add('active');
+          // Sincronizar ambos si existen (ej. si el link está en sidebar y bottom nav)
+          document.querySelectorAll(`[href="#${id}"]`).forEach(el => el.classList.add('active'));
         }
       });
     }
