@@ -1482,9 +1482,8 @@ th .un-picto-mini {
   .print-report-header h1 { font-size: 18px !important; }
   .print-report-header h2 { font-size: 15px !important; }
 
-  /* Escalar contenedor si es muy grande */
+  /* Ajustar contenedor para impresión */
   #storage-matrix-container {
-    zoom: 0.9;
     width: 100% !important;
   }
 
@@ -1497,11 +1496,15 @@ th .un-picto-mini {
     display: none !important;
   }
 
-  /* Mostrar solo el clon del legend inyectado por JS */
+  /* Mostrar solo el clon del legend inyectado por JS - Forzado a SEGUNDA HOJA */
   #print-legend-clone {
     display: block !important;
-    margin-top: 15px !important;
-    border-top: 2px solid #000 !important;
-    padding-top: 10px !important;
+    page-break-before: always !important;
+    break-inside: avoid !important; /* Evita que se rompa internamente */
+    margin-top: 50px !important;
+    border: 2px solid #000 !important;
+    padding: 20px !important;
+    background: #fff !important;
+    width: 100% !important;
   }
 }

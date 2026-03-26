@@ -396,7 +396,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (originalLegend) {
             printLegend = originalLegend.cloneNode(true);
             printLegend.style.display = 'block';
-            printLegend.id = 'print-legend-clone'; // Evitar colisión de IDs
+            printLegend.classList.add('page-break'); // Force second page
+            printLegend.id = 'print-legend-clone';
             container.appendChild(printLegend);
         }
 
