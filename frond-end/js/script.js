@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (mainContent) mainContent.scrollTop = 0;
 
       // 6. Carga automática de datos especiales
-      if (id === 'dashboard' && typeof window.cargarDashboard === 'function') {
+      if ((id === 'dashboard' || id === 'etiquetas-lista') && typeof window.cargarDashboard === 'function') {
         window.cargarDashboard();
       }
     }
@@ -197,7 +197,11 @@ document.addEventListener('DOMContentLoaded', function() {
   async function cargarDashboard() {
     try {
       console.log("🔄 [Dashboard] Cargando datos vivos...");
-      
+      // 0. Mostrar loader en la tabla de etiquetas si procede
+      if (typeof window.renderEtiquetasLoader === 'function') {
+         window.renderEtiquetasLoader();
+      }
+
       // 1. Cargar conteo de etiquetas y actividad reciente
       const respEtiquetas = await fetch(`${API_URL}/etiquetas`);
       const dataLabel = await respEtiquetas.json();

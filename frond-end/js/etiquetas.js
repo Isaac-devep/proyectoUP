@@ -25,6 +25,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
 
   // REMOVIDO: cargarDashboard ahora es centralizado en script.js
+  
+  window.renderEtiquetasLoader = function() {
+    const tableBody = document.getElementById("etiquetasTableBody");
+    if (!tableBody) return;
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align: center; padding: 60px;">
+          <div class="spinner-sm" style="width:40px; height:40px; border-width:4px; border-top-color:var(--primary); margin:0 auto 15px;"></div>
+          <p style="color:var(--text-muted); font-size:14px; font-weight:600;">Consultando base de datos...</p>
+        </td>
+      </tr>
+    `;
+  };
 
   window.renderEtiquetasTable = function(etiquetas) {
     const tableBody = document.getElementById("etiquetasTableBody");
