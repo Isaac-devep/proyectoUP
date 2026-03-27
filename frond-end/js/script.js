@@ -24,35 +24,28 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!usuario) return;
     
     const role = usuario.rol || "";
-    const isEmployee = role.toLowerCase() === 'empleado';
+    const isColaborador = role.toLowerCase() === 'colaborador' || role.toLowerCase() === 'empleado';
     
     console.log(`🛡️ [RBAC] Aplicando restricciones para rol: ${role}`);
 
-    // Si es empleado, ocultar elementos de gestión
-    if (isEmployee) {
+    // Si es colaborador, ocultar SOLO gestión de usuarios y restringir botones maestros
+    if (isColaborador) {
       // Sidebar Links
-      const navGenerar = document.getElementById('nav-generar-etiquetas');
       const navUsuarios = document.getElementById('nav-usuarios-gestion');
-      if (navGenerar) navGenerar.style.display = 'none';
-      if (navUsuarios) {
-         navUsuarios.style.display = 'none';
-         // También ocultar el título de la categoría si es posible
-         const parentCat = navUsuarios.closest('.menu-category');
-         if (parentCat) {
-            // Si solo queda ese link o queremos ocultar la categoría "CONSULTAS" (o parte de ella)
-            // Por ahora solo ocultamos el link específico.
-         }
-      }
+      const navGenerar = document.getElementById('nav-generar-etiquetas');
+      
+      // AHORA PERMITIMOS nav-generar-etiquetas para Colaboradores
+      if (navGenerar) navGenerar.style.display = 'block'; 
+      
+      if (navUsuarios) navUsuarios.style.display = 'none';
 
       // Dashboard Quick Access
-      const quickNueva = document.getElementById('quick-nueva-etiqueta');
       const quickGestion = document.getElementById('quick-gestionar-usuarios');
-      if (quickNueva) quickNueva.style.display = 'none';
       if (quickGestion) quickGestion.style.display = 'none';
 
-      // Bloquear acceso por hash si intenta navegar manualmente
+      // Bloquear acceso por hash solo a gestión de usuarios
       window.addEventListener('hashchange', () => {
-         const restrictedHashes = ['#generar-etiquetas', '#usuarios-gestion'];
+         const restrictedHashes = ['#usuarios-gestion'];
          if (restrictedHashes.includes(window.location.hash)) {
             window.location.hash = '#dashboard';
             showToast("Acceso restringido para su nivel de usuario.", "error");

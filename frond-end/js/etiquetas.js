@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!tableBody) return;
 
     const user = JSON.parse(localStorage.getItem('usuario'));
-    const isEmployee = user && user.rol && user.rol.toLowerCase() === 'empleado';
+    const isColaborador = user && user.rol && (user.rol.toLowerCase() === 'colaborador' || user.rol.toLowerCase() === 'empleado');
 
     if (etiquetas.length === 0) {
       tableBody.innerHTML = `
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (hasGenerator && window.showSection) {
            window.showSection('generar-etiquetas');
         } else {
-           // Si es empleado, el preview está al final de etiquetas-lista
+           // Si es colaborador, el preview está al final de etiquetas-lista
            const previewTop = document.getElementById('previewEtiqueta');
            if (previewTop) previewTop.scrollIntoView({ behavior: 'smooth' });
         }
@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div style="display:flex; gap:10px; align-items:center;">
                <label style="font-size: 11px; font-weight:700; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; gap:5px;">
                  <input type="checkbox" id="checkInternalUse" onchange="document.getElementById('printableLabel').classList.toggle('ghs-black-border', this.checked)">
-                 USO INTERNO (Art. 12)
+               Borde Negro (Art. 12 / Uso Interno)
                </label>
                 <div class="size-selector-pills" id="labelSizeGroup">
                   <button type="button" class="size-pill" data-size="ghs-size-mini" title="Articulo 13: Envases < 30ml">MINI</button>
@@ -400,20 +400,20 @@ document.addEventListener("DOMContentLoaded", function () {
               <div class="form-group">
                 <label>Nombre del producto *</label>
                 <input name="nombre_producto" value="${escapeHtml(getText(data.nombre_producto))}" class="form-control" 
-                       ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}
+                       ${isColaborador ? 'readonly disabled' : ''}
                        oninput="document.getElementById('lbl-nombre').textContent = this.value">
               </div>
               <div class="form-group">
                 <label>Identificación de Componentes (CAS / Otros)</label>
                 <input name="cas" value="${escapeHtml(getText(data.cas))}" class="form-control" 
-                       ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}
+                       ${isColaborador ? 'readonly disabled' : ''}
                        oninput="document.getElementById('lbl-meta').innerHTML = 'Identificación: <br> ' + this.value">
               </div>
             </div>
             <div class="form-group">
               <label>Palabra de Advertencia</label>
               <select name="palabra_advertencia" class="form-control" 
-                      ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'disabled' : ''}
+                      ${isColaborador ? 'disabled' : ''}
                       onchange="const s = document.getElementById('lbl-signal'); s.textContent = this.value; s.className = 'ghs-signal-word ' + (this.value === 'ATENCIÓN' ? 'atencion' : '')">
                 <option value="PELIGRO" ${data.palabra_advertencia === 'PELIGRO' ? 'selected' : ''}>PELIGRO</option>
                 <option value="ATENCIÓN" ${data.palabra_advertencia === 'ATENCIÓN' ? 'selected' : ''}>ATENCIÓN</option>
@@ -422,15 +422,15 @@ document.addEventListener("DOMContentLoaded", function () {
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
               <div class="form-group">
                 <label>Indicaciones de Peligro (H)</label>
-                <textarea name="indicaciones_peligro" rows="4" class="form-control" ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}>${getArr(data.indicaciones_peligro).join("\n")}</textarea>
+                <textarea name="indicaciones_peligro" rows="4" class="form-control" ${isColaborador ? 'readonly disabled' : ''}>${getArr(data.indicaciones_peligro).join("\n")}</textarea>
               </div>
               <div class="form-group">
-                <label>Consejos de Prudencia (P)</label>
-                <textarea name="consejos_prudencia" rows="4" class="form-control" ${user && user.rol && user.rol.toLowerCase() === 'empleado' ? 'readonly disabled' : ''}>${getArr(data.consejos_prudencia).join("\n")}</textarea>
+                <label>Consejos de Prudencia</label>
+                <textarea name="consejos_prudencia" rows="4" class="form-control" ${isColaborador ? 'readonly disabled' : ''}>${getArr(data.consejos_prudencia).join("\n")}</textarea>
               </div>
             </div>
             
-            ${user && user.rol && user.rol.toLowerCase() !== 'empleado' ? `
+            ${user && user.rol && !['colaborador', 'empleado'].includes(user.rol.toLowerCase()) ? `
               <div style="display:flex; gap:15px; margin-top:25px;">
                 <button type="button" class="btn btn-primary" id="btnGuardarEtiqueta">
                    <i class="fas fa-save"></i> Guardar en Base de Datos

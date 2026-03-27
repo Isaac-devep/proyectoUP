@@ -57,7 +57,26 @@ document.addEventListener('DOMContentLoaded', function() {
     let dbProductos = [];
     let selectedProductIds = new Set();
 
-    // ... (skipped selectors for brevity)
+    // Selectores UI
+    const productListContainer = document.getElementById('comp-product-list');
+    const searchInput = document.getElementById('compSearch');
+    const btnClear = document.getElementById('btnClearCompSelection');
+    const btnGenerate = document.getElementById('btnGenStorageMatrix');
+    const matrixContainer = document.getElementById('storage-matrix-container');
+    const selectedCountSpan = document.getElementById('comp-selected-count');
+    const tipsArea = document.getElementById('storage-tips-area');
+    const hazardNotes = document.getElementById('storage-hazard-notes');
+    
+    // Selectores de Ubicación
+    const locationSelect = document.getElementById('storage-location-select');
+    const btnManageLoc = document.getElementById('btnManageLocations');
+    const modalLoc = document.getElementById('modalLocations');
+    const formNewLoc = document.getElementById('formNewLocation');
+    const locationListDiv = document.getElementById('locationList');
+    const matrixTitle = document.getElementById('storage-matrix-title');
+    const locationLabel = document.getElementById('storage-location-label');
+
+    const API_URL = (window.CONFIG ? window.CONFIG.API_BASE_URL : "http://127.0.0.1:8000");
 
     // 3. Cargar y Clasificar Productos
     async function cargarInventario() {

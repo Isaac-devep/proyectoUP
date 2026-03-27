@@ -8,9 +8,9 @@ const seedUsers = async () => {
     console.log('Conectado a MongoDB para el sembrado...');
 
     const users = [
-      { id_usuario: '1014152276', usu: 'Gaby.', contra: 'saramajo', correo: 'gaby@gmail.com', nombre: 'Gabriela', apellido: 'Yela', id_rol: 'Empleado', estado: 'activo' },
+      { id_usuario: '1014152276', usu: 'Gaby.', contra: 'saramajo', correo: 'gaby@gmail.com', nombre: 'Gabriela', apellido: 'Yela', id_rol: 'Colaborador', estado: 'activo' },
       { id_usuario: '123123123', usu: 'admin', contra: 'admin', correo: 'admin@admin.com', nombre: 'cristian', apellido: 'albor', id_rol: 'Administrador', estado: 'activo' },
-      { id_usuario: '12317777', usu: 'emp', contra: 'emp', correo: 'empleado@gmail.com', nombre: 'hola', apellido: 'hola', id_rol: 'Empleado', estado: 'activo' },
+      { id_usuario: '12317777', usu: 'emp', contra: 'emp', correo: 'empleado@gmail.com', nombre: 'hola', apellido: 'hola', id_rol: 'Colaborador', estado: 'activo' },
       { id_usuario: '12345', usu: 'cralbor', contra: 'imthebest', correo: 'calborparra@gmail.com', nombre: 'Cristian', apellido: 'Albor', id_rol: 'Super administrador', estado: 'active' },
       { id_usuario: '23123213213', usu: 'ejemplo', contra: 'ejemplo', correo: 'ejemplo@gmail.com', nombre: 'ejemplo', apellido: 'hola', id_rol: 'Administrador', estado: 'activo' }
     ];

@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
   correo: { type: String, required: true, unique: true },
   nombre: { type: String, required: true },
   apellido: { type: String, required: true },
-  id_rol: { type: String, required: true, enum: ['Super administrador', 'Administrador', 'Empleado'] },
+  id_rol: { type: String, required: true, enum: ['Super administrador', 'Administrador', 'Colaborador'] },
   estado: { type: String, default: 'activo' }
 }, { timestamps: true });
 

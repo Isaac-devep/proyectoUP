@@ -34,13 +34,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         case "Administrador":
                             window.location.href = "/html/admin/admin.html";
                             break;
+                        case "Colaborador":
                         case "Empleado":
-                            // Redirigir a la pantalla específica de empleado
+                            // Redirigir a la pantalla específica de colaborador
                             window.location.href = "/html/empleados/empleado.html";
                             break;
                         default:
-                            showToast("Rol no reconocido", "error");
-                            break;
+                            // Admin / Superadmin
+                            window.location.href = "/html/admin/admin.html";
                     }
                 } else {
                     showToast(data.error || "Usuario o contraseña incorrectos", "error");
