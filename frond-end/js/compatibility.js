@@ -104,47 +104,54 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             dbProductos = (data.etiquetas || []).map(p => {
-                let rawStrings = (p.pictogramas || []).map(pic => pic.toString().toLowerCase().trim());
+                const rawStrings = (p.pictogramas || []).map(pic => pic.toString().toLowerCase().trim());
                 
-                // Limpiar: "ghs01-explosivo" -> "ghs01"
-                let rawPictos = rawStrings.map(s => {
-                    const match = s.match(/ghs\d+/);
-                    return match ? match[0] : s;
-                });
+                // Mapeo Maestro: Normalizar cualquier nombre o código a 'ghsXX'
+                const normalizePicto = (s) => {
+                    if (s.match(/^ghs\d+$/)) return s;
+                    const map = {
+                        'explosivo': 'ghs01', 'llama': 'ghs02', 'inflamable': 'ghs02',
+                        'oxidante': 'ghs03', 'comburente': 'ghs03', 'gas': 'ghs04',
+                        'cilindro': 'ghs04', 'corrosivo': 'ghs05', 'toxico': 'ghs06',
+                        'calavera': 'ghs06', 'irritante': 'ghs07', 'exclamacion': 'ghs07',
+                        'salud': 'ghs08', 'ambiente': 'ghs09', 'daño-ambiente': 'ghs09'
+                    };
+                    for (let key in map) { if (s.includes(key)) return map[key]; }
+                    const ghsMatch = s.match(/ghs\d+/);
+                    return ghsMatch ? ghsMatch[0] : s;
+                };
 
+                let rawPictos = rawStrings.map(normalizePicto);
                 const lowerName = (p.id_producto || "").toLowerCase();
 
-                // 0. Correcciones Regulatorias Específicas (Hipoclorito de Sodio)
-                if (lowerName.includes('hipoclorito')) {
-                    rawPictos = ['ghs05', 'ghs09']; // Corrosivo + Daño Ambiente (Según FDS)
-                }
+                // 0. Correcciones Regulatorias Específicas
+                if (lowerName.includes('hipoclorito')) rawPictos = ['ghs05', 'ghs09'];
                 
                 // 1. Reglas de Precedencia SGA (Exclusiones)
                 let pictos = [...new Set(rawPictos)];
-                const hasCorrosivo = pictos.includes('ghs05');
-                const hasToxico = pictos.includes('ghs06');
-                const hasSalud = pictos.includes('ghs08');
-                if (hasCorrosivo || hasToxico || hasSalud) {
+                if (pictos.includes('ghs05') || pictos.includes('ghs06') || pictos.includes('ghs08')) {
                     pictos = pictos.filter(p => p !== 'ghs07');
                 }
 
                 // 2. Ordenar por prioridad
                 pictos.sort((a, b) => (priorityMap[a] || 99) - (priorityMap[b] || 99));
 
-                // Determinar clase principal para matriz lógica
+                // 3. Determinar clase principal para matriz lógica
                 let clase = '9';
                 if (lowerName.includes('hipoclorito')) {
-                    clase = '8B'; // Clasificación estándar de almacenamiento
+                    clase = '8B';
                 } else if (pictos.includes('ghs02')) {
                     clase = '3';
                 } else if (pictos.includes('ghs03')) {
                     clase = '5.1';
                 } else if (pictos.includes('ghs05')) {
                    clase = lowerName.includes('acido') ? '8A' : '8B';
+                } else if (pictos.includes('ghs04')) {
+                    clase = '2.2';
+                } else if (lowerName.includes('propano') || lowerName.includes('butano')) {
+                    clase = '2.1';
                 }
-                else if (pictos.includes('ghs04')) clase = '2.2';
-                else if (lowerName.includes('propano')) clase = '2.1';
-
+                
                 return { ...p, compClass: clase, matrixPictos: pictos.length > 0 ? pictos : [clase] };
             });
             renderProductChecklist();
