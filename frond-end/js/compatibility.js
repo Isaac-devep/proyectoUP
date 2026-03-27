@@ -121,22 +121,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     return ghsMatch ? ghsMatch[0] : s;
                 };
 
+                // MASTER REGULATORY ENGINE (SDS Truth)
+                const REGULATORY_SDS = {
+                    'etanol': ['ghs02'],
+                    'alcohol': ['ghs02'],
+                    'formaldehído': ['ghs06', 'ghs08'],
+                    'formol': ['ghs06', 'ghs08'],
+                    'cemento': ['ghs07'],
+                    'jabón': ['ghs07'],
+                    'cera': ['ghs07'],
+                    'detergente': ['ghs07'],
+                    'limpia vidrios': ['ghs07'],
+                    'disinfectant': ['ghs07'],
+                    'limpiador': ['ghs07'],
+                    'ambientador': ['ghs02', 'ghs07'],
+                    'hipoclorito': ['ghs05', 'ghs09'],
+                    'cloro': ['ghs05', 'ghs09'],
+                    'soda cáustica': ['ghs05'],
+                    'diablo rojo': ['ghs05'],
+                    'potasa': ['ghs05']
+                };
+
                 let rawPictos = rawStrings.map(normalizePicto);
                 const lowerName = (p.id_producto || "").toLowerCase();
 
-                // 0. Correcciones Regulatorias Específicas (SGA/GHS Audit Fixes)
-                if (lowerName.includes('etanol') || lowerName.includes('alcohol')) {
-                    rawPictos = ['ghs02']; // Exclusivo: Inflamable
-                } else if (lowerName.includes('formaldehído')) {
-                    rawPictos = ['ghs06', 'ghs08']; // Exclusivo: Tóxico + Salud
-                } else if (lowerName.includes('cemento')) {
-                    rawPictos = ['ghs07']; // Exclusivo: Irritante
-                } else if (lowerName.includes('ambientador') || lowerName.includes('fragancia') || lowerName.includes('aromatizante')) {
-                    rawPictos = ['ghs02', 'ghs07']; // Inflamable + Irritante
-                } else if (lowerName.includes('limpia vidrios') || lowerName.includes('jabón') || lowerName.includes('cera') || lowerName.includes('detergente') || lowerName.includes('disinfectant')) {
-                    rawPictos = ['ghs07']; // Exclusivo: Irritante
-                } else if (lowerName.includes('hipoclorito')) {
-                    rawPictos = ['ghs05', 'ghs09']; // Corrosivo + Ambiental
+                // Aplicar Overrides de la Fuente de Verdad
+                for (let key in REGULATORY_SDS) {
+                    if (lowerName.includes(key)) {
+                        rawPictos = [...REGULATORY_SDS[key]];
+                        break; // Prioridad al primer match regulatorio
+                    }
                 }
                 
                 // 1. Reglas de Precedencia SGA (Exclusiones)
@@ -148,22 +162,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 2. Ordenar por prioridad
                 pictos.sort((a, b) => (priorityMap[a] || 99) - (priorityMap[b] || 99));
 
-                // 3. Determinar clase principal para matriz lógica
-                let clase = '9';
+                // 3. Determinar clase principal para matriz lógica (Familia SGA)
+                let clase = '9'; // Clase por defecto (Misceláneos/Irritantes)
+                
                 if (lowerName.includes('hipoclorito')) {
-                    clase = '8B';
+                    clase = '8B'; // Cloro es básico
                 } else if (pictos.includes('ghs02')) {
-                    clase = '3';
+                    clase = '3'; // Inflamables
                 } else if (pictos.includes('ghs03')) {
-                    clase = '5.1';
+                    clase = '5.1'; // Oxidantes
                 } else if (pictos.includes('ghs05')) {
-                   clase = lowerName.includes('acido') ? '8A' : '8B';
+                   clase = lowerName.includes('acido') ? '8A' : '8B'; // Ácidos vs Bases
                 } else if (pictos.includes('ghs06')) {
-                   clase = '6.1';
+                   clase = '6.1'; // Tóxicos
                 } else if (pictos.includes('ghs04')) {
-                    clase = '2.2';
+                    clase = '2.2'; // Gases no inflamables
                 } else if (lowerName.includes('propano') || lowerName.includes('butano')) {
-                    clase = '2.1';
+                    clase = '2.1'; // Gases inflamables
                 }
                 
                 return { ...p, compClass: clase, matrixPictos: pictos.length > 0 ? pictos : [clase] };
