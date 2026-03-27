@@ -124,14 +124,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 let rawPictos = rawStrings.map(normalizePicto);
                 const lowerName = (p.id_producto || "").toLowerCase();
 
-                // 0. Correcciones Regulatorias Específicas
-                if (lowerName.includes('hipoclorito')) rawPictos = ['ghs05', 'ghs09'];
-                if (lowerName.includes('formaldehído')) rawPictos = ['ghs06', 'ghs08'];
-                if (lowerName.includes('etanol') || lowerName.includes('alcohol')) rawPictos = ['ghs02'];
-                if (lowerName.includes('cemento') || lowerName.includes('cemento hidráulico')) rawPictos = ['ghs07'];
-                if (lowerName.includes('jabón') || lowerName.includes('cera') || lowerName.includes('detergente') || lowerName.includes('neutral disinfectant')) rawPictos = ['ghs07'];
-                if (lowerName.includes('limpia vidrios')) rawPictos = ['ghs07'];
-                if (lowerName.includes('ambientador')) rawPictos = ['ghs02', 'ghs07'];
+                // 0. Correcciones Regulatorias Específicas (SGA/GHS Audit Fixes)
+                if (lowerName.includes('etanol') || lowerName.includes('alcohol')) {
+                    rawPictos = ['ghs02']; // Exclusivo: Inflamable
+                } else if (lowerName.includes('formaldehído')) {
+                    rawPictos = ['ghs06', 'ghs08']; // Exclusivo: Tóxico + Salud
+                } else if (lowerName.includes('cemento')) {
+                    rawPictos = ['ghs07']; // Exclusivo: Irritante
+                } else if (lowerName.includes('ambientador') || lowerName.includes('fragancia') || lowerName.includes('aromatizante')) {
+                    rawPictos = ['ghs02', 'ghs07']; // Inflamable + Irritante
+                } else if (lowerName.includes('limpia vidrios') || lowerName.includes('jabón') || lowerName.includes('cera') || lowerName.includes('detergente') || lowerName.includes('disinfectant')) {
+                    rawPictos = ['ghs07']; // Exclusivo: Irritante
+                } else if (lowerName.includes('hipoclorito')) {
+                    rawPictos = ['ghs05', 'ghs09']; // Corrosivo + Ambiental
+                }
                 
                 // 1. Reglas de Precedencia SGA (Exclusiones)
                 let pictos = [...new Set(rawPictos)];
