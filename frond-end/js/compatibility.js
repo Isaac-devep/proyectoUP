@@ -64,26 +64,38 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const res = await fetch(`${API_URL}/etiquetas`);
             const data = await res.json();
+            
+            const priorityMap = {
+                'ghs01': 1, 'ghs03': 2, 'ghs02': 3, 'ghs04': 4,
+                'ghs05': 5, 'ghs06': 6, 'ghs08': 7, 'ghs07': 8, 'ghs09': 9
+            };
+
             dbProductos = (data.etiquetas || []).map(p => {
-                // PRIORIDAD 1: Usar pictogramas reales de la base de datos
-                const ghsPictos = (p.pictogramas || []);
+                let rawPictos = (p.pictogramas || []).map(pic => pic.toString().toLowerCase().trim());
                 
-                // PRIORIDAD 2: Inferir clase de compatibilidad para la matriz lógica
+                // 1. Reglas de Precedencia SGA (Exclusiones)
+                let pictos = [...new Set(rawPictos)];
+                const hasCorrosivo = pictos.includes('ghs05');
+                const hasToxico = pictos.includes('ghs06');
+                const hasSalud = pictos.includes('ghs08');
+                if (hasCorrosivo || hasToxico || hasSalud) {
+                    pictos = pictos.filter(p => p !== 'ghs07');
+                }
+
+                // 2. Ordenar por prioridad
+                pictos.sort((a, b) => (priorityMap[a] || 99) - (priorityMap[b] || 99));
+
+                // Determinar clase principal para matriz lógica
                 let clase = '9';
-                if (ghsPictos.includes('ghs02')) clase = '3';
-                else if (ghsPictos.includes('ghs03')) clase = '5.1';
-                else if (ghsPictos.includes('ghs05')) {
-                   // Diferenciar entre ácido y base si es posible, por defecto 8B (Base/Soda)
+                if (pictos.includes('ghs02')) clase = '3';
+                else if (pictos.includes('ghs03')) clase = '5.1';
+                else if (pictos.includes('ghs05')) {
                    clase = (p.id_producto || "").toLowerCase().includes('acido') ? '8A' : '8B';
                 }
-                else if (ghsPictos.includes('ghs04')) clase = '2.2';
+                else if (pictos.includes('ghs04')) clase = '2.2';
                 else if ((p.id_producto || "").toLowerCase().includes('propano')) clase = '2.1';
 
-                return { 
-                    ...p, 
-                    compClass: clase, 
-                    matrixPictos: ghsPictos.length > 0 ? ghsPictos : [clase] 
-                };
+                return { ...p, compClass: clase, matrixPictos: pictos.length > 0 ? pictos : [clase] };
             });
             renderProductChecklist();
         } catch (err) {

@@ -280,20 +280,42 @@ document.addEventListener("DOMContentLoaded", function () {
       const preview = document.getElementById("previewEtiqueta");
       if (!preview) return;
       
-      let pictos = getArr(data.pictogramas);
+      let rawPictos = getArr(data.pictogramas).map(p => p.toString().toLowerCase().trim().replace(/\s+/g, '-'));
+      
+      // LÓGICA DE PRIORIDAD SGA (GHS)
+      const priorityMap = {
+        'ghs01': 1, 'explosivo': 1,
+        'ghs03': 2, 'oxidante': 2, 'comburente': 2,
+        'ghs02': 3, 'inflamable': 3, 'llama': 3,
+        'ghs04': 4, 'gas-presurizado': 4, 'gas': 4, 'cilindro': 4,
+        'ghs05': 5, 'corrosivo': 5,
+        'ghs06': 6, 'toxico': 6, 'calavera': 6,
+        'ghs08': 7, 'peligro-salud': 7, 'salud': 7,
+        'ghs07': 8, 'irritante': 8, 'exclamacion': 8,
+        'ghs09': 9, 'ambiente': 9, 'daño-ambiente': 9
+      };
+
+      // 1. Filtrar redundancias (Reglas de Precedencia SGA)
+      let pictos = [...new Set(rawPictos)]; // Eliminar duplicados literales
+      const hasCorrosivo = pictos.some(p => p === 'ghs05' || p === 'corrosivo');
+      const hasToxico = pictos.some(p => p === 'ghs06' || p === 'toxico');
+      const hasSalud = pictos.some(p => p === 'ghs08' || p === 'salud');
+
+      if (hasCorrosivo || hasToxico || hasSalud) {
+          // Si hay corrosión o toxicidad o peligro salud (respiratoria), el signo de exclamación no debe aparecer para esos peligros
+          pictos = pictos.filter(p => p !== 'ghs07' && p !== 'irritante' && p !== 'exclamacion');
+      }
+
+      // 2. Ordenar por prioridad
+      pictos.sort((a, b) => (priorityMap[a] || 99) - (priorityMap[b] || 99));
+
       let pictosHtml = pictos.length > 0 
         ? pictos.map((pic) => {
-            let s = pic.toString().toLowerCase().trim().replace(/\s+/g, '-');
+            let s = pic;
             const pictoSwap = {
-               'ghs01': 'explosivo', 'explosivo': 'explosivo',
-               'ghs02': 'inflamable', 'llama': 'inflamable', 'inflamable': 'inflamable',
-               'ghs03': 'oxidante', 'oxidante': 'oxidante', 'comburente': 'oxidante',
-               'ghs04': 'gas-presurizado', 'gas': 'gas-presurizado', 'cilindro': 'gas-presurizado',
-               'ghs05': 'corrosivo', 'corrosivo': 'corrosivo',
-               'ghs06': 'toxico', 'toxico': 'toxico', 'calavera': 'toxico',
-               'ghs07': 'irritante', 'irritante': 'irritante', 'exclamacion': 'irritante',
-               'ghs08': 'peligro-salud', 'salud': 'peligro-salud',
-               'ghs09': 'daño-ambiente', 'ambiente': 'daño-ambiente'
+               'ghs01': 'explosivo', 'ghs02': 'inflamable', 'ghs03': 'oxidante',
+               'ghs04': 'gas-presurizado', 'ghs05': 'corrosivo', 'ghs06': 'toxico',
+               'ghs07': 'irritante', 'ghs08': 'peligro-salud', 'ghs09': 'daño-ambiente'
             };
             if (pictoSwap[s]) s = pictoSwap[s];
             return `<div class="ghs-picto-box"><img src="../../images/${s}.png" alt="${s}" onerror="this.src='../../images/default-pictogram.png';"></div>`;
