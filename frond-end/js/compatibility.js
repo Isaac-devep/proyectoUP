@@ -5,19 +5,21 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: '2.2', name: 'Gases No Inflamables', icon: 'ghs04' },
         { id: '3',   name: 'Líquidos Inflamables', icon: 'ghs02' },
         { id: '5.1', name: 'Sustancias Oxidantes', icon: 'ghs03' },
+        { id: '6.1', name: 'Tóxicos', icon: 'ghs06' },
         { id: '8B',  name: 'Corrosivos Básicos (Álcalis)', icon: 'ghs05' },
         { id: '8A',  name: 'Corrosivos Ácidos', icon: 'ghs05' },
         { id: '9',   name: 'Bajo Riesgo / No Clasificadas', icon: 'ghs09' }
     ];
 
     const matrix = {
-        '2.1': { '2.1':'G', '2.2':'Y', '3':'R',   '5.1':'R', '8B':'Y', '8A':'Y', '9':'G' },
-        '2.2': { '2.1':'Y', '2.2':'G', '3':'Y',   '5.1':'Y', '8B':'Y', '8A':'Y', '9':'G' },
-        '3':   { '2.1':'R', '2.2':'Y', '3':'G',   '5.1':'R', '8B':'Y', '8A':'Y', '9':'G' },
-        '5.1': { '2.1':'R', '2.2':'Y', '3':'R',   '5.1':'G', '8B':'Y', '8A':'Y', '9':'R' },
-        '8B':  { '2.1':'Y', '2.2':'Y', '3':'Y',   '5.1':'Y', '8B':'G', '8A':'R', '9':'G' },
-        '8A':  { '2.1':'Y', '2.2':'Y', '3':'Y',   '5.1':'Y', '8B':'R', '8A':'G', '9':'G' },
-        '9':   { '2.1':'G', '2.2':'G', '3':'G',   '5.1':'R', '8B':'G', '8A':'G', '9':'G' }
+        '2.1': { '2.1':'G', '2.2':'Y', '3':'R',   '5.1':'R', '6.1':'Y', '8B':'Y', '8A':'Y', '9':'G' },
+        '2.2': { '2.1':'Y', '2.2':'G', '3':'Y',   '5.1':'Y', '6.1':'G', '8B':'Y', '8A':'Y', '9':'G' },
+        '3':   { '2.1':'R', '2.2':'Y', '3':'G',   '5.1':'R', '6.1':'Y', '8B':'Y', '8A':'Y', '9':'G' },
+        '5.1': { '2.1':'R', '2.2':'Y', '3':'R',   '5.1':'G', '6.1':'Y', '8B':'Y', '8A':'Y', '9':'R' },
+        '6.1': { '2.1':'Y', '2.2':'G', '3':'Y',   '5.1':'Y', '6.1':'G', '8B':'Y', '8A':'Y', '9':'G' },
+        '8B':  { '2.1':'Y', '2.2':'Y', '3':'Y',   '5.1':'Y', '6.1':'Y', '8B':'G', '8A':'R', '9':'G' },
+        '8A':  { '2.1':'Y', '2.2':'Y', '3':'Y',   '5.1':'Y', '6.1':'Y', '8B':'R', '8A':'G', '9':'G' },
+        '9':   { '2.1':'G', '2.2':'G', '3':'G',   '5.1':'R', '6.1':'G', '8B':'G', '8A':'G', '9':'G' }
     };
 
     const unPictos = {
@@ -126,23 +128,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 let rawPictos = rawStrings.map(normalizePicto);
                 const name = (p.id_producto || "").toLowerCase();
 
-                // 0. Correcciones Regulatorias Específicas (Hard Overrides - Caso Insensible y Sin Acentos)
-                const clearName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // "formaldehído" -> "formaldehido"
+                // 0. Correcciones Regulatorias Específicas (Hard Overrides)
+                const clearName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
 
-                if (clearName.includes('etanol') || clearName.includes('alcohol')) {
-                    rawPictos = ['ghs02'];
+                if (clearName.includes('etanol') || clearName.includes('alcohol') || clearName.includes('thinner') || clearName.includes('gasolina') || clearName.includes('esmalte') || clearName.includes('anticorrosivo') || clearName.includes('pintura epoxica')) {
+                    rawPictos = ['ghs02']; // Asegura que todos los solventes sean Inflamables (Llama)
                 } else if (clearName.includes('formaldehido')) {
-                    rawPictos = ['ghs06', 'ghs08'];
-                } else if (clearName.includes('cemento') || clearName.includes('cemento hidraulico')) {
-                    rawPictos = ['ghs07'];
+                    rawPictos = ['ghs06', 'ghs08']; // Calavera y Peligro Salud
+                } else if (clearName.includes('cemento') || clearName.includes('soldadura')) {
+                    rawPictos = ['ghs07']; // Exclamación (Irritante)
                 } else if (clearName.includes('hipoclorito') || clearName.includes('cloro')) {
-                    rawPictos = ['ghs05', 'ghs09'];
+                    rawPictos = ['ghs05', 'ghs09']; // Corrosivo y Daño Ambiente
                 } else if (clearName.match(/soda|diablo rojo|potasa|caustica/)) {
-                    rawPictos = ['ghs05'];
-                } else if (clearName.match(/jabon|cera|detergente|limpador|disinfectant|limpia vidrios/)) {
-                    rawPictos = ['ghs07'];
+                    rawPictos = ['ghs05']; // Corrosivo
+                } else if (clearName.match(/jabon|cera|detergente|limpiador|disinfectant|limpia vidrios|desengrasante|evap clean/)) {
+                    rawPictos = ['ghs07']; // Limpieza y desengrasantes (Exclamación, no corrosivos)
                 } else if (clearName.match(/ambientador|fragancia/)) {
-                    rawPictos = ['ghs02', 'ghs07'];
+                    rawPictos = ['ghs02', 'ghs07']; // Inflamable + Irritante
+                } else if (clearName.match(/refrigerante|r-22|410a/)) {
+                    rawPictos = ['ghs04']; // Cilindro de gas
+                } else if (clearName.match(/propano|butano|gas licuado|glp/)) {
+                    rawPictos = ['ghs02']; // Llama (el bloque de abajo le asignará la clase 2.1)
                 }
                 
                 // 1. Reglas de Precedencia SGA (Exclusiones)
@@ -157,20 +163,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 3. Determinar clase principal para matriz lógica (Familia SGA)
                 let clase = '9'; // Clase por defecto (Misceláneos/Irritantes)
                 
-                if (name.includes('hipoclorito')) {
-                    clase = '8B'; // Cloro es básico
+                if (pictos.includes('ghs06') || clearName.includes('formaldehido')) {
+                    clase = '6.1'; // Tóxicos
+                } else if (clearName.includes('hipoclorito') || clearName.match(/soda|diablo rojo|potasa/)) {
+                    clase = '8B'; // Corrosivos Básicos (Álcalis fuertes)
+                } else if (pictos.includes('ghs05')) {
+                   clase = clearName.includes('acido') ? '8A' : '8B'; 
+                } else if (clearName.match(/propano|butano|gas licuado|glp/)) {
+                    clase = '2.1'; // Gases inflamables
+                } else if (pictos.includes('ghs04')) {
+                    clase = '2.2'; // Gases a presión no inflamables
                 } else if (pictos.includes('ghs02')) {
-                    clase = '3'; // Inflamables
+                    clase = '3'; // Líquidos Inflamables
                 } else if (pictos.includes('ghs03')) {
                     clase = '5.1'; // Oxidantes
-                } else if (pictos.includes('ghs05')) {
-                   clase = name.includes('acido') ? '8A' : '8B'; // Ácidos vs Bases
-                } else if (pictos.includes('ghs06')) {
-                   clase = '6.1'; // Tóxicos
-                } else if (pictos.includes('ghs04')) {
-                    clase = '2.2'; // Gases no inflamables
-                } else if (name.includes('propano') || name.includes('butano')) {
-                    clase = '2.1'; // Gases inflamables
                 }
                 
                 return { ...p, compClass: clase, matrixPictos: pictos.length > 0 ? pictos : [clase] };
