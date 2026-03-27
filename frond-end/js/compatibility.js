@@ -121,36 +121,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     return ghsMatch ? ghsMatch[0] : s;
                 };
 
-                // MASTER REGULATORY ENGINE (SDS Truth)
-                const REGULATORY_SDS = {
-                    'etanol': ['ghs02'],
-                    'alcohol': ['ghs02'],
-                    'formaldehído': ['ghs06', 'ghs08'],
-                    'formol': ['ghs06', 'ghs08'],
-                    'cemento': ['ghs07'],
-                    'jabón': ['ghs07'],
-                    'cera': ['ghs07'],
-                    'detergente': ['ghs07'],
-                    'limpia vidrios': ['ghs07'],
-                    'disinfectant': ['ghs07'],
-                    'limpiador': ['ghs07'],
-                    'ambientador': ['ghs02', 'ghs07'],
-                    'hipoclorito': ['ghs05', 'ghs09'],
-                    'cloro': ['ghs05', 'ghs09'],
-                    'soda cáustica': ['ghs05'],
-                    'diablo rojo': ['ghs05'],
-                    'potasa': ['ghs05']
-                };
-
                 let rawPictos = rawStrings.map(normalizePicto);
-                const lowerName = (p.id_producto || "").toLowerCase();
+                const name = (p.id_producto || "").toLowerCase();
 
-                // Aplicar Overrides de la Fuente de Verdad
-                for (let key in REGULATORY_SDS) {
-                    if (lowerName.includes(key)) {
-                        rawPictos = [...REGULATORY_SDS[key]];
-                        break; // Prioridad al primer match regulatorio
-                    }
+                // 0. Correcciones Regulatorias Específicas (Hard Overrides - Sin Acentos para Robustez)
+                if (name.includes('etanol') || name.includes('alcohol')) {
+                    rawPictos = ['ghs02'];
+                } else if (name.match(/formaldeh[ií]do/)) {
+                    rawPictos = ['ghs06', 'ghs08'];
+                } else if (name.includes('cemento')) {
+                    rawPictos = ['ghs07'];
+                } else if (name.match(/hipoclorito|cloro/)) {
+                    rawPictos = ['ghs05', 'ghs09'];
+                } else if (name.match(/soda|diablo rojo|potasa/)) {
+                    rawPictos = ['ghs05'];
+                } else if (name.match(/jabon|cera|detergente|limpador|disinfectant|limpia vidrios/)) {
+                    rawPictos = ['ghs07'];
+                } else if (name.match(/ambientador|fragancia/)) {
+                    rawPictos = ['ghs02', 'ghs07'];
                 }
                 
                 // 1. Reglas de Precedencia SGA (Exclusiones)
