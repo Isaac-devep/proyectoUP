@@ -715,26 +715,22 @@ tr:hover td {
 .ghs-picto-box {
   width: var(--ghs-picto-size);
   height: var(--ghs-picto-size);
-  border: 2px solid #cc0000;
-  padding: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: rotate(45deg);
-  overflow: hidden;
-  background: #fff;
+  overflow: visible;
+  background: transparent;
 }
 
 .ghs-picto-box img {
-  width: 120%;
-  height: 120%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  transform: rotate(-45deg);
 }
 
-/* Art. 12 - Borde Negro para Uso Interno */
-.ghs-black-border .ghs-picto-box {
-  border-color: #000 !important;
+/* Art. 12 - Borde Negro para Uso Interno (Filter hack if needed, or keeping it subtle) */
+.ghs-black-border .ghs-picto-box img {
+  filter: grayscale(1) contrast(1.5); /* Hacemos el rombo negro si es para uso interno */
 }
 
 .ghs-section h4 {
