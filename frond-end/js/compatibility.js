@@ -30,10 +30,15 @@ document.addEventListener('DOMContentLoaded', function() {
         '9':   { color: '#94a3b8', icon: 'daño-ambiente', label: '9' }     // Misceláneos
     };
 
-    function getUnPictoHtml(claseOrArray) {
+    function getUnPictoHtml(claseOrArray, limit = null, size = 24) {
         if (!claseOrArray) return '';
-        const classes = Array.isArray(claseOrArray) ? claseOrArray : [claseOrArray];
+        let classes = Array.isArray(claseOrArray) ? [...claseOrArray] : [claseOrArray];
         
+        // Limitar si es necesario (para cabeceras de matriz)
+        if (limit && classes.length > limit) {
+            classes = classes.slice(0, limit);
+        }
+
         return classes.map(clase => {
             // Mapeo dinámico de GHS a UN si es necesario
             let targetClase = clase;
@@ -46,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const p = unPictos[targetClase] || unPictos['9'];
             return `
-                <div class="un-diamond" style="background:${p.color}; width:24px; height:24px; transform: rotate(45deg); display:flex; align-items:center; justify-content:center; margin: 0 4px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 1px 3px rgba(0,0,0,0.2); overflow:hidden;">
+                <div class="un-diamond" style="background:${p.color}; width:${size}px; height:${size}px; transform: rotate(45deg); display:flex; align-items:center; justify-content:center; margin: 0 2px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 1px 2px rgba(0,0,0,0.2); overflow:hidden;">
                     <img src="../../images/${p.icon}.png" style="width:130%; height:130%; transform: rotate(-45deg); object-fit: contain;" onerror="this.src='../../assets/pictogramas/${clase}.png';">
                 </div>
             `;
@@ -100,6 +105,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             dbProductos = (data.etiquetas || []).map(p => {
                 let rawPictos = (p.pictogramas || []).map(pic => pic.toString().toLowerCase().trim());
+                const lowerName = (p.id_producto || "").toLowerCase();
+
+                // 0. Correcciones Regulatorias Específicas (Hipoclorito de Sodio)
+                if (lowerName.includes('hipoclorito')) {
+                    rawPictos = ['ghs05', 'ghs09']; // Corrosivo + Daño Ambiente (Según FDS)
+                }
                 
                 // 1. Reglas de Precedencia SGA (Exclusiones)
                 let pictos = [...new Set(rawPictos)];
@@ -115,13 +126,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Determinar clase principal para matriz lógica
                 let clase = '9';
-                if (pictos.includes('ghs02')) clase = '3';
-                else if (pictos.includes('ghs03')) clase = '5.1';
-                else if (pictos.includes('ghs05')) {
-                   clase = (p.id_producto || "").toLowerCase().includes('acido') ? '8A' : '8B';
+                if (lowerName.includes('hipoclorito')) {
+                    clase = '8B'; // Clasificación estándar de almacenamiento
+                } else if (pictos.includes('ghs02')) {
+                    clase = '3';
+                } else if (pictos.includes('ghs03')) {
+                    clase = '5.1';
+                } else if (pictos.includes('ghs05')) {
+                   clase = lowerName.includes('acido') ? '8A' : '8B';
                 }
                 else if (pictos.includes('ghs04')) clase = '2.2';
-                else if ((p.id_producto || "").toLowerCase().includes('propano')) clase = '2.1';
+                else if (lowerName.includes('propano')) clase = '2.1';
 
                 return { ...p, compClass: clase, matrixPictos: pictos.length > 0 ? pictos : [clase] };
             });
@@ -211,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selected.forEach(p => {
             html += `<th style="text-align:center; padding:10px 5px;">
                         <div style="display:flex; justify-content:center; gap:2px;">
-                            ${getUnPictoHtml(p.matrixPictos)}
+                            ${getUnPictoHtml(p.matrixPictos, 1, 20)}
                         </div>
                      </th>`;
         });
@@ -229,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div style="display:flex; align-items:center; gap:10px; width:100%;">
                         <span style="font-weight:600; flex:1; white-space: normal;">${rowP.id_producto}</span>
                         <div style="display:flex; justify-content:center; align-items:center; gap:4px;">
-                            ${getUnPictoHtml(rowP.matrixPictos)}
+                            ${getUnPictoHtml(rowP.matrixPictos, 1, 20)}
                         </div>
                     </div>
                 </td>`;
