@@ -269,11 +269,63 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                const rule = matrix[rowP.compClass]?.[colP.compClass] || 'G';
+                // 1. Regla GHS Base
+                let rule = matrix[rowP.compClass]?.[colP.compClass] || 'G';
+                let interactionNote = null;
+
+                // 2. Motor de Reactividad Específica (Overrides)
+                const n1 = (rowP.id_producto || "").toLowerCase();
+                const n2 = (colP.id_producto || "").toLowerCase();
+                
+                // Hipoclorito vs Ácidos/Limpiadores
+                const isCloro = n1.includes('hipoclorito') || n2.includes('hipoclorito');
+                const isAcido = n1.includes('evap clean') || n1.includes('desengrasante industrial no. 1') || 
+                                n2.includes('evap clean') || n2.includes('desengrasante industrial no. 1');
+                if (isCloro && isAcido) {
+                    rule = 'R';
+                    interactionNote = "¡PELIGRO LETAL! Hipoclorito + Ácido libera GAS CLORO.";
+                }
+
+                // Hipoclorito vs Amoníaco
+                const isAmonia = n1.includes('limpia vidrios') || n1.includes('ambientador') || 
+                                 n2.includes('limpia vidrios') || n2.includes('ambientador');
+                if (isCloro && isAmonia) {
+                    rule = 'R';
+                    interactionNote = "¡RIESGO QUÍMICO! Mezcla genera VAPORES DE CLORAMINAS TÓXICOS.";
+                }
+
+                // Hipoclorito vs Alcohol
+                const isAlcohol = n1.includes('etanol') || n1.includes('alcohol') || 
+                                  n2.includes('etanol') || n2.includes('alcohol');
+                if (isCloro && isAlcohol) {
+                    rule = 'R';
+                    interactionNote = "¡PELIGRO! Hipoclorito + Etanol reaccionan formando CLOROFORMO.";
+                }
+
+                // Soda Cáustica vs Agua/Jabón
+                const isBases = n1.includes('soda cáustica') || n1.includes('diablo rojo') || 
+                                n2.includes('soda cáustica') || n2.includes('diablo rojo');
+                const isBaseAgua = n1.includes('jabón líquido') || n1.includes('cera') || 
+                                   n2.includes('jabón líquido') || n2.includes('cera');
+                if (isBases && isBaseAgua) {
+                    rule = 'Y';
+                    interactionNote = "¡REACCIÓN EXOTÉRMICA! Soda Cáustica + Agua genera calor extremo/salpicaduras.";
+                }
+
+                // Inflamables vs Gases
+                const isInflamable = rowP.compClass === '3' || colP.compClass === '3';
+                const isGasInflam = rowP.compClass === '2.1' || colP.compClass === '2.1';
+                if (isInflamable && isGasInflam) {
+                    rule = 'Y';
+                    interactionNote = "SEGURIDAD CIUDADANA: Líquidos Inflamables a mín. 6m de Gases o con Muro Cortafuego.";
+                }
+
                 if (rule === 'R') globalStatus = 'R';
                 else if (rule === 'Y' && globalStatus !== 'R') globalStatus = 'Y';
 
-                // Guardar nota de peligro si existe
+                // Guardar nota de peligro
+                if (interactionNote) hazardsFound.add(interactionNote);
+                
                 const key = `${rowP.compClass}-${colP.compClass}`;
                 const revKey = `${colP.compClass}-${rowP.compClass}`;
                 if (detailRules[key]) hazardsFound.add(detailRules[key]);
@@ -282,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const cellClass = rule === 'G' ? 'cell-green' : (rule === 'Y' ? 'cell-yellow' : 'cell-red');
                 const icon = rule === 'G' ? 'fa-check' : (rule === 'Y' ? 'fa-exclamation' : 'fa-times');
                 
-                html += `<td class="cell-result ${cellClass}" title="${rowP.id_producto} vs ${colP.id_producto}" style="text-align:center;">
+                html += `<td class="cell-result ${cellClass}" title="${interactionNote || rowP.id_producto + ' vs ' + colP.id_producto}" style="text-align:center;">
                     <i class="fas ${icon}"></i>
                 </td>`;
             });
