@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </button>
           `}
 
-          ${!isEmployee ? `
+          ${!isColaborador ? `
             <button class="action-btn" style="color:#ef4444;" title="Eliminar" onclick="window.eliminarEtiqueta('${eti._id}')">
               <i class="fas fa-trash-alt"></i>
             </button>

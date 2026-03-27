@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. Estado Global
     let dbProductos = [];
     let selectedProductIds = new Set();
+    let storageLocations = JSON.parse(localStorage.getItem('saga_locations')) || [];
 
     // Selectores UI
     const productListContainer = document.getElementById('comp-product-list');
