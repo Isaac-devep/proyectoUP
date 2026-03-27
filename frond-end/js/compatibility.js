@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const unPictos = {
         '1':   { color: '#ef4444', icon: 'explosivo', label: '1' },        // Explosivo
         '2.1': { color: '#ef4444', icon: 'inflamable', label: '2.1' },     // Gas Inflamable
-        '2.2': { color: '#22c55e', icon: 'gas-presurizado', label: '2.2' }, // Gas comprimido
+        '2.2': { color: '#22c55e', icon: 'gas-presurizado', label: '2.2' }, // Gas comprimido   
         '3':   { color: '#ef4444', icon: 'inflamable', label: '3' },       // Líquido Inflamable
         '5.1': { color: '#eab308', icon: 'oxidante', label: '5.1' },      // Oxidante
         '6.1': { color: '#f8fafc', icon: 'toxico', label: '6.1' },        // Tóxico (Blanco)
