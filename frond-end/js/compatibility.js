@@ -153,19 +153,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 3. Determinar clase principal para matriz lógica (Familia SGA)
                 let clase = '9'; // Clase por defecto (Misceláneos/Irritantes)
                 
-                if (lowerName.includes('hipoclorito')) {
+                if (name.includes('hipoclorito')) {
                     clase = '8B'; // Cloro es básico
                 } else if (pictos.includes('ghs02')) {
                     clase = '3'; // Inflamables
                 } else if (pictos.includes('ghs03')) {
                     clase = '5.1'; // Oxidantes
                 } else if (pictos.includes('ghs05')) {
-                   clase = lowerName.includes('acido') ? '8A' : '8B'; // Ácidos vs Bases
+                   clase = name.includes('acido') ? '8A' : '8B'; // Ácidos vs Bases
                 } else if (pictos.includes('ghs06')) {
                    clase = '6.1'; // Tóxicos
                 } else if (pictos.includes('ghs04')) {
                     clase = '2.2'; // Gases no inflamables
-                } else if (lowerName.includes('propano') || lowerName.includes('butano')) {
+                } else if (name.includes('propano') || name.includes('butano')) {
                     clase = '2.1'; // Gases inflamables
                 }
                 
