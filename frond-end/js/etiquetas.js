@@ -503,31 +503,31 @@ document.addEventListener("DOMContentLoaded", function () {
             body { font-family: 'Inter', sans-serif; background: #fff; display: flex; justify-content: center; padding: 20px; }
             
             /* RELLENO DE ESTILOS PARA IMPRESIÓN SOLA */
-            .ghs-label { --ghs-picto-size: 50px; --ghs-col-right-width: 240px; --ghs-signal-font: 24px; --ghs-title-font: 20px; border: 4px solid #cc0000; color:#000; padding:10px; display:flex; flex-direction:column; gap:6px; background:#fff; overflow:hidden; }
-            .ghs-header { border-bottom: 2px solid #000; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; }
+            .ghs-label { --ghs-picto-size: 50px; --ghs-col-right-width: 240px; --ghs-signal-font: 24px; --ghs-title-font: 20px; border: 4px solid #cc0000; color:#000; padding:10px; display:flex; flex-direction:column; gap:4px; background:#fff; overflow:visible; }
+            .ghs-header { border-bottom: 2px solid #000; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: flex-start; }
             .ghs-header h2 { font-size: var(--ghs-title-font); font-weight: 900; line-height: 1.1; margin: 0; text-transform: uppercase; flex: 1; }
             .ghs-components { text-align: right; font-size: 10px; font-weight: 600; }
-            .ghs-body { display: grid; grid-template-columns: 1fr var(--ghs-col-right-width); gap: 20px; }
-            .ghs-col-left { display: flex; flex-direction: column; gap: 10px; }
+            .ghs-body { display: grid; grid-template-columns: 1fr var(--ghs-col-right-width); gap: 15px; }
+            .ghs-col-left { display: flex; flex-direction: column; gap: 8px; }
             .ghs-col-right { display: flex; flex-direction: column; align-items: center; gap: 8px; border-left: 1px solid #eee; padding-left: 12px; }
             .ghs-signal-word { font-weight: 900; font-size: var(--ghs-signal-font); text-transform: uppercase; color: #cc0000; margin-top: 5px; }
             .ghs-signal-word.atencion { color: #f97316; }
             .ghs-pictos { display: grid; grid-template-columns: repeat(2, calc(var(--ghs-picto-size) * 1.42)); gap: 6px; }
-            .ghs-picto-box { width: var(--ghs-picto-size); height: var(--ghs-picto-size); border: 2px solid #cc0000; transform: rotate(45deg); display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; }
-            .ghs-picto-box img { width: 120%; height: 120%; transform: rotate(-45deg); object-fit: contain; }
-            .ghs-section h4 { color: #cc0000; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
-            .ghs-section ul { padding-left: 15px; font-size: 10px; list-style-type: disc; }
+            .ghs-picto-box { width: var(--ghs-picto-size); height: var(--ghs-picto-size); display: flex; align-items: center; justify-content: center; background: transparent; overflow: visible; }
+            .ghs-picto-box img { width: 100%; height: 100%; object-fit: contain; }
+            .ghs-section h4 { color: #cc0000; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
+            .ghs-section ul { padding-left: 15px; font-size: 10px; list-style-type: disc; line-height: 1.15; margin: 0; }
             .ghs-footer { margin-top: 10px; border-top: 2px solid #000; padding-top: 8px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; font-size: 9px; }
             
             /* TAMAÑOS CLP DYNAMICS AGGRESSIVE */
-            .ghs-size-s  { width: 74mm;  height: 52mm;  --ghs-picto-size: 32px; --ghs-col-right-width: 130px; --ghs-signal-font: 14px; --ghs-title-font: 16px; }
-            .ghs-size-m  { width: 105mm; height: 74mm;  --ghs-picto-size: 45px; --ghs-col-right-width: 180px; --ghs-signal-font: 18px; --ghs-title-font: 18px; }
-            .ghs-size-l  { width: 148mm; height: 105mm; --ghs-picto-size: 65px; --ghs-col-right-width: 260px; --ghs-signal-font: 26px; --ghs-title-font: 24px; }
-            .ghs-size-xl { width: 210mm; height: 148mm; --ghs-picto-size: 85px; --ghs-col-right-width: 360px; --ghs-signal-font: 34px; --ghs-title-font: 32px; }
-            .ghs-size-mini { width: 52mm; height: 35mm; --ghs-picto-size: 28px; --ghs-signal-font: 12px; --ghs-title-font: 13px; }
+            .ghs-size-s  { width: 74mm;  min-height: 52mm;  --ghs-picto-size: 32px; --ghs-col-right-width: 130px; --ghs-signal-font: 14px; --ghs-title-font: 16px; }
+            .ghs-size-m  { width: 105mm; min-height: 74mm;  --ghs-picto-size: 45px; --ghs-col-right-width: 180px; --ghs-signal-font: 18px; --ghs-title-font: 18px; }
+            .ghs-size-l  { width: 148mm; min-height: 105mm; --ghs-picto-size: 65px; --ghs-col-right-width: 260px; --ghs-signal-font: 26px; --ghs-title-font: 24px; }
+            .ghs-size-xl { width: 210mm; min-height: 148mm; --ghs-picto-size: 85px; --ghs-col-right-width: 360px; --ghs-signal-font: 34px; --ghs-title-font: 32px; }
+            .ghs-size-mini { width: 52mm; min-height: 35mm; --ghs-picto-size: 28px; --ghs-signal-font: 12px; --ghs-title-font: 13px; }
             
             /* MODOS REGULATORIOS */
-            .ghs-black-border .ghs-picto-box { border-color: #000 !important; }
+            .ghs-black-border .ghs-picto-box img { filter: grayscale(1) contrast(1.5); }
             .ghs-mini-layout .ghs-body { display: block !important; }
             .ghs-mini-layout .ghs-col-left { display: none !important; }
             .ghs-mini-layout .ghs-col-right { border: none !important; padding: 0 !important; width: 100% !important; }
