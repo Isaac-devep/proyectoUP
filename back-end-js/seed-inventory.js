@@ -52,13 +52,25 @@ async function seed() {
     for (const item of inventory) {
       const labelId = item.nombre.replace(/\s+/g, '-').toLowerCase() + "-" + Date.now();
       
+      // Frases por defecto según el tipo de producto
+      let defaultH = ["H225: Líquido y vapores muy inflamables"];
+      let defaultP = ["P102: Mantener fuera del alcance de los niños.", "P210: Mantener alejado del calor y chispas."];
+
+      if (item.clase === "2.1") {
+        defaultH = ["H220: Gas extremadamente inflamable", "H280: Contiene gas a presión"];
+      } else if (item.clase === "8") {
+        defaultH = ["H314: Provoca quemaduras graves en la piel y lesiones oculares"];
+      } else if (item.clase === "9") {
+        defaultH = ["H315: Provoca irritación cutánea"];
+      }
+
       await Label.create({
         id_etiqueta: labelId,
         p_advertencia: item.adv,
         inf_cas: "Inventario-SGA",
         id_producto: item.nombre,
-        frases_h: ["Ver ficha técnica para detalles de peligros."],
-        frases_p: ["Mantener fuera del alcance de los niños."],
+        frases_h: defaultH,
+        frases_p: defaultP,
         pictogramas: item.pictos,
         emergencia: "123 (Bomberos) / CISPROQUIM"
       });
