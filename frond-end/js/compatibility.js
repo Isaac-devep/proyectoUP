@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
         selected.forEach(p => {
             html += `<th style="text-align:center; padding:10px 5px;">
                         <div style="display:flex; justify-content:center; gap:2px;">
-                            ${getUnPictoHtml(p.matrixPictos, null, 20)}
+                            ${getUnPictoHtml(p.matrixPictos, 1, 20)}
                         </div>
                      </th>`;
         });
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div style="display:flex; align-items:center; gap:10px; width:100%;">
                         <span style="font-weight:600; flex:1; white-space: normal;">${rowP.id_producto}</span>
                         <div style="display:flex; justify-content:center; align-items:center; gap:4px;">
-                            ${getUnPictoHtml(rowP.matrixPictos, null, 20)}
+                            ${getUnPictoHtml(rowP.matrixPictos, 1, 20)}
                         </div>
                     </div>
                 </td>`;
