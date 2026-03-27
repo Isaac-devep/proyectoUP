@@ -9,7 +9,8 @@ const LabelSchema = new mongoose.Schema({
   frases_h: [String],
   frases_p: [String],
   pictogramas: [String],
-  emergencia: { type: String, default: "En caso de emergencia llame al 123" }
+  emergencia: { type: String, default: "En caso de emergencia llame al 123" },
+  fds_file: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Label', LabelSchema);

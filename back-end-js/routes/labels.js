@@ -1,34 +1,51 @@
 const express = require('express');
 const router = express.Router();
 const Label = require('../models/Label');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Configuración de almacenamiento para PDFs de FDS
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '../assets');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    // Mantener el nombre original para que coincida con el archivo de seguridad FDS
+    cb(null, file.originalname);
+  }
+});
+const upload = multer({ storage });
 
 // Create Label (Etiqueta complete)
-router.post('/', async (req, res) => {
+router.post('/', upload.single('fds_pdf'), async (req, res) => {
   try {
-    const { 
-      id_etiqueta, 
-      p_advertencia, 
-      inf_cas, 
-      fecha, 
-      id_producto,
-      frases_h, // These should be ObjectIds if they are already in DB
-      frases_p,
-      pictogramas
-    } = req.body;
+    const data = req.file ? req.body : req.body;
+    
+    // Si viene de FormData, los arrays llegan como strings
+    const parseField = (f) => {
+      if (typeof f === 'string') {
+        try { return JSON.parse(f); } catch(e) { return f.split(',').map(s => s.trim()); }
+      }
+      return f || [];
+    };
 
     const newLabel = new Label({
-      id_etiqueta,
-      p_advertencia,
-      inf_cas,
-      fecha,
-      id_producto,
-      frases_h,
-      frases_p,
-      pictogramas
+      id_etiqueta: req.body.id_etiqueta,
+      p_advertencia: req.body.p_advertencia,
+      inf_cas: req.body.inf_cas,
+      fecha: req.body.fecha || Date.now(),
+      id_producto: req.body.id_producto,
+      frases_h: parseField(req.body.frases_h),
+      frases_p: parseField(req.body.frases_p),
+      pictogramas: parseField(req.body.pictogramas),
+      fds_file: req.file ? req.file.originalname : req.body.fds_file
     });
 
     await newLabel.save();
-    res.json({ mensaje: "Etiqueta registrada correctamente" });
+    res.json({ mensaje: "Etiqueta registrada correctamente", fds_file: newLabel.fds_file });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

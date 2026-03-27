@@ -59,27 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     tableBody.innerHTML = etiquetas.map(eti => {
       const nombre = eti.id_producto || "";
-      let pdfFile = "";
-      const n = nombre.toLowerCase();
-      // ... (lógica de mapeo de PDF omitida por brevedad en el diff si es posible, pero debo incluirla para no borrarla)
-      if (n.includes("propano")) pdfFile = "aoc-hds-proveedores-propano.pdf";
-      else if (n.includes("glp")) pdfFile = "FDS-GAS-LICUADO-DE-PETROLEO.pdf";
-      else if (n.includes("butano")) pdfFile = "FICHAS-DE-DATOS-DE-SEGURIDAD-BUTANO.pdf";
-      else if (n.includes("freon-22") || n.includes("r-22")) pdfFile = "CH_HS_Refrigerante-FREON-22-R-22.pdf";
-      else if (n.includes("410a")) pdfFile = "GAS REFRIGERNATE 410A.pdf";
-      else if (n.includes("thinner")) pdfFile = "THINNER 70-spain-Spanish-1_4_pdf-BDS001377BU.pdf";
-      else if (n.includes("soldadura")) pdfFile = "2507_FDS_Soldadura.pdf";
-      else if (n.includes("clean pipe")) pdfFile = "FDS_03_-_SOLDAMAX_PAVCO_LOW_VOC (3).pdf";
-      else if (n.includes("desengrasante industrial no. 1")) pdfFile = "FDS-10227588-DESENGRASANTE-IND.-No.-1-CRC-IND_Nal-SGA-2024.pdf";
-      else if (n.includes("pintura epoxica")) pdfFile = "fds-epoxica-base-solvente.pdf";
-      else if (n.includes("gasolina")) pdfFile = "Gasolina Regular.pdf";
-      else if (n.includes("esmante") || n.includes("esmalte")) pdfFile = "HDS_Esmalte_Sintetico_rev.2022_2_d8cfe131-91b3-4262-9f2a-5ab15b7328bd.pdf";
-      else if (n.includes("anticorrosivo")) pdfFile = "Hoja_De_Seguridad_Anticorrosivo.pdf";
-      else if (n.includes("hipoclorito")) pdfFile = "ficha-datos-seguridad-hipoclorito-sodio.pdf";
-      else if (n.includes("diablo rojo")) pdfFile = "7._DIABLO_ROJO-9334222.pdf";
-      else if (n.includes("soda caustica")) pdfFile = "a1-lo-01-hoja-de-seguridad-soda-ca-ustica.pdf";
-      else if (n.includes("evap clean")) pdfFile = "SDS_ES_10136.pdf";
-      else if (n.includes("neutral disinfectant")) pdfFile = "MX-1X-901158-03-20 NEUTRAL DISINFECTANT CLEANER (LA).pdf";
+      const fds_file = eti.fds_file;
 
       return `
       <tr>
@@ -91,12 +71,12 @@ document.addEventListener("DOMContentLoaded", function () {
             <i class="fas fa-edit"></i>
           </button>
           
-          ${pdfFile ? `
-            <a href="${API_URL}/assets/${pdfFile}" target="_blank" class="action-btn" title="Descargar PDF Original" style="color:var(--primary);">
+          ${fds_file ? `
+            <a href="${API_URL}/assets/${fds_file}" target="_blank" class="action-btn" title="Ver FDS Original" style="color:var(--primary);">
               <i class="fas fa-file-pdf"></i>
             </a>
           ` : `
-            <button class="action-btn" disabled style="opacity:0.3;" title="Sin PDF">
+            <button class="action-btn" disabled style="opacity:0.3;" title="Sin FDS asociado">
               <i class="fas fa-file-pdf"></i>
             </button>
           `}
@@ -474,21 +454,25 @@ document.addEventListener("DOMContentLoaded", function () {
         const datos = Object.fromEntries(fb.entries());
         
         try {
-          const body = {
-            id_etiqueta: datos.cas || datos.nombre_producto + "-" + Date.now(),
-            p_advertencia: datos.palabra_advertencia,
-            inf_cas: datos.cas || "",
-            id_producto: datos.nombre_producto,
-            frases_h: (datos.indicaciones_peligro || "").split("\n").filter(x => x.trim()),
-            frases_p: (datos.consejos_prudencia || "").split("\n").filter(x => x.trim()),
-            pictogramas: pictos,
-            emergencia: "123 (Bomberos)"
-          };
+          // Usar FormData para enviar el PDF si existe
+          const bodyPayload = new FormData();
+          bodyPayload.append("id_etiqueta", datos.cas || datos.nombre_producto + "-" + Date.now());
+          bodyPayload.append("p_advertencia", datos.palabra_advertencia);
+          bodyPayload.append("inf_cas", datos.cas || "");
+          bodyPayload.append("id_producto", datos.nombre_producto);
+          bodyPayload.append("frases_h", JSON.stringify((datos.indicaciones_peligro || "").split("\n").filter(x => x.trim())));
+          bodyPayload.append("frases_p", JSON.stringify((datos.consejos_prudencia || "").split("\n").filter(x => x.trim())));
+          bodyPayload.append("pictogramas", JSON.stringify(pictos));
+          bodyPayload.append("emergencia", "123 (Bomberos)");
+
+          // Adjuntar el archivo original si existe
+          if (lastFile) {
+            bodyPayload.append("fds_pdf", lastFile);
+          }
 
           const res = await fetch(`${API_URL}/etiquetas`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
+            body: bodyPayload, // Sin Content-Type header para que el navegador ponga el boundary
           });
 
           if (!res.ok) {
@@ -497,6 +481,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
 
           showToast("✅ Etiqueta guardada con éxito en la base de datos.", "success");
+          lastFile = null; // Limpiar archivo tras guardado
           cargarDashboard(); // Refresh stats
         } catch (error) {
           console.error("Error guardando:", error);
