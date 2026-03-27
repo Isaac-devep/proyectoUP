@@ -53,6 +53,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }).join('');
     }
 
+    const detailRules = {
+        '2.1-3': 'Segregar por gabinete o barrera. Riesgo de explosión por calor.',
+        '5.1-3': 'PELIGRO: Separación mínima de 3m. Ignición espontánea.',
+        '8A-8B': 'PELIGRO: Reacción violenta Ácido-Base. Segregar estrictamente.',
+        '5.1-2.1': 'Peligro extremo. Los oxidantes alimentan el fuego de gases.',
+        '9-5.1': 'Oxidantes alejados de cualquier combustible/bajo riesgo.'
+    };
+
     // 2. Estado Global
     let dbProductos = [];
     let selectedProductIds = new Set();
