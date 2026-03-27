@@ -126,6 +126,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // 0. Correcciones Regulatorias Específicas
                 if (lowerName.includes('hipoclorito')) rawPictos = ['ghs05', 'ghs09'];
+                if (lowerName.includes('formaldehído')) rawPictos = ['ghs06', 'ghs08'];
+                if (lowerName.includes('etanol') || lowerName.includes('alcohol')) rawPictos = ['ghs02'];
+                if (lowerName.includes('cemento') || lowerName.includes('cemento hidráulico')) rawPictos = ['ghs07'];
+                if (lowerName.includes('jabón') || lowerName.includes('cera') || lowerName.includes('detergente') || lowerName.includes('neutral disinfectant')) rawPictos = ['ghs07'];
+                if (lowerName.includes('limpia vidrios')) rawPictos = ['ghs07'];
+                if (lowerName.includes('ambientador')) rawPictos = ['ghs02', 'ghs07'];
                 
                 // 1. Reglas de Precedencia SGA (Exclusiones)
                 let pictos = [...new Set(rawPictos)];
@@ -146,6 +152,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     clase = '5.1';
                 } else if (pictos.includes('ghs05')) {
                    clase = lowerName.includes('acido') ? '8A' : '8B';
+                } else if (pictos.includes('ghs06')) {
+                   clase = '6.1';
                 } else if (pictos.includes('ghs04')) {
                     clase = '2.2';
                 } else if (lowerName.includes('propano') || lowerName.includes('butano')) {
