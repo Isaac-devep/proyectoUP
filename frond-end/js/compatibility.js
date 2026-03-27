@@ -21,13 +21,15 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     const unPictos = {
-        '2.1': { color: '#ef4444', icon: 'inflamable', label: '2.1' },     // Inflamable
-        '2.2': { color: '#22c55e', icon: 'gas-presurizado', label: '2.2' }, // Gas
+        '1':   { color: '#ef4444', icon: 'explosivo', label: '1' },        // Explosivo
+        '2.1': { color: '#ef4444', icon: 'inflamable', label: '2.1' },     // Gas Inflamable
+        '2.2': { color: '#22c55e', icon: 'gas-presurizado', label: '2.2' }, // Gas comprimido
         '3':   { color: '#ef4444', icon: 'inflamable', label: '3' },       // Líquido Inflamable
         '5.1': { color: '#eab308', icon: 'oxidante', label: '5.1' },      // Oxidante
-        '8A':  { color: '#334155', icon: 'corrosivo', label: '8' },        // Corrosivo
-        '8B':  { color: '#334155', icon: 'corrosivo', label: '8' },        // Corrosivo
-        '9':   { color: '#94a3b8', icon: 'daño-ambiente', label: '9' }     // Misceláneos
+        '6.1': { color: '#f8fafc', icon: 'toxico', label: '6.1' },        // Tóxico (Blanco)
+        '8A':  { color: '#334155', icon: 'corrosivo', label: '8' },        // Corrosivo Ácido
+        '8B':  { color: '#334155', icon: 'corrosivo', label: '8' },        // Corrosivo Básico
+        '9':   { color: '#94a3b8', icon: 'irritante', label: '9' }        // Irritantes/Varios
     };
 
     function getUnPictoHtml(claseOrArray, limit = null, size = 24) {
@@ -124,20 +126,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 let rawPictos = rawStrings.map(normalizePicto);
                 const name = (p.id_producto || "").toLowerCase();
 
-                // 0. Correcciones Regulatorias Específicas (Hard Overrides - Sin Acentos para Robustez)
-                if (name.includes('etanol') || name.includes('alcohol')) {
+                // 0. Correcciones Regulatorias Específicas (Hard Overrides - Caso Insensible y Sin Acentos)
+                const clearName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // "formaldehído" -> "formaldehido"
+
+                if (clearName.includes('etanol') || clearName.includes('alcohol')) {
                     rawPictos = ['ghs02'];
-                } else if (name.match(/formaldeh[ií]do/)) {
+                } else if (clearName.includes('formaldehido')) {
                     rawPictos = ['ghs06', 'ghs08'];
-                } else if (name.includes('cemento')) {
+                } else if (clearName.includes('cemento') || clearName.includes('cemento hidraulico')) {
                     rawPictos = ['ghs07'];
-                } else if (name.match(/hipoclorito|cloro/)) {
+                } else if (clearName.includes('hipoclorito') || clearName.includes('cloro')) {
                     rawPictos = ['ghs05', 'ghs09'];
-                } else if (name.match(/soda|diablo rojo|potasa/)) {
+                } else if (clearName.match(/soda|diablo rojo|potasa|caustica/)) {
                     rawPictos = ['ghs05'];
-                } else if (name.match(/jabon|cera|detergente|limpador|disinfectant|limpia vidrios/)) {
+                } else if (clearName.match(/jabon|cera|detergente|limpador|disinfectant|limpia vidrios/)) {
                     rawPictos = ['ghs07'];
-                } else if (name.match(/ambientador|fragancia/)) {
+                } else if (clearName.match(/ambientador|fragancia/)) {
                     rawPictos = ['ghs02', 'ghs07'];
                 }
                 
