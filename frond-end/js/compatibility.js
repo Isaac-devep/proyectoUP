@@ -104,7 +104,14 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             dbProductos = (data.etiquetas || []).map(p => {
-                let rawPictos = (p.pictogramas || []).map(pic => pic.toString().toLowerCase().trim());
+                let rawStrings = (p.pictogramas || []).map(pic => pic.toString().toLowerCase().trim());
+                
+                // Limpiar: "ghs01-explosivo" -> "ghs01"
+                let rawPictos = rawStrings.map(s => {
+                    const match = s.match(/ghs\d+/);
+                    return match ? match[0] : s;
+                });
+
                 const lowerName = (p.id_producto || "").toLowerCase();
 
                 // 0. Correcciones Regulatorias Específicas (Hipoclorito de Sodio)
