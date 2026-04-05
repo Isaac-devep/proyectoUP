@@ -270,45 +270,43 @@ document.addEventListener("DOMContentLoaded", function () {
       const preview = document.getElementById("previewEtiqueta");
       if (!preview) return;
       
-      let rawPictos = getArr(data.pictogramas).map(p => p.toString().toLowerCase().trim().replace(/\s+/g, '-'));
-      
-      // LÓGICA DE PRIORIDAD SGA (GHS)
-      const priorityMap = {
-        'ghs01': 1, 'explosivo': 1,
-        'ghs03': 2, 'oxidante': 2, 'comburente': 2,
-        'ghs02': 3, 'inflamable': 3, 'llama': 3,
-        'ghs04': 4, 'gas-presurizado': 4, 'gas': 4, 'cilindro': 4,
-        'ghs05': 5, 'corrosivo': 5,
-        'ghs06': 6, 'toxico': 6, 'calavera': 6,
-        'ghs08': 7, 'peligro-salud': 7, 'salud': 7,
-        'ghs07': 8, 'irritante': 8, 'exclamacion': 8,
-        'ghs09': 9, 'ambiente': 9, 'daño-ambiente': 9
+      // 1. Normalizar a códigos ghsXX y eliminar duplicados
+      const pictoMapping = {
+        'explosivo': 'ghs01', 'ghs01': 'ghs01',
+        'inflamable': 'ghs02', 'llama': 'ghs02', 'ghs02': 'ghs02',
+        'oxidante': 'ghs03', 'comburente': 'ghs03', 'ghs03': 'ghs03',
+        'gas-presurizado': 'ghs04', 'cilindro': 'ghs04', 'ghs04': 'ghs04',
+        'corrosivo': 'ghs05', 'corrosion': 'ghs05', 'ghs05': 'ghs05',
+        'toxico': 'ghs06', 'veneno': 'ghs06', 'calavera': 'ghs06', 'ghs06': 'ghs06',
+        'irritante': 'ghs07', 'exclamacion': 'ghs07', 'ghs07': 'ghs07',
+        'peligro-salud': 'ghs08', 'salud': 'ghs08', 'ghs08': 'ghs08',
+        'daño-ambiente': 'ghs09', 'ambiente': 'ghs09', 'ghs09': 'ghs09'
       };
 
-      // 1. Filtrar redundancias (Reglas de Precedencia SGA)
-      let pictos = [...new Set(rawPictos)]; // Eliminar duplicados literales
-      const hasCorrosivo = pictos.some(p => p === 'ghs05' || p === 'corrosivo');
-      const hasToxico = pictos.some(p => p === 'ghs06' || p === 'toxico');
-      const hasSalud = pictos.some(p => p === 'ghs08' || p === 'salud');
+      let rawPictos = getArr(data.pictogramas).map(p => {
+         const clean = p.toString().toLowerCase().trim().replace(/\s+/g, '-');
+         return pictoMapping[clean] || clean;
+      });
+      
+      let pictos = [...new Set(rawPictos)].filter(p => p.startsWith('ghs'));
 
-      if (hasCorrosivo || hasToxico || hasSalud) {
-          // Si hay corrosión o toxicidad o peligro salud (respiratoria), el signo de exclamación no debe aparecer para esos peligros
-          pictos = pictos.filter(p => p !== 'ghs07' && p !== 'irritante' && p !== 'exclamacion');
-      }
-
-      // 2. Ordenar por prioridad
+      // 2. Ordenar por prioridad (Estándar SGA)
+      const priorityMap = {
+        'ghs01': 1, 'ghs03': 2, 'ghs02': 3, 'ghs04': 4, 
+        'ghs05': 5, 'ghs06': 6, 'ghs08': 7, 'ghs07': 8, 'ghs09': 9
+      };
       pictos.sort((a, b) => (priorityMap[a] || 99) - (priorityMap[b] || 99));
 
+      const pictoImageMap = {
+        'ghs01': 'explosivo', 'ghs02': 'inflamable', 'ghs03': 'oxidante',
+        'ghs04': 'gas-presurizado', 'ghs05': 'corrosivo', 'ghs06': 'toxico',
+        'ghs07': 'irritante', 'ghs08': 'peligro-salud', 'ghs09': 'daño-ambiente'
+      };
+
       let pictosHtml = pictos.length > 0 
-        ? pictos.map((pic) => {
-            let s = pic;
-            const pictoSwap = {
-               'ghs01': 'explosivo', 'ghs02': 'inflamable', 'ghs03': 'oxidante',
-               'ghs04': 'gas-presurizado', 'ghs05': 'corrosivo', 'ghs06': 'toxico',
-               'ghs07': 'irritante', 'ghs08': 'peligro-salud', 'ghs09': 'daño-ambiente'
-            };
-            if (pictoSwap[s]) s = pictoSwap[s];
-            return `<div class="ghs-picto-box"><img src="../../images/${s}.png" alt="${s}" onerror="this.src='../../images/default-pictogram.png';"></div>`;
+        ? pictos.map((code) => {
+            const imgName = pictoImageMap[code];
+            return `<div class="ghs-picto-box"><img src="../../images/${imgName}.png" alt="${code}" onerror="this.src='../../images/default-pictogram.png';"></div>`;
           }).join("")
         : '<div style="color:#666;">No hay pictogramas</div>';
 

@@ -57,43 +57,44 @@ const GHS_PHRASES = {
 };
 
 // ─── Pictogramas GHS válidos que el sistema puede renderizar ───────────────
-const VALID_PICTOGRAMS = [
-    'explosivo', 'inflamable', 'oxidante', 'gas-presurizado',
-    'corrosivo', 'toxico', 'peligro-salud', 'irritante', 'daño-ambiente'
-];
+const VALID_PICTOS = {
+    'ghs01': 'explosivo', 'ghs02': 'inflamable', 'ghs03': 'oxidante',
+    'ghs04': 'gas-presurizado', 'ghs05': 'corrosivo', 'ghs06': 'toxico',
+    'ghs07': 'irritante', 'ghs08': 'peligro-salud', 'ghs09': 'daño-ambiente'
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  ANÁLISIS IA  →  GPT-4o-mini con prompt especializado en SGA/GHS
 // ═══════════════════════════════════════════════════════════════════════════
 async function analizarFDSconIA(texto) {
-    const PROMPT_SISTEMA = `Eres un experto en Fichas de Datos de Seguridad (FDS/SDS) y en el Sistema Globalmente Armonizado (SGA/GHS).
-Tu tarea es analizar el texto extraído de un documento FDS/SDS y devolver ÚNICAMENTE un objeto JSON válido con la siguiente estructura exacta, sin texto adicional, sin markdown, solo el JSON puro:
+    const PROMPT_SISTEMA = `Eres un experto en Fichas de Datos de Seguridad (FDS/SDS) y en el Sistema Globalmente Armonizado (SGA/GHS). 
+Tu tarea es analizar el texto extraído de un documento FDS y devolver ÚNICAMENTE un objeto JSON.
 
+REGLAS DE IDENTIFICACIÓN:
+1. **PICTOGRAMAS**: Devuelve una lista de códigos (ej: ["ghs05", "ghs07"]). 
+   - Usa solo estos códigos: ghs01 (Bomba), ghs02 (Llama), ghs03 (Llama sobre círculo), ghs04 (Cilindro), ghs05 (Corrosión), ghs06 (Calavera), ghs07 (Exclamación), ghs08 (Peligro Salud), ghs09 (Medio Ambiente).
+   - **IMPORTANTE**: No infieras peligros que no estén explícitos. Si un producto es "Diablo Rojo" pero el texto no menciona frases H22x, NO es inflamable.
+   - **H402 / H401**: Estas frases de peligro ambiental NO llevan pictograma ghs09. Solo ghs09 si hay H400, H410 o H411.
+   - **REGLA DE PRECEDENCIA**: 
+     - Si hay ghs06 (Calavera), no pongas ghs07 (Exclamación).
+     - Si hay ghs05 (Corrosión) para piel/ojos, no pongas ghs07 para irritación.
+2. **DATOS**:
+   - nombre_producto: El nombre comercial exacto (ej: "DIABLO ROJO").
+   - cas: El número CAS o "No detectado".
+   - palabra_advertencia: Solo "PELIGRO" o "ATENCIÓN".
+   - indicaciones_peligro: Lista de frases H encontradas (ej: ["H314: Provoca quemaduras..."]).
+   - consejos_prudencia: Lista de frases P encontradas (ej: ["P260: No respirar..."]).
+
+JSON FINAL (Sin texto extra, solo el objeto):
 {
-  "nombre_producto": "string — nombre comercial del producto químico",
-  "cas": "string — número CAS en formato XX-XX-X o 'No detectado'",
-  "palabra_advertencia": "PELIGRO" o "ATENCIÓN" (solo estos dos valores),
-  "indicaciones_peligro": ["array de strings con formato 'Hxxx: descripción' — todas las frases H encontradas"],
-  "consejos_prudencia": ["array de strings con formato 'Pxxx: descripción' — todos los consejos P encontrados"],
-  "pictogramas": ["array de strings — solo valores de esta lista exacta: explosivo, inflamable, oxidante, gas-presurizado, corrosivo, toxico, peligro-salud, irritante, daño-ambiente"],
-  "informacion_emergencia": ["array de strings con teléfonos o contactos de emergencia encontrados"]
-}
-
-REGLAS CRÍTICAS:
-1. Para pictogramas, infiere cuáles aplican basándote en las frases H y descripción del producto:
-   - H200-H290 explosivos/reactivos → "explosivo"
-   - H220-H228, H242 inflamables → "inflamable"  
-   - H270-H272 comburentes → "oxidante"
-   - H280-H281 gases a presión → "gas-presurizado"
-   - H290, H314, H318 corrosivos → "corrosivo"
-   - H300, H310, H330, H301, H311, H331 tóxicos → "toxico"
-   - H334, H340, H341, H350, H351, H360, H361, H370, H371, H372, H373 → "peligro-salud"
-   - H302, H312, H332, H315, H317, H319, H335, H336 irritantes → "irritante"
-   - H400, H410, H411, H412, H413 acuáticos → "daño-ambiente"
-2. Aplica SIEMPRE las reglas de precedencia SGA: si hay "toxico" o "corrosivo" o "peligro-salud", NO incluyas "irritante"
-3. Si la palabra de advertencia no está clara, determínala por las frases H (H300/H310/H330 → PELIGRO, frases menores → ATENCIÓN)
-4. Extrae TODAS las frases H y P que encuentres, incluso si están en tablas o formatos poco estándar
-5. Para el nombre del producto, prioriza la Sección 1 del FDS`;
+  "nombre_producto": "string",
+  "cas": "string",
+  "palabra_advertencia": "PELIGRO" | "ATENCIÓN",
+  "indicaciones_peligro": ["Hxxx: descripción", ...],
+  "consejos_prudencia": ["Pxxx: descripción", ...],
+  "pictogramas": ["ghs01", "ghs02", ...],
+  "informacion_emergencia": ["string", ...]
+}`;
 
     const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
@@ -119,7 +120,7 @@ REGLAS CRÍTICAS:
     if (Array.isArray(resultado.pictogramas)) {
         resultado.pictogramas = resultado.pictogramas
             .map(p => p.toLowerCase().trim())
-            .filter(p => VALID_PICTOGRAMS.includes(p));
+            .filter(p => !!VALID_PICTOS[p]);
     }
 
     return resultado;
@@ -164,20 +165,20 @@ function analizarFDSconRegex(texto) {
         if (!desc.toLowerCase().includes(placeholderText)) consejos.push(`${codigo}: ${desc}`);
     }
 
-    // Pictogramas por palabras clave
+    // Pictogramas por palabras clave (Códigos GHS estándar)
     const pictogramas = [];
     const textoL = texto.toLowerCase();
     const pictoMap = {
-        "inflamable": "inflamable", "llama": "inflamable", "oxidante": "oxidante",
-        "llama sobre círculo": "oxidante", "explosivo": "explosivo", "bomba explotando": "explosivo",
-        "corrosivo": "corrosivo", "corrosión": "corrosivo", "tóxica": "toxico",
-        "veneno": "toxico", "calavera": "toxico", "peligro para la salud": "peligro-salud",
-        "exclamación": "irritante", "exclamacion": "irritante", "irritantes": "irritante",
-        "comburente": "oxidante", "peróxido": "oxidante", "acuático": "daño-ambiente",
-        "daño al medio": "daño-ambiente", "gas a presión": "gas-presurizado", "cilindro": "gas-presurizado"
+        "inflamable": "ghs02", "llama": "ghs02", "oxidante": "ghs03",
+        "llama sobre círculo": "ghs03", "explosivo": "ghs01", "bomba explotando": "ghs01",
+        "corrosivo": "ghs05", "corrosión": "ghs05", "tóxica": "ghs06",
+        "veneno": "ghs06", "calavera": "ghs06", "peligro para la salud": "ghs08",
+        "exclamación": "ghs07", "exclamacion": "ghs07", "irritantes": "ghs07",
+        "comburente": "ghs03", "peróxido": "ghs03", "acuático": "ghs09",
+        "daño al medio": "ghs09", "gas a presión": "ghs04", "cilindro": "ghs04"
     };
-    for (const [kw, pic] of Object.entries(pictoMap)) {
-        if (textoL.includes(kw)) pictogramas.push(pic);
+    for (const [kw, code] of Object.entries(pictoMap)) {
+        if (textoL.includes(kw)) pictogramas.push(code);
     }
 
     // Advertencia
