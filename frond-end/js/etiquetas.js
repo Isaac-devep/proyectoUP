@@ -232,12 +232,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const preview = document.getElementById("previewEtiqueta");
     if (!preview) return;
     preview.innerHTML = `
-      <div class="card" style="padding:30px;text-align:center;">
-        <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:15px;">
-          <i class="fas fa-spinner fa-spin" style="font-size:28px;"></i>
-          <h3 style="margin:0;">Procesando PDF...</h3>
+      <div class="card" style="padding:40px;text-align:center;">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 25px rgba(99,102,241,0.35);">
+          <i class="fas fa-robot" style="font-size:28px;color:#fff;"></i>
         </div>
-        <p>Extrayendo datos de seguridad del documento</p>
+        <h3 style="margin:0 0 8px;font-size:1.2rem;">Analizando FDS con Inteligencia Artificial</h3>
+        <p style="color:#64748b;font-size:0.9rem;margin-bottom:18px;">GPT-4o-mini está leyendo y estructurando los datos de seguridad del documento...</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <span style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Identificación de producto</span>
+          <span style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Frases H y P</span>
+          <span style="background:#fdf4ff;color:#9333ea;border:1px solid #e9d5ff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Pictogramas GHS</span>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:8px 20px;background:#f8fafc;border-radius:8px;">
+          <i class="fas fa-circle-notch fa-spin" style="color:#6366f1;"></i>
+          <span style="font-size:0.8rem;color:#94a3b8;">Esto puede tomar unos segundos...</span>
+        </div>
       </div>
     `;
   }
@@ -307,8 +316,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
       preview.innerHTML = `
         <div class="card" style="padding:25px; background: #f8fafc; border: 1px dashed var(--primary);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-            <h3 style="margin:0;">Vista Prévia Profesional SGA (CLP)</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <h3 style="margin:0;">Vista Prévia Profesional SGA (CLP)</h3>
+              ${data._meta ? (data._meta.metodo_analisis === 'openai'
+                ? `<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;box-shadow:0 2px 8px rgba(99,102,241,0.4);">
+                     <i class="fas fa-robot"></i> Analizado por IA
+                   </span>`
+                : `<span style="display:inline-flex;align-items:center;gap:5px;background:#f59e0b;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">
+                     <i class="fas fa-code"></i> Modo regex (fallback)
+                   </span>`)
+              : ''}
+            </div>
             <div style="display:flex; gap:10px; align-items:center;">
                <label style="font-size: 11px; font-weight:700; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; gap:5px;">
                  <input type="checkbox" id="checkInternalUse" onchange="document.getElementById('printableLabel').classList.toggle('ghs-black-border', this.checked)">
