@@ -270,6 +270,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const preview = document.getElementById("previewEtiqueta");
       if (!preview) return;
       
+      console.log("🛠️ [SAGA DEBUG] Data recibida:", data);
+      console.log("🎨 [SAGA DEBUG] Pictogramas crudos:", data.pictogramas);
+      
       // 1. Normalizar a códigos ghsXX y eliminar duplicados
       const pictoMapping = {
         'explosivo': 'ghs01', 'ghs01': 'ghs01',
@@ -318,12 +321,22 @@ document.addEventListener("DOMContentLoaded", function () {
             <div style="display:flex;align-items:center;gap:12px;">
               <h3 style="margin:0;">Vista Prévia Profesional SGA (CLP)</h3>
               ${data._meta ? (data._meta.metodo_analisis === 'openai'
-                ? `<span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;box-shadow:0 2px 8px rgba(99,102,241,0.4);">
-                     <i class="fas fa-robot"></i> Analizado por IA
-                   </span>`
-                : `<span style="display:inline-flex;align-items:center;gap:5px;background:#f59e0b;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">
-                     <i class="fas fa-code"></i> Modo regex (fallback)
-                   </span>`)
+                ? `<div style="display:flex; flex-direction:column; gap:5px;">
+                      <span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;box-shadow:0 2px 8px rgba(99,102,241,0.4);">
+                        <i class="fas fa-robot"></i> Analizado por IA
+                      </span>
+                      <span style="background:#10b981; color:#fff; font-size:9px; font-weight:900; padding:2px 8px; border-radius:4px; text-transform:uppercase; text-align:center;">
+                        SAGA v2.5
+                      </span>
+                    </div>`
+                : `<div style="display:flex; flex-direction:column; gap:5px;">
+                      <span style="display:inline-flex;align-items:center;gap:5px;background:#f59e0b;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">
+                        <i class="fas fa-code"></i> Modo regex (fallback)
+                      </span>
+                      <span style="background:#10b981; color:#fff; font-size:9px; font-weight:900; padding:2px 8px; border-radius:4px; text-transform:uppercase; text-align:center;">
+                        SAGA v2.5
+                      </span>
+                    </div>`)
               : ''}
             </div>
             <div style="display:flex; gap:10px; align-items:center;">

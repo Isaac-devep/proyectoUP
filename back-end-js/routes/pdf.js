@@ -82,7 +82,9 @@ async function analizarFDSconIA(texto) {
 REGLAS DE ORO:
 - **H402 / H401**: NO llevan pictogramas. 
 - **NO INFIERAS**: Si la frase H no está en el texto, no pongas el pictograma.
-- **PRECEDENCIA**: Si hay ghs05 o ghs06, quita el ghs07 (solo si es por irritación piel/ojos).
+- **PRECEDENCIA**: 
+  - Si hay ghs05 O ghs06, quita el ghs07 **SOLO SI** el ghs07 es por irritación (H315, H317, H319). 
+  - **IMPORTANTE**: Si el ghs07 es por Toxicidad Aguda (H302, H312, H332), MANTENLO aunque haya ghs05. (Caso Diablo Rojo).
 - **NOMBRE**: Extrae el nombre comercial literal de la sección 1.
 
 Devuelve solo este JSON:
@@ -182,8 +184,11 @@ function analizarFDSconRegex(texto) {
         if (/H400|H41[01]/.test(codigo)) pictogramas.add("ghs09"); // Medio ambiente (Solo cat 1 y 2)
     });
 
-    // Regla de precedencia SGA
-    if (pictogramas.has("ghs05") || pictogramas.has("ghs06")) {
+    // Regla de precedencia SGA (Refinada)
+    // El ghs07 se quita si hay ghs05/06 Y el peligro era solo irritación ligera.
+    // Pero si hay H302, H312 o H332 (Toxicidad Aguda 4), el ghs07 DEBE permanecer.
+    const tieneToxicidadAguda4 = [...indicaciones].some(f => /H302|H312|H332/.test(f));
+    if ((pictogramas.has("ghs05") || pictogramas.has("ghs06")) && !tieneToxicidadAguda4) {
         pictogramas.delete("ghs07"); 
     }
 
