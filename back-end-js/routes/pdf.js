@@ -64,35 +64,35 @@ const VALID_PICTOS = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  ANÁLISIS IA  →  GPT-4o-mini con prompt especializado en SGA/GHS
+//  ANÁLISIS IA  →  GPT-4o-mini con tabla de mapeo estricta
 // ═══════════════════════════════════════════════════════════════════════════
 async function analizarFDSconIA(texto) {
-    const PROMPT_SISTEMA = `Eres un experto en Fichas de Datos de Seguridad (FDS/SDS) y en el Sistema Globalmente Armonizado (SGA/GHS). 
-Tu tarea es analizar el texto extraído de un documento FDS y devolver ÚNICAMENTE un objeto JSON.
+    const PROMPT_SISTEMA = `Eres un experto en seguridad química. Tu única misión es extraer datos de una FDS y mapear pictogramas GHS usando esta TABLA DE VERDAD estricta basada en frases H:
 
-REGLAS DE IDENTIFICACIÓN:
-1. **PICTOGRAMAS**: Devuelve una lista de códigos (ej: ["ghs05", "ghs07"]). 
-   - Usa solo estos códigos: ghs01 (Bomba), ghs02 (Llama), ghs03 (Llama sobre círculo), ghs04 (Cilindro), ghs05 (Corrosión), ghs06 (Calavera), ghs07 (Exclamación), ghs08 (Peligro Salud), ghs09 (Medio Ambiente).
-   - **IMPORTANTE**: No infieras peligros que no estén explícitos. Si un producto es "Diablo Rojo" pero el texto no menciona frases H22x, NO es inflamable.
-   - **H402 / H401**: Estas frases de peligro ambiental NO llevan pictograma ghs09. Solo ghs09 si hay H400, H410 o H411.
-   - **REGLA DE PRECEDENCIA**: 
-     - Si hay ghs06 (Calavera), no pongas ghs07 (Exclamación).
-     - Si hay ghs05 (Corrosión) para piel/ojos, no pongas ghs07 para irritación.
-2. **DATOS**:
-   - nombre_producto: El nombre comercial exacto (ej: "DIABLO ROJO").
-   - cas: El número CAS o "No detectado".
-   - palabra_advertencia: Solo "PELIGRO" o "ATENCIÓN".
-   - indicaciones_peligro: Lista de frases H encontradas (ej: ["H314: Provoca quemaduras..."]).
-   - consejos_prudencia: Lista de frases P encontradas (ej: ["P260: No respirar..."]).
+1. GHS01 (ghs01): H200, H201, H202, H203, H204, H205, H240, H241
+2. GHS02 (ghs02): H220, H221, H222, H223, H224, H225, H226, H228, H242, H250, H251, H252, H260, H261
+3. GHS03 (ghs03): H270, H271, H272
+4. GHS04 (ghs04): H280, H281
+5. GHS05 (ghs05): H290, H314, H318
+6. GHS06 (ghs06): H300, H301, H310, H311, H330, H331
+7. GHS07 (ghs07): H302, H312, H332, H315, H317, H319, H335, H336
+8. GHS08 (ghs08): H304, H334, H340, H341, H350, H351, H360, H361, H370, H371, H372, H373
+9. GHS09 (ghs09): H400, H410, H411
 
-JSON FINAL (Sin texto extra, solo el objeto):
+REGLAS DE ORO:
+- **H402 / H401**: NO llevan pictogramas. 
+- **NO INFIERAS**: Si la frase H no está en el texto, no pongas el pictograma.
+- **PRECEDENCIA**: Si hay ghs05 o ghs06, quita el ghs07 (solo si es por irritación piel/ojos).
+- **NOMBRE**: Extrae el nombre comercial literal de la sección 1.
+
+Devuelve solo este JSON:
 {
   "nombre_producto": "string",
   "cas": "string",
   "palabra_advertencia": "PELIGRO" | "ATENCIÓN",
   "indicaciones_peligro": ["Hxxx: descripción", ...],
   "consejos_prudencia": ["Pxxx: descripción", ...],
-  "pictogramas": ["ghs01", "ghs02", ...],
+  "pictogramas": ["ghs0x", ...],
   "informacion_emergencia": ["string", ...]
 }`;
 
@@ -165,20 +165,26 @@ function analizarFDSconRegex(texto) {
         if (!desc.toLowerCase().includes(placeholderText)) consejos.push(`${codigo}: ${desc}`);
     }
 
-    // Pictogramas por palabras clave (Códigos GHS estándar)
-    const pictogramas = [];
-    const textoL = texto.toLowerCase();
-    const pictoMap = {
-        "inflamable": "ghs02", "llama": "ghs02", "oxidante": "ghs03",
-        "llama sobre círculo": "ghs03", "explosivo": "ghs01", "bomba explotando": "ghs01",
-        "corrosivo": "ghs05", "corrosión": "ghs05", "tóxica": "ghs06",
-        "veneno": "ghs06", "calavera": "ghs06", "peligro para la salud": "ghs08",
-        "exclamación": "ghs07", "exclamacion": "ghs07", "irritantes": "ghs07",
-        "comburente": "ghs03", "peróxido": "ghs03", "acuático": "ghs09",
-        "daño al medio": "ghs09", "gas a presión": "ghs04", "cilindro": "ghs04"
-    };
-    for (const [kw, code] of Object.entries(pictoMap)) {
-        if (textoL.includes(kw)) pictogramas.push(code);
+    // Pictogramas basados estrictamente en frases H extraídas (Mapeo GHS oficial)
+    const pictogramas = new Set();
+    indicaciones.forEach(frase => {
+        const codigo = frase.split(':')[0].trim().toUpperCase();
+        
+        // Mapeo lógico SGA/GHS
+        if (/H20[0-5]|H24[01]/.test(codigo)) pictogramas.add("ghs01"); // Explosivos
+        if (/H22[0-8]|H242|H25[0-2]|H26[01]/.test(codigo)) pictogramas.add("ghs02"); // Inflamables
+        if (/H27[0-2]/.test(codigo)) pictogramas.add("ghs03"); // Comburentes
+        if (/H28[01]/.test(codigo)) pictogramas.add("ghs04"); // Gases presión
+        if (/H290|H314|H318/.test(codigo)) pictogramas.add("ghs05"); // Corrosivos
+        if (/H30[01]|H31[01]|H33[01]/.test(codigo)) pictogramas.add("ghs06"); // Tóxicos agudos
+        if (/H302|H312|H332|H31[579]|H33[56]/.test(codigo)) pictogramas.add("ghs07"); // Irritantes/Nocivos
+        if (/H304|H334|H34[01]|H35[01]|H36[01]|H37[0-3]/.test(codigo)) pictogramas.add("ghs08"); // Peligro salud
+        if (/H400|H41[01]/.test(codigo)) pictogramas.add("ghs09"); // Medio ambiente (Solo cat 1 y 2)
+    });
+
+    // Regla de precedencia SGA
+    if (pictogramas.has("ghs05") || pictogramas.has("ghs06")) {
+        pictogramas.delete("ghs07"); 
     }
 
     // Advertencia
