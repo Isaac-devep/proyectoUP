@@ -4,276 +4,170 @@ const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const { OpenAI } = require('openai');
 
-// ─── Multer (memory storage) ───────────────────────────────────────────────
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
-// ─── OpenAI Client ─────────────────────────────────────────────────────────
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// ─── Diccionario GHS de respaldo ───────────────────────────────────────────
-const GHS_PHRASES = {
-    "H220": "Gas extremadamente inflamable", "H221": "Gas inflamable",
-    "H222": "Aerosol extremadamente inflamable", "H224": "Líquido y vapores extremadamente inflamables",
-    "H225": "Líquido y vapores muy inflamables", "H226": "Líquidos y vapores inflamables",
-    "H227": "Líquido combustible", "H228": "Sólido inflamable",
-    "H280": "Contiene gas a presión; peligro de explosión en caso de calentamiento",
-    "H300": "Mortal en caso de ingestión", "H301": "Tóxico en caso de ingestión",
-    "H302": "Nocivo en caso de ingestión", "H310": "Mortal en contacto con la piel",
-    "H311": "Tóxico en contacto con la piel", "H312": "Nocivo en contacto con la piel",
-    "H314": "Provoca quemaduras graves en la piel y lesiones oculares graves",
-    "H315": "Provoca irritación cutánea", "H317": "Puede provocar una reacción alérgica en la piel",
-    "H318": "Provoca lesiones oculares graves", "H319": "Provoca irritación ocular grave",
-    "H330": "Mortal en caso de inhalación", "H331": "Tóxico en caso de inhalación",
-    "H332": "Nocivo en caso de inhalación", "H335": "Puede irritar las vías respiratorias",
-    "H336": "Puede provocar somnolencia o vértigo", "H350": "Puede provocar cáncer",
-    "H351": "Se sospecha que provoca cáncer",
-    "H400": "Muy tóxico para los organismos acuáticos",
-    "H410": "Muy tóxico para los organismos acuáticos, con efectos nocivos duraderos",
-    "H411": "Tóxico para los organismos acuáticos, con efectos nocivos duraderos",
-    "P101": "Si se necesita consejo médico, tener a mano el envase o la etiqueta",
-    "P102": "Mantener fuera del alcance de los niños",
-    "P201": "Pedir instrucciones especiales antes del uso",
-    "P210": "Mantener alejado del calor, de chispas, de llamas abiertas y de cualquier otra fuente de ignición. No fumar",
-    "P232": "Proteger de la humedad", "P233": "Mantener el recipiente herméticamente cerrado",
-    "P234": "Conservar únicamente en el recipiente original",
-    "P260": "No respirar el polvo/el humo/el gas/la niebla/los vapores/el aerosol",
-    "P261": "Evitar respirar el polvo/el humo/el gas/la niebla/los vapores/el aerosol",
-    "P264": "Lavarse concienzudamente tras la manipulación",
-    "P270": "No comer, beber ni fumar durante su utilización",
-    "P273": "Evitar su liberación al medio ambiente",
-    "P280": "Llevar guantes/prendas/gafas/máscara de protección",
-    "P301": "EN CASO DE INGESTIÓN:", "P302": "EN CASO DE CONTACTO CON LA PIEL:",
-    "P303": "EN CASO DE CONTACTO CON LA PIEL (o el pelo):", "P304": "EN CASO DE INHALACIÓN:",
-    "P305": "EN CASO DE CONTACTO CON LOS OJOS:",
-    "P310": "Llamar inmediatamente a un centro de toxicología o a un médico",
-    "P330": "Enjuagar la boca", "P331": "NO provocar el vómito",
-    "P351": "Aclarar cuidadosamente con agua durante varios minutos",
-    "P353": "Aclarar la piel con agua [o ducharse]",
-    "P361": "Quitar inmediatamente todas las prendas contaminadas",
-    "P403": "Almacenar en un lugar bien ventilado", "P405": "Guardar bajo llave",
-    "P410": "Proteger de la luz del sol",
-    "P501": "Eliminar el contenido/el recipiente en una planta autorizada"
+// ═══════════════════════════════════════════════════════════════════════════
+//  TABLA DE VERDAD GHS — Determinística, sin IA, sin errores
+//  Fuente: Reglamento CLP / GHS Rev.9 (ONU)
+// ═══════════════════════════════════════════════════════════════════════════
+const H_A_GHS = {
+    // ghs01 - Explosivo
+    H200:'ghs01', H201:'ghs01', H202:'ghs01', H203:'ghs01', H204:'ghs01', H205:'ghs01',
+    H240:'ghs01', H241:'ghs01',
+    // ghs02 - Inflamable
+    H220:'ghs02', H221:'ghs02', H222:'ghs02', H223:'ghs02', H224:'ghs02', H225:'ghs02',
+    H226:'ghs02', H228:'ghs02', H242:'ghs02', H250:'ghs02', H251:'ghs02', H252:'ghs02',
+    H260:'ghs02', H261:'ghs02',
+    // ghs03 - Comburente/Oxidante
+    H270:'ghs03', H271:'ghs03', H272:'ghs03',
+    // ghs04 - Gas a presión
+    H280:'ghs04', H281:'ghs04',
+    // ghs05 - Corrosivo
+    H290:'ghs05', H314:'ghs05', H318:'ghs05',
+    // ghs06 - Tóxico agudo (categorías 1-3)
+    H300:'ghs06', H301:'ghs06', H310:'ghs06', H311:'ghs06', H330:'ghs06', H331:'ghs06',
+    // ghs07 - Nocivo/Irritante (categoría 4 y efectos locales)
+    H302:'ghs07', H312:'ghs07', H315:'ghs07', H317:'ghs07', H319:'ghs07',
+    H332:'ghs07', H335:'ghs07', H336:'ghs07',
+    // ghs08 - Peligro para la salud a largo plazo
+    H304:'ghs08', H334:'ghs08', H340:'ghs08', H341:'ghs08', H350:'ghs08', H351:'ghs08',
+    H360:'ghs08', H361:'ghs08', H370:'ghs08', H371:'ghs08', H372:'ghs08', H373:'ghs08',
+    // ghs09 - Peligro para el medio ambiente acuático
+    H400:'ghs09', H410:'ghs09', H411:'ghs09',
 };
 
-// ─── Pictogramas GHS válidos que el sistema puede renderizar ───────────────
-const VALID_PICTOS = {
-    'ghs01': 'explosivo', 'ghs02': 'inflamable', 'ghs03': 'oxidante',
-    'ghs04': 'gas-presurizado', 'ghs05': 'corrosivo', 'ghs06': 'toxico',
-    'ghs07': 'irritante', 'ghs08': 'peligro-salud', 'ghs09': 'daño-ambiente'
-};
+// Extrae códigos H de una lista de frases (ej: ["H225: Inflamable", "H318: ..."])
+function extraerCodigosH(indicaciones) {
+    const codigos = new Set();
+    for (const frase of indicaciones) {
+        const match = frase.match(/\bH(\d{3}[A-Z]?)\b/gi);
+        if (match) match.forEach(m => codigos.add(m.toUpperCase()));
+    }
+    return codigos;
+}
+
+// Mapea códigos H a pictogramas GHS con reglas de precedencia
+function mapearPictogramas(indicaciones) {
+    const codigosH = extraerCodigosH(indicaciones);
+    const pictos = new Set();
+
+    for (const h of codigosH) {
+        if (H_A_GHS[h]) pictos.add(H_A_GHS[h]);
+    }
+
+    // Regla de precedencia: si hay ghs05 (corrosivo) y ghs07 SOLO viene de
+    // irritación leve (H315/H317/H319), se suprime ghs07.
+    // PERO si hay también H302/H312/H332 (toxicidad aguda cat.4), se mantiene ghs07.
+    const tieneToxicidadAguda4 = codigosH.has('H302') || codigosH.has('H312') || codigosH.has('H332');
+    if (pictos.has('ghs05') && !tieneToxicidadAguda4) {
+        pictos.delete('ghs07');
+    }
+
+    // Orden de prioridad visual SGA
+    const orden = ['ghs01','ghs02','ghs03','ghs04','ghs05','ghs06','ghs08','ghs07','ghs09'];
+    return orden.filter(g => pictos.has(g));
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  ANÁLISIS IA  →  GPT-4o-mini con tabla de mapeo estricta
+//  IA — Solo extrae texto estructurado, NO decide pictogramas
 // ═══════════════════════════════════════════════════════════════════════════
-async function analizarFDSconIA(texto) {
-    const PROMPT_SISTEMA = `Eres un experto en seguridad química. Tu única misión es extraer datos de una FDS y mapear pictogramas GHS usando esta TABLA DE VERDAD estricta basada en frases H:
+async function extraerDatosConIA(texto) {
+    const prompt = `Eres un experto en fichas de datos de seguridad (FDS). Extrae la informacion del documento y devuelve UNICAMENTE un JSON valido sin markdown ni explicaciones.
 
-1. GHS01 (ghs01): H200, H201, H202, H203, H204, H205, H240, H241
-2. GHS02 (ghs02): H220, H221, H222, H223, H224, H225, H226, H228, H242, H250, H251, H252, H260, H261
-3. GHS03 (ghs03): H270, H271, H272
-4. GHS04 (ghs04): H280, H281
-5. GHS05 (ghs05): H290, H314, H318
-6. GHS06 (ghs06): H300, H301, H310, H311, H330, H331
-7. GHS07 (ghs07): H302, H312, H332, H315, H317, H319, H335, H336
-8. GHS08 (ghs08): H304, H334, H340, H341, H350, H351, H360, H361, H370, H371, H372, H373
-9. GHS09 (ghs09): H400, H410, H411
+INSTRUCCIONES:
+- nombre_producto: nombre comercial exacto de la Seccion 1 (NO incluyas "Producto:", "Nombre:", ni el nombre de la empresa).
+- cas: numero CAS principal (formato: XXXXXXX-XX-X). Si no hay, usa "".
+- palabra_advertencia: "PELIGRO" o "ATENCION" segun la Seccion 2.
+- indicaciones_peligro: lista de frases H de la Seccion 2 en formato "Hxxx: descripcion".
+- consejos_prudencia: lista de frases P de la Seccion 2 en formato "Pxxx: descripcion".
+- informacion_emergencia: numeros de telefono de emergencia de la Seccion 1.
 
-REGLAS DE ORO:
-- **H402 / H401**: NO llevan pictogramas. 
-- **NO INFIERAS**: Si la frase H no está en el texto, no pongas el pictograma.
-- **PRECEDENCIA**: 
-  - Si hay ghs05 O ghs06, quita el ghs07 **SOLO SI** el ghs07 es por irritación (H315, H317, H319). 
-  - **IMPORTANTE**: Si el ghs07 es por Toxicidad Aguda (H302, H312, H332), MANTENLO aunque haya ghs05. (Caso Diablo Rojo).
-- **NOMBRE**: Extrae el nombre comercial literal de la sección 1.
-
-Devuelve solo este JSON:
-{
-  "nombre_producto": "string",
-  "cas": "string",
-  "palabra_advertencia": "PELIGRO" | "ATENCIÓN",
-  "indicaciones_peligro": ["Hxxx: descripción", ...],
-  "consejos_prudencia": ["Pxxx: descripción", ...],
-  "pictogramas": ["ghs0x", ...],
-  "informacion_emergencia": ["string", ...]
-}`;
+FORMATO REQUERIDO:
+{"nombre_producto":"...","cas":"...","palabra_advertencia":"PELIGRO","indicaciones_peligro":["H225: Liquido y vapores muy inflamables"],"consejos_prudencia":["P210: Mantener alejado de fuentes de ignicion"],"informacion_emergencia":["018000511414"]}`;
 
     const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         temperature: 0,
         max_tokens: 2000,
         messages: [
-            { role: 'system', content: PROMPT_SISTEMA },
-            {
-                role: 'user',
-                content: `Analiza el siguiente texto extraído de una Ficha de Datos de Seguridad (FDS) y devuelve el JSON estructurado:\n\n${texto.substring(0, 12000)}`
-            }
+            { role: 'system', content: prompt },
+            { role: 'user', content: `Analiza esta FDS:\n\n${texto.substring(0, 12000)}` }
         ]
     });
 
-    const respuestaRaw = completion.choices[0].message.content.trim();
-    
-    // Limpiar posibles bloques markdown que el modelo pueda añadir
-    const jsonStr = respuestaRaw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-    
-    const resultado = JSON.parse(jsonStr);
+    const raw = completion.choices[0].message.content.trim()
+        .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
 
-    // Validar y sanitizar pictogramas contra la lista permitida
-    if (Array.isArray(resultado.pictogramas)) {
-        resultado.pictogramas = resultado.pictogramas
-            .map(p => p.toLowerCase().trim())
-            .filter(p => !!VALID_PICTOS[p]);
-    }
+    const resultado = JSON.parse(raw);
 
-    return resultado;
-}
+    // Limpiar nombre
+    resultado.nombre_producto = (resultado.nombre_producto || '')
+        .replace(/^(nombre\s+(comercial\s+)?(del\s+)?producto|producto|identificaci[oó]n(\s+del\s+producto)?)[:\s\-]*/i, '')
+        .trim();
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  FALLBACK  →  Extracción por regex (método original mejorado)
-// ═══════════════════════════════════════════════════════════════════════════
-function analizarFDSconRegex(texto) {
-    // Nombre del producto
-    let nombre = "NO DETECTADO";
-    const patronesNombre = [
-        /(?:Identificación del producto|Nombre del producto|Producto|Nombre comercial)[\s:*-]+([^\n]+)/i,
-        /1\s*\.\s*IDENTIFICACI[ÓO]N[^\n]*\n([^\n]+)/i,
-        /^\s*([A-Z][A-Z0-9ÁÉÍÓÚÑ\s\-/%&\.]{5,})\s*$/m
-    ];
-    for (const patron of patronesNombre) {
-        const match = texto.match(patron);
-        if (match && match[1].trim().length > 5) { nombre = match[1].trim(); break; }
-    }
+    // Garantizar arrays
+    if (!Array.isArray(resultado.indicaciones_peligro)) resultado.indicaciones_peligro = [];
+    if (!Array.isArray(resultado.consejos_prudencia)) resultado.consejos_prudencia = [];
+    if (!Array.isArray(resultado.informacion_emergencia)) resultado.informacion_emergencia = [];
 
-    const placeholderText = "ver ficha técnica";
+    // LOS PICTOGRAMAS LOS CALCULAMOS NOSOTROS — NO la IA
+    resultado.pictogramas = mapearPictogramas(resultado.indicaciones_peligro);
 
-    // Frases H
-    const indicaciones = [];
-    const hRegex = /\bH\s*(\d{3,4}[A-Za-z]?)\b\s*[:\-]?\s*([^\n]+)/gi;
-    let m;
-    while ((m = hRegex.exec(texto)) !== null) {
-        const codigo = "H" + m[1].toUpperCase();
-        let desc = m[2].trim().replace(/[.;:-]+$/, "");
-        if (desc.toLowerCase().includes("ficha") || desc.length < 5) desc = GHS_PHRASES[codigo] || desc;
-        if (!desc.toLowerCase().includes(placeholderText)) indicaciones.push(`${codigo}: ${desc}`);
-    }
-
-    // Frases P
-    const consejos = [];
-    const pRegex = /\bP\s*(\d{3,4}[A-Za-z]?)\b\s*[:\-]?\s*([^\n]+)/gi;
-    while ((m = pRegex.exec(texto)) !== null) {
-        const codigo = "P" + m[1].toUpperCase();
-        let desc = m[2].trim().replace(/[.;:-]+$/, "");
-        if (desc.toLowerCase().includes("ficha") || desc.length < 5) desc = GHS_PHRASES[codigo] || desc;
-        if (!desc.toLowerCase().includes(placeholderText)) consejos.push(`${codigo}: ${desc}`);
-    }
-
-    // Pictogramas basados estrictamente en frases H extraídas (Mapeo GHS oficial)
-    const pictogramas = new Set();
-    indicaciones.forEach(frase => {
-        const codigo = frase.split(':')[0].trim().toUpperCase();
-        
-        // Mapeo lógico SGA/GHS
-        if (/H20[0-5]|H24[01]/.test(codigo)) pictogramas.add("ghs01"); // Explosivos
-        if (/H22[0-8]|H242|H25[0-2]|H26[01]/.test(codigo)) pictogramas.add("ghs02"); // Inflamables
-        if (/H27[0-2]/.test(codigo)) pictogramas.add("ghs03"); // Comburentes
-        if (/H28[01]/.test(codigo)) pictogramas.add("ghs04"); // Gases presión
-        if (/H290|H314|H318/.test(codigo)) pictogramas.add("ghs05"); // Corrosivos
-        if (/H30[01]|H31[01]|H33[01]/.test(codigo)) pictogramas.add("ghs06"); // Tóxicos agudos
-        if (/H302|H312|H332|H31[579]|H33[56]/.test(codigo)) pictogramas.add("ghs07"); // Irritantes/Nocivos
-        if (/H304|H334|H34[01]|H35[01]|H36[01]|H37[0-3]/.test(codigo)) pictogramas.add("ghs08"); // Peligro salud
-        if (/H400|H41[01]/.test(codigo)) pictogramas.add("ghs09"); // Medio ambiente (Solo cat 1 y 2)
+    console.log('📤 [SAGA] Resultado final:', {
+        nombre: resultado.nombre_producto,
+        frases_h: extraerCodigosH(resultado.indicaciones_peligro),
+        pictogramas: resultado.pictogramas
     });
 
-    // Regla de precedencia SGA (Refinada)
-    // El ghs07 se quita si hay ghs05/06 Y el peligro era solo irritación ligera.
-    // Pero si hay H302, H312 o H332 (Toxicidad Aguda 4), el ghs07 DEBE permanecer.
-    const tieneToxicidadAguda4 = [...indicaciones].some(f => /H302|H312|H332/.test(f));
-    if ((pictogramas.has("ghs05") || pictogramas.has("ghs06")) && !tieneToxicidadAguda4) {
-        pictogramas.delete("ghs07"); 
-    }
-
-    // Advertencia
-    const advMatch = texto.match(/(PELIGRO|ADVERTENCIA|PRECAUCI[ÓO]N|ATENCI[ÓO]N|WARNING|DANGER)/i);
-    const advertencia = advMatch ? advMatch[0].toUpperCase() : "No detectada";
-    const palabraAdv = advertencia.includes('ATENCI') || advertencia.includes('ADVERTENCIA') ? 'ATENCIÓN' : 'PELIGRO';
-
-    // CAS
-    const casMatch = texto.match(/\b\d{2,7}-\d{2}-\d\b/);
-
-    // Emergencia
-    const emergencia = [];
-    const emergRegex = /(?:Tel[ée]fono|Contacto|EMERGENCIA|N[ÚU]MERO).*?[:\-]\s*([^\n]+)/gi;
-    while ((m = emergRegex.exec(texto)) !== null) emergencia.push(m[1].trim());
-
-    return {
-        nombre_producto: nombre,
-        indicaciones_peligro: [...new Set(indicaciones)],
-        consejos_prudencia: [...new Set(consejos)],
-        informacion_emergencia: [...new Set(emergencia)],
-        pictogramas: [...new Set(pictogramas)],
-        palabra_advertencia: palabraAdv,
-        cas: casMatch ? casMatch[0] : "No detectado"
-    };
+    return resultado;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  RUTA PRINCIPAL  POST /extract_pdf_data
 // ═══════════════════════════════════════════════════════════════════════════
 router.post('/', (req, res, next) => {
-    console.log("📥 [FDS] Petición recibida en /extract_pdf_data");
+    console.log('📥 [FDS] Peticion recibida');
     next();
 }, upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ error: "No se subió ningún archivo" });
+            return res.status(400).json({ error: 'No se subio ningun archivo' });
+        }
+        if (!process.env.OPENAI_API_KEY) {
+            return res.status(500).json({ error: 'Servicio de IA no configurado. Falta OPENAI_API_KEY.' });
         }
 
         console.log(`📂 [FDS] Procesando: ${req.file.originalname} (${(req.file.size / 1024).toFixed(1)} KB)`);
 
-        // 1. Extraer texto del PDF
         const data = await pdfParse(req.file.buffer);
         const texto = data.text;
+        console.log(`📝 [FDS] Texto extraido: ${texto.length} caracteres`);
 
         if (!texto || texto.trim().length < 50) {
-            return res.status(422).json({ error: "El PDF no contiene texto extraíble (posiblemente es una imagen escaneada)" });
+            return res.status(422).json({ error: 'El PDF no contiene texto extraible (posiblemente es una imagen escaneada)' });
         }
 
-        // 2. Intentar análisis con IA primero
-        let resultado = null;
-        let metodo = 'openai';
+        console.log('🤖 [FDS] Extrayendo datos con GPT-4o-mini...');
+        const resultado = await extraerDatosConIA(texto);
+        console.log(`✅ [FDS] "${resultado.nombre_producto}" | Pictogramas: [${resultado.pictogramas.join(', ')}]`);
 
-        if (process.env.OPENAI_API_KEY) {
-            try {
-                console.log("🤖 [FDS] Analizando con GPT-4o-mini...");
-                resultado = await analizarFDSconIA(texto);
-                console.log(`✅ [FDS] IA completada — Producto: "${resultado.nombre_producto}" | Pictogramas: [${(resultado.pictogramas || []).join(', ')}]`);
-            } catch (iaError) {
-                console.warn(`⚠️ [FDS] IA falló (${iaError.message}), usando regex como fallback...`);
-                metodo = 'regex-fallback';
-            }
-        } else {
-            console.warn("⚠️ [FDS] OPENAI_API_KEY no configurada, usando regex");
-            metodo = 'regex-fallback';
-        }
-
-        // 3. Fallback a regex si la IA no funcionó
-        if (!resultado) {
-            resultado = analizarFDSconRegex(texto);
-        }
-
-        // 4. Respuesta enriquecida con metadatos del análisis
         res.json({
             ...resultado,
             _meta: {
-                metodo_analisis: metodo,
+                metodo_analisis: 'openai',
                 paginas: data.numpages,
                 caracteres_extraidos: texto.length
             }
         });
 
     } catch (err) {
-        console.error("❌ [FDS] Error crítico:", err);
-        res.status(500).json({ error: "Error procesando el PDF", detail: err.message });
+        console.error('❌ [FDS] Error:', err.message);
+        res.status(500).json({
+            error: 'Error al analizar el PDF con IA',
+            detail: err.message
+        });
     }
 });
 

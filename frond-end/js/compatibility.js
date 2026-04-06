@@ -34,31 +34,27 @@ document.addEventListener('DOMContentLoaded', function() {
         '9':   { color: '#94a3b8', icon: 'irritante', label: '9' }        // Irritantes/Varios
     };
 
+    // Mapa ghsXX → nombre de imagen (consistente con etiquetas.js y la lista de productos)
+    const PICTO_IMAGE_MAP = {
+        'ghs01': 'explosivo',       'ghs02': 'inflamable',    'ghs03': 'oxidante',
+        'ghs04': 'gas-presurizado', 'ghs05': 'corrosivo',     'ghs06': 'toxico',
+        'ghs07': 'irritante',       'ghs08': 'peligro-salud', 'ghs09': 'daño-ambiente'
+    };
+
     function getUnPictoHtml(claseOrArray, limit = null, size = 24) {
         if (!claseOrArray) return '';
-        let classes = Array.isArray(claseOrArray) ? [...claseOrArray] : [claseOrArray];
-        
-        // Limitar si es necesario (para cabeceras de matriz)
-        if (limit && classes.length > limit) {
-            classes = classes.slice(0, limit);
+        let codes = Array.isArray(claseOrArray) ? [...claseOrArray] : [claseOrArray];
+
+        if (limit && codes.length > limit) {
+            codes = codes.slice(0, limit);
         }
 
-        return classes.map(clase => {
-            // Mapeo dinámico de GHS a UN si es necesario
-            let targetClase = clase;
-            const ghsToUn = {
-                'ghs02': '3',   'ghs03': '5.1', 'ghs04': '2.2', 
-                'ghs05': '8A',  'ghs09': '9',   'ghs01': '1', 
-                'ghs06': '6.1', 'ghs08': '6.1'
-            };
-            if (ghsToUn[clase.toLowerCase()]) targetClase = ghsToUn[clase.toLowerCase()];
-
-            const p = unPictos[targetClase] || unPictos['9'];
-            return `
-                <div class="un-diamond" style="background:${p.color}; width:${size}px; height:${size}px; transform: rotate(45deg); display:flex; align-items:center; justify-content:center; margin: 0 2px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 1px 2px rgba(0,0,0,0.2); overflow:hidden;">
-                    <img src="../../images/${p.icon}.png" style="width:130%; height:130%; transform: rotate(-45deg); object-fit: contain;" onerror="this.src='../../assets/pictogramas/${clase}.png';">
-                </div>
-            `;
+        return codes.map(code => {
+            const imgName = PICTO_IMAGE_MAP[code.toLowerCase()];
+            if (!imgName) return '';
+            return `<img src="../../images/${imgName}.png" alt="${code}" title="${code}"
+                        style="width:${size}px; height:${size}px; object-fit:contain;"
+                        onerror="this.style.display='none'">`;
         }).join('');
     }
 
@@ -127,59 +123,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 let rawPictos = rawStrings.map(normalizePicto);
                 const name = (p.id_producto || "").toLowerCase();
+                const clearName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-                // 0. Correcciones Regulatorias Específicas (Hard Overrides)
-                const clearName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+                // Deduplicar y filtrar solo códigos ghsXX válidos
+                let pictos = [...new Set(rawPictos)].filter(c => /^ghs\d+$/.test(c));
 
-                if (clearName.includes('etanol') || clearName.includes('alcohol') || clearName.includes('thinner') || clearName.includes('gasolina') || clearName.includes('esmalte') || clearName.includes('anticorrosivo') || clearName.includes('pintura epoxica')) {
-                    rawPictos = ['ghs02']; // Asegura que todos los solventes sean Inflamables (Llama)
-                } else if (clearName.includes('formaldehido')) {
-                    rawPictos = ['ghs06', 'ghs08']; // Calavera y Peligro Salud
-                } else if (clearName.includes('cemento') || clearName.includes('soldadura')) {
-                    rawPictos = ['ghs07']; // Exclamación (Irritante)
-                } else if (clearName.includes('hipoclorito') || clearName.includes('cloro')) {
-                    rawPictos = ['ghs05', 'ghs09']; // Corrosivo y Daño Ambiente
-                } else if (clearName.match(/soda|diablo rojo|potasa|caustica/)) {
-                    rawPictos = ['ghs05']; // Corrosivo
-                } else if (clearName.match(/jabon|cera|detergente|limpiador|disinfectant|limpia vidrios|desengrasante|evap clean/)) {
-                    rawPictos = ['ghs07']; // Limpieza y desengrasantes (Exclamación, no corrosivos)
-                } else if (clearName.match(/ambientador|fragancia/)) {
-                    rawPictos = ['ghs02', 'ghs07']; // Inflamable + Irritante
-                } else if (clearName.match(/refrigerante|r-22|410a/)) {
-                    rawPictos = ['ghs04']; // Cilindro de gas
-                } else if (clearName.match(/propano|butano|gas licuado|glp/)) {
-                    rawPictos = ['ghs02']; // Llama (el bloque de abajo le asignará la clase 2.1)
-                }
-                
-                // 1. Reglas de Precedencia SGA (Exclusiones)
-                let pictos = [...new Set(rawPictos)];
-                if (pictos.includes('ghs05') || pictos.includes('ghs06') || pictos.includes('ghs08')) {
-                    pictos = pictos.filter(p => p !== 'ghs07');
+                // Regla de precedencia SGA mínima:
+                // ghs05 (Corrosivo) incluye daño ocular grave (H318),
+                // que es más severo que la mera irritación ocular (H319→ghs07).
+                // Solo eliminamos ghs07 si HAY ghs05 y NO hay ghs06 (tóxico).
+                if (pictos.includes('ghs05') && !pictos.includes('ghs06')) {
+                    pictos = pictos.filter(c => c !== 'ghs07');
                 }
 
                 // 2. Ordenar por prioridad
                 pictos.sort((a, b) => (priorityMap[a] || 99) - (priorityMap[b] || 99));
 
-                // 3. Determinar clase principal para matriz lógica (Familia SGA)
-                let clase = '9'; // Clase por defecto (Misceláneos/Irritantes)
-                
-                if (pictos.includes('ghs06') || clearName.includes('formaldehido')) {
-                    clase = '6.1'; // Tóxicos
-                } else if (clearName.includes('hipoclorito') || clearName.match(/soda|diablo rojo|potasa/)) {
-                    clase = '8B'; // Corrosivos Básicos (Álcalis fuertes)
+                // Determinar clase principal para matriz lógica (basado en pictogramas reales)
+                let clase = '9';
+                if (pictos.includes('ghs06')) {
+                    clase = '6.1';
                 } else if (pictos.includes('ghs05')) {
-                   clase = clearName.includes('acido') ? '8A' : '8B'; 
-                } else if (clearName.match(/propano|butano|gas licuado|glp/)) {
-                    clase = '2.1'; // Gases inflamables
+                    clase = clearName.includes('acido') ? '8A' : '8B';
+                } else if (pictos.includes('ghs01')) {
+                    clase = '1';
                 } else if (pictos.includes('ghs04')) {
-                    clase = '2.2'; // Gases a presión no inflamables
+                    // ghs04 puede ser gas inflamable (2.1) o no inflamable (2.2)
+                    clase = pictos.includes('ghs02') ? '2.1' : '2.2';
                 } else if (pictos.includes('ghs02')) {
-                    clase = '3'; // Líquidos Inflamables
+                    // Verificar si es gas inflamable por el nombre
+                    clase = clearName.match(/propano|butano|gas licuado|glp/) ? '2.1' : '3';
                 } else if (pictos.includes('ghs03')) {
-                    clase = '5.1'; // Oxidantes
+                    clase = '5.1';
                 }
-                
-                return { ...p, compClass: clase, matrixPictos: pictos.length > 0 ? pictos : [clase] };
+
+                return { ...p, compClass: clase, matrixPictos: pictos.length > 0 ? pictos : ['ghs07'] };
             });
             renderProductChecklist();
         } catch (err) {
@@ -196,22 +174,19 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Mapa ghsXX → nombre de imagen (igual que etiquetas.js)
+        const pictoImageMap = {
+            'ghs01': 'explosivo',       'ghs02': 'inflamable',    'ghs03': 'oxidante',
+            'ghs04': 'gas-presurizado', 'ghs05': 'corrosivo',     'ghs06': 'toxico',
+            'ghs07': 'irritante',       'ghs08': 'peligro-salud', 'ghs09': 'daño-ambiente'
+        };
+
         productListContainer.innerHTML = filtered.map(p => {
-            const pictos = (p.pictogramas || []).map(pic => {
-                let s = pic.toString().toLowerCase().trim().replace(/\s+/g, '-');
-                const pictoSwap = {
-                   'ghs01': 'explosivo', 'explosivo': 'explosivo',
-                   'ghs02': 'inflamable', 'llama': 'inflamable', 'inflamable': 'inflamable',
-                   'ghs03': 'oxidante', 'oxidante': 'oxidante', 'comburente': 'oxidante',
-                   'ghs04': 'gas-presurizado', 'gas': 'gas-presurizado', 'cilindro': 'gas-presurizado',
-                   'ghs05': 'corrosivo', 'corrosivo': 'corrosivo',
-                   'ghs06': 'toxico', 'toxico': 'toxico', 'calavera': 'toxico',
-                   'ghs07': 'irritante', 'irritante': 'irritante', 'exclamacion': 'irritante',
-                   'ghs08': 'peligro-salud', 'salud': 'peligro-salud',
-                   'ghs09': 'daño-ambiente', 'ambiente': 'daño-ambiente'
-                };
-                if (pictoSwap[s]) s = pictoSwap[s];
-                return `<img src="../../images/${s}.png" alt="${s}" onerror="this.src='../../images/default-pictogram.png';">`;
+            // Usar matrixPictos (ya normalizados, deduplicados y ordenados)
+            const pictoHtml = (p.matrixPictos || []).map(code => {
+                const imgName = pictoImageMap[code];
+                if (!imgName) return '';
+                return `<img src="../../images/${imgName}.png" alt="${code}" title="${code}" onerror="this.style.display='none'">`;
             }).join('');
 
             return `
@@ -219,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <input type="checkbox" ${selectedProductIds.has(p._id) ? 'checked' : ''} onclick="event.stopPropagation()">
                     <span>${p.id_producto}</span>
                     <div class="picto-previews">
-                        ${pictos}
+                        ${pictoHtml}
                     </div>
                 </div>
             `;
@@ -266,8 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Headers Pictogramas (X)
         selected.forEach(p => {
             html += `<th style="text-align:center; padding:10px 5px;">
-                        <div style="display:flex; justify-content:center; gap:2px;">
-                            ${getUnPictoHtml(p.matrixPictos, 1, 20)}
+                        <div style="display:flex; justify-content:center; gap:2px; flex-wrap: wrap; width: 100%;">
+                            ${getUnPictoHtml(p.matrixPictos, null, 18)}
                         </div>
                      </th>`;
         });
@@ -284,8 +259,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td class="cell-name" style="padding: 6px 15px;">
                     <div style="display:flex; align-items:center; gap:10px; width:100%;">
                         <span style="font-weight:600; flex:1; white-space: normal;">${rowP.id_producto}</span>
-                        <div style="display:flex; justify-content:center; align-items:center; gap:4px;">
-                            ${getUnPictoHtml(rowP.matrixPictos, 1, 20)}
+                        <div style="display:flex; justify-content:center; align-items:center; gap:4px; flex-wrap:wrap;">
+                            ${getUnPictoHtml(rowP.matrixPictos, null, 18)}
                         </div>
                     </div>
                 </td>`;

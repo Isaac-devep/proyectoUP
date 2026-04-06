@@ -16,6 +16,8 @@ window.addEventListener(
 );
 
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("🚀 [SAGA] Version 2.5 LOADED - Motor Unificado Activo");
+  // alert("🟢 SAGA v2.5 CARGADO: La lógica de pictogramas ha sido actualizada. Por favor, vuelve a subir tu PDF.");
   // --------- Variables y referencias
   const dropArea = document.getElementById("drop-area");
   const fileInput = document.getElementById("pdfInput");
@@ -270,48 +272,32 @@ document.addEventListener("DOMContentLoaded", function () {
       const preview = document.getElementById("previewEtiqueta");
       if (!preview) return;
       
-      console.log("🛠️ [SAGA DEBUG] Data recibida:", data);
-      console.log("🎨 [SAGA DEBUG] Pictogramas crudos:", data.pictogramas);
-      
-      // 1. Normalizar a códigos ghsXX y eliminar duplicados
-      const pictoMapping = {
-        'explosivo': 'ghs01', 'ghs01': 'ghs01',
-        'inflamable': 'ghs02', 'llama': 'ghs02', 'ghs02': 'ghs02',
-        'oxidante': 'ghs03', 'comburente': 'ghs03', 'ghs03': 'ghs03',
-        'gas-presurizado': 'ghs04', 'cilindro': 'ghs04', 'ghs04': 'ghs04',
-        'corrosivo': 'ghs05', 'corrosion': 'ghs05', 'ghs05': 'ghs05',
-        'toxico': 'ghs06', 'veneno': 'ghs06', 'calavera': 'ghs06', 'ghs06': 'ghs06',
-        'irritante': 'ghs07', 'exclamacion': 'ghs07', 'ghs07': 'ghs07',
-        'peligro-salud': 'ghs08', 'salud': 'ghs08', 'ghs08': 'ghs08',
-        'daño-ambiente': 'ghs09', 'ambiente': 'ghs09', 'ghs09': 'ghs09'
+      console.log("🛠️ [SAGA] Pictogramas recibidos del servidor:", data.pictogramas);
+
+      // El servidor ya devuelve códigos ghsXX. Solo validamos y ordenamos.
+      const pictoImageMap = {
+        'ghs01': 'explosivo',      'ghs02': 'inflamable',   'ghs03': 'oxidante',
+        'ghs04': 'gas-presurizado','ghs05': 'corrosivo',    'ghs06': 'toxico',
+        'ghs07': 'irritante',      'ghs08': 'peligro-salud','ghs09': 'daño-ambiente'
       };
 
-      let rawPictos = getArr(data.pictogramas).map(p => {
-         const clean = p.toString().toLowerCase().trim().replace(/\s+/g, '-');
-         return pictoMapping[clean] || clean;
-      });
-      
-      let pictos = [...new Set(rawPictos)].filter(p => p.startsWith('ghs'));
-
-      // 2. Ordenar por prioridad (Estándar SGA)
       const priorityMap = {
-        'ghs01': 1, 'ghs03': 2, 'ghs02': 3, 'ghs04': 4, 
+        'ghs01': 1, 'ghs03': 2, 'ghs02': 3, 'ghs04': 4,
         'ghs05': 5, 'ghs06': 6, 'ghs08': 7, 'ghs07': 8, 'ghs09': 9
       };
+
+      let pictos = [...new Set(getArr(data.pictogramas).map(p => p.toString().toLowerCase().trim()))]
+        .filter(p => pictoImageMap[p]);
       pictos.sort((a, b) => (priorityMap[a] || 99) - (priorityMap[b] || 99));
 
-      const pictoImageMap = {
-        'ghs01': 'explosivo', 'ghs02': 'inflamable', 'ghs03': 'oxidante',
-        'ghs04': 'gas-presurizado', 'ghs05': 'corrosivo', 'ghs06': 'toxico',
-        'ghs07': 'irritante', 'ghs08': 'peligro-salud', 'ghs09': 'daño-ambiente'
-      };
+      console.log("✅ [SAGA] Pictogramas finales:", pictos);
 
-      let pictosHtml = pictos.length > 0 
-        ? pictos.map((code) => {
-            const imgName = pictoImageMap[code];
-            return `<div class="ghs-picto-box"><img src="../../images/${imgName}.png" alt="${code}" onerror="this.src='../../images/default-pictogram.png';"></div>`;
-          }).join("")
+      let pictosHtml = pictos.length > 0
+        ? pictos.map(code =>
+            `<div class="ghs-picto-box"><img src="../../images/${pictoImageMap[code]}.png" alt="${code}" onerror="this.src='../../images/default-pictogram.png';"></div>`
+          ).join("")
         : '<div style="color:#666;">No hay pictogramas</div>';
+
 
       const formId = "formEtiqueta-" + Date.now();
 
@@ -592,4 +578,12 @@ document.addEventListener("DOMContentLoaded", function () {
     `);
     printWindow.document.close();
   };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  EXPORTACIÓN GLOBAL (Para unificación con admin.js)
+  // ═══════════════════════════════════════════════════════════════════════════
+  window.procesarPDF = procesarPDF;
+  window.renderEditableForm = renderEditableForm;
+  window.mostrarPreviewLoading = mostrarPreviewLoading;
+  window.mostrarPreviewError = mostrarPreviewError;
 });

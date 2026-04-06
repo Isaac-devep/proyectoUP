@@ -26,22 +26,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     localStorage.setItem("usuario", JSON.stringify(data.usuario));
                     localStorage.setItem("rol", data.usuario.id_rol);
 
-                    // RUTAS CORREGIDAS PARA PRODUCCIÓN (Sin /frond-end/)
+                    // RUTAS RELATIVAS (Para que funcionen dentro de /frond-end/)
                     switch (data.usuario.rol) {
                         case "Super administrador":
-                            window.location.href = "/html/super/superadmin.html";
+                            window.location.href = "html/super/superadmin.html";
                             break;
                         case "Administrador":
-                            window.location.href = "/html/admin/admin.html";
+                            window.location.href = "html/admin/admin.html";
                             break;
                         case "Colaborador":
                         case "Empleado":
                             // Redirigir a la pantalla específica de colaborador
-                            window.location.href = "/html/empleados/empleado.html";
+                            window.location.href = "html/empleados/empleado.html";
                             break;
                         default:
                             // Admin / Superadmin
-                            window.location.href = "/html/admin/admin.html";
+                            window.location.href = "html/admin/admin.html";
                     }
                 } else {
                     showToast(data.error || "Usuario o contraseña incorrectos", "error");
