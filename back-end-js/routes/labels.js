@@ -64,6 +64,40 @@ router.get('/', async (req, res) => {
   }
 });
 
+// UPDATE Label
+router.put('/:id', upload.single('fds_pdf'), async (req, res) => {
+  try {
+    // Si viene de FormData, los arrays llegan como strings
+    const parseField = (f) => {
+      if (typeof f === 'string') {
+        try { return JSON.parse(f); } catch(e) { return f.split(',').map(s => s.trim()); }
+      }
+      return f || [];
+    };
+
+    const updateData = {
+      id_etiqueta: req.body.id_etiqueta,
+      p_advertencia: req.body.p_advertencia,
+      inf_cas: req.body.inf_cas,
+      id_producto: req.body.id_producto,
+      frases_h: parseField(req.body.frases_h),
+      frases_p: parseField(req.body.frases_p),
+      pictogramas: parseField(req.body.pictogramas)
+    };
+
+    if (req.file) {
+      updateData.fds_file = req.file.originalname;
+    }
+
+    const updated = await Label.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    
+    if (!updated) return res.status(404).json({ error: "Etiqueta no encontrada" });
+    res.json({ mensaje: "Etiqueta actualizada correctamente", fds_file: updated.fds_file });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // DELETE Label
 router.delete('/:id', async (req, res) => {
   try {

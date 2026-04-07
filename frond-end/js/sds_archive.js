@@ -61,6 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
           <td style="color: #6b7280;">${date}</td>
           <td>
             <div style="display:flex; gap: 8px;">
+                <label class="btn btn-outline btn-sm" style="color:#6366f1; border-color:#6366f1; cursor:pointer;" title="Actualizar/Reemplazar Archivo">
+                    <i class="fas fa-upload"></i>
+                    <input type="file" hidden accept=".pdf" onchange="window.updateFDSArchiveFile('${file.name}', this)">
+                </label>
+                <button class="btn btn-outline btn-sm" style="color:#ef4444; border-color:#ef4444;" title="Eliminar Archivo Físico" onclick="window.deleteFDSArchiveFile('${file.name}')">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
                 <a href="${API_URL}/assets/${file.name}" target="_blank" class="btn btn-primary btn-sm" title="Visualizar">
                     <i class="fas fa-eye"></i>
                 </a>
@@ -88,4 +95,38 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Exponer para recarga manual si es necesario
   window.refreshFDSArchive = cargarArchivosFDS;
+
+  window.updateFDSArchiveFile = async function(filename, inputEle) {
+    if (!inputEle.files.length) return;
+    const file = inputEle.files[0];
+    const formData = new FormData();
+    formData.append("fds_pdf", file);
+    try {
+      const resp = await fetch(`${API_URL}/fds/assets/${filename}`, {
+        method: "PUT",
+        body: formData,
+      });
+      if (!resp.ok) throw new Error("Error al actualizar");
+      if (typeof showToast !== 'undefined') showToast("✅ Archivo reemplazado correctamente", "success");
+      cargarArchivosFDS();
+    } catch(err) {
+      console.error(err);
+      if (typeof showToast !== 'undefined') showToast("❌ Error al actualizar archivo", "error");
+    }
+  };
+
+  window.deleteFDSArchiveFile = async function(filename) {
+    if (!confirm(`¿Estás seguro de que deseas eliminar el archivo:\n${filename}\n\nOJO: Si hay etiquetas vinculadas a este archivo, el link de descarga se romperá.`)) return;
+    try {
+      const resp = await fetch(`${API_URL}/fds/assets/${filename}`, {
+        method: "DELETE"
+      });
+      if (!resp.ok) throw new Error("Error al eliminar");
+      if (typeof showToast !== 'undefined') showToast("✅ Archivo eliminado correctamente", "success");
+      cargarArchivosFDS();
+    } catch(err) {
+      console.error(err);
+      if (typeof showToast !== 'undefined') showToast("❌ Error al eliminar archivo", "error");
+    }
+  };
 });

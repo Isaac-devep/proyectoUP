@@ -128,6 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (eti) {
         // Mapear campos de BD a formato esperado por renderEditableForm
         const formattedData = {
+          _id: eti._id,
           nombre_producto: eti.id_producto,
           palabra_advertencia: eti.p_advertencia,
           cas: eti.inf_cas,
@@ -428,10 +429,15 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             
             ${user && user.rol && !['colaborador', 'empleado'].includes(user.rol.toLowerCase()) ? `
-              <div style="display:flex; gap:15px; margin-top:25px;">
+              <div style="display:flex; gap:15px; margin-top:25px; align-items:center;">
                 <button type="button" class="btn btn-primary" id="btnGuardarEtiqueta">
-                   <i class="fas fa-save"></i> Guardar en Base de Datos
+                   <i class="fas fa-save"></i> ${data._id ? 'Actualizar en Base de Datos' : 'Guardar en Base de Datos'}
                 </button>
+                ${data._id ? `
+                <button type="button" class="btn btn-outline" style="color:#ef4444; border-color:#ef4444;" onclick="window.eliminarEtiqueta('${data._id}'); setTimeout(() => window.showSection && window.showSection('etiquetas-lista'), 800);">
+                   <i class="fas fa-trash-alt"></i> Eliminar Etiqueta
+                </button>
+                ` : ''}
               </div>
             ` : `
               <div class="badge badge-warning" style="width:100%; justify-content:center; padding:15px; margin-top:15px;">
@@ -486,8 +492,12 @@ document.addEventListener("DOMContentLoaded", function () {
             bodyPayload.append("fds_pdf", lastFile);
           }
 
-          const res = await fetch(`${API_URL}/etiquetas`, {
-            method: "POST",
+          const isUpdating = !!data._id;
+          const method = isUpdating ? "PUT" : "POST";
+          const endpoint = isUpdating ? `${API_URL}/etiquetas/${data._id}` : `${API_URL}/etiquetas`;
+
+          const res = await fetch(endpoint, {
+            method: method,
             body: bodyPayload, // Sin Content-Type header para que el navegador ponga el boundary
           });
 
@@ -496,7 +506,7 @@ document.addEventListener("DOMContentLoaded", function () {
             throw new Error(errText || "Error al guardar");
           }
 
-          showToast("✅ Etiqueta guardada con éxito en la base de datos.", "success");
+          showToast(`✅ Etiqueta ${isUpdating ? "actualizada" : "guardada"} con éxito en la base de datos.`, "success");
           lastFile = null; // Limpiar archivo tras guardado
           cargarDashboard(); // Refresh stats
         } catch (error) {
