@@ -348,8 +348,17 @@ document.addEventListener("DOMContentLoaded", function () {
           <div class="ghs-label ghs-size-m" id="printableLabel">
             <div class="ghs-header">
               <h2 id="lbl-nombre">${escapeHtml(getText(data.nombre_producto)) || "NOMBRE DEL PRODUCTO"}</h2>
-              <div class="ghs-components" id="lbl-meta">
-                ${data.cas ? `Identificación: <br> ${escapeHtml(data.cas)}` : 'Componentes / CAS: <br> ---'}
+              <div id="lbl-meta" style="font-size: 8px; font-weight: 700; text-align: right; width: 45%; word-wrap: break-word;">
+                ${(() => {
+                  if (!data.cas || data.cas.toLowerCase() === 'sin identificar') return 'ID: <br> ---';
+                  const hasUN = data.cas.toUpperCase().includes('UN');
+                  const hasCAS = /\d{2,7}-\d{2}-\d/.test(data.cas);
+                  let label = 'ID:';
+                  if (hasUN && hasCAS) label = 'CAS / UN:';
+                  else if (hasUN) label = 'UN:';
+                  else if (hasCAS) label = 'CAS:';
+                  return `${label} <br> ${escapeHtml(data.cas)}`;
+                })()}
               </div>
             </div>
 
@@ -405,7 +414,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 <label>Identificación de Componentes (CAS / Otros)</label>
                 <input name="cas" value="${escapeHtml(getText(data.cas))}" class="form-control" 
                        ${isColaborador ? 'readonly disabled' : ''}
-                       oninput="document.getElementById('lbl-meta').innerHTML = 'Identificación: <br> ' + this.value">
+                       oninput="(() => {
+                         const val = this.value;
+                         if (!val || val.toLowerCase() === 'sin identificar') {
+                            document.getElementById('lbl-meta').innerHTML = 'ID: <br> ---';
+                            return;
+                         }
+                         const hasUN = val.toUpperCase().includes('UN');
+                         const hasCAS = /\\d{2,7}-\\d{2}-\\d/.test(val);
+                         let label = 'ID:';
+                         if (hasUN && hasCAS) label = 'CAS / UN:';
+                         else if (hasUN) label = 'UN:';
+                         else if (hasCAS) label = 'CAS:';
+                         document.getElementById('lbl-meta').innerHTML = label + ' <br> ' + val;
+                       })()">
               </div>
             </div>
             <div class="form-group">

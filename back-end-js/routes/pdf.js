@@ -78,14 +78,19 @@ async function extraerDatosConIA(texto) {
 
 INSTRUCCIONES:
 - nombre_producto: nombre comercial exacto de la Seccion 1 (NO incluyas "Producto:", "Nombre:", ni el nombre de la empresa).
-- cas: numero CAS principal (formato: XXXXXXX-XX-X). Si no hay, usa "".
+- cas: REGLA DE ORO: Extrae ÚNICAMENTE lo que esté escrito en el PDF. No adivines.
+  1. Si hay Números CAS, lístalos (ej: "1310-58-3, 1310-73-2").
+  2. Si hay Número UN (Sección 1 o 14), extráelo (ej: "UN 1813").
+  3. SI EL DOCUMENTO TIENE AMBOS (CAS Y UN), DEVUELVE AMBOS en este mismo campo (ej: "1310-58-3, 1310-73-2 (UN 1813)").
+  4. Si no hay CAS pero hay UN, devuelve solo el UN.
+  5. Si no hay nada de nada, devuelve "Sin identificar".
 - palabra_advertencia: "PELIGRO" o "ATENCION" segun la Seccion 2.
 - indicaciones_peligro: lista de frases H de la Seccion 2 en formato "Hxxx: descripcion".
 - consejos_prudencia: lista de frases P de la Seccion 2 en formato "Pxxx: descripcion".
 - informacion_emergencia: numeros de telefono de emergencia de la Seccion 1.
 
 FORMATO REQUERIDO:
-{"nombre_producto":"...","cas":"...","palabra_advertencia":"PELIGRO","indicaciones_peligro":["H225: Liquido y vapores muy inflamables"],"consejos_prudencia":["P210: Mantener alejado de fuentes de ignicion"],"informacion_emergencia":["018000511414"]}`;
+{"nombre_producto":"...","cas":"1310-58-3 (UN 1813)","palabra_advertencia":"PELIGRO","indicaciones_peligro":["H225: Liquido y vapores muy inflamables"],"consejos_prudencia":["P210: Mantener alejado de fuentes de ignicion"],"informacion_emergencia":["018000511414"]}`;
 
     const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
@@ -93,7 +98,7 @@ FORMATO REQUERIDO:
         max_tokens: 2000,
         messages: [
             { role: 'system', content: prompt },
-            { role: 'user', content: `Analiza esta FDS:\n\n${texto.substring(0, 12000)}` }
+            { role: 'user', content: `Analiza esta FDS completa:\n\n${texto.substring(0, 45000)}` }
         ]
     });
 
@@ -121,6 +126,40 @@ FORMATO REQUERIDO:
         pictogramas: resultado.pictogramas
     });
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VERIFICACIÓN DE ALUCINACIONES (GROUNDING) ESTRICTO
+    // ═══════════════════════════════════════════════════════════════════════════
+    if (resultado.cas && resultado.cas.toLowerCase() !== 'sin identificar') {
+        const casFound = resultado.cas.match(/\d{2,7}-\d{2}-\d/g) || [];
+        const unFound = resultado.cas.match(/UN\s*\d{4}/gi) || [];
+
+        const verifiedCas = casFound.filter(c => texto.includes(c));
+        const verifiedUn = unFound.filter(u => {
+            const num = u.match(/\d+/)[0];
+            const regexLiteral = new RegExp(`UN\\s*${num}`, 'i');
+            const regexOnu = new RegExp(`ONU\\s*${num}`, 'i');
+            return regexLiteral.test(texto) || regexOnu.test(texto);
+        });
+
+        if (verifiedCas.length > 0 || verifiedUn.length > 0) {
+            let finalStr = verifiedCas.join(', ');
+            if (verifiedUn.length > 0) {
+                const unStr = verifiedUn.join(', ').toUpperCase();
+                finalStr = finalStr ? `${finalStr} (${unStr})` : unStr;
+            }
+            resultado.cas = finalStr;
+        } else {
+            resultado.cas = "Sin identificar";
+        }
+    }
+
+    if ((!resultado.cas || resultado.cas.toLowerCase() === 'sin identificar') && resultado.nombre_producto) {
+        const unMatch = resultado.nombre_producto.match(/\bUN\s*\d{4}\b/i);
+        if (unMatch && (texto.includes(unMatch[0]) || texto.includes(unMatch[0].replace(' ', '')))) {
+            resultado.cas = unMatch[0].toUpperCase();
+        }
+    }
+
     return resultado;
 }
 
@@ -141,10 +180,10 @@ router.post('/', (req, res, next) => {
 
         console.log(`📂 [FDS] Procesando: ${req.file.originalname} (${(req.file.size / 1024).toFixed(1)} KB)`);
 
-        const data = await pdfParse(req.file.buffer);
+        const dataBuffer = req.file.buffer;
+        const data = await pdfParse(dataBuffer);
         const texto = data.text;
-        console.log(`📝 [FDS] Texto extraido: ${texto.length} caracteres`);
-
+        
         if (!texto || texto.trim().length < 50) {
             return res.status(422).json({ error: 'El PDF no contiene texto extraible (posiblemente es una imagen escaneada)' });
         }
