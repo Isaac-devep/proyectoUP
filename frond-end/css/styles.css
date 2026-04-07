@@ -1543,14 +1543,13 @@ th .un-picto-mini {
     display: none !important;
   }
 
-  /* Mostrar solo el clon del legend inyectado por JS - Forzado a SEGUNDA HOJA */
+  /* Mostrar solo el clon del legend inyectado por JS - pegado a la tabla */
   #print-legend-clone {
     display: block !important;
-    page-break-before: always !important;
     break-inside: avoid !important; /* Evita que se rompa internamente */
-    margin-top: 50px !important;
+    margin-top: 10px !important;
     border: 2px solid #000 !important;
-    padding: 20px !important;
+    padding: 10px !important;
     background: #fff !important;
     width: 100% !important;
   }

@@ -522,9 +522,25 @@ document.addEventListener('DOMContentLoaded', function() {
         if (originalLegend) {
             printLegend = originalLegend.cloneNode(true);
             printLegend.style.display = 'block';
-            printLegend.classList.add('page-break'); // Force second page
+            printLegend.style.margin = '0';
+            printLegend.style.padding = '10px 0 0 0';
+            printLegend.style.borderTop = 'none';
             printLegend.id = 'print-legend-clone';
-            container.appendChild(printLegend);
+
+            // Truco final: Meterlo como la última FILA del cuerpo de la tabla.
+            // Chrome no desalinea las cabeceras porque no es un tfoot, y usa el espacio en blanco natural.
+            const table = container.querySelector('table');
+            const tbody = table ? table.querySelector('tbody') : null;
+            
+            if (tbody) {
+                const tr = document.createElement('tr');
+                tr.id = 'print-legend-row';
+                tr.innerHTML = `<td colspan="100" style="border: none !important; background: transparent !important; padding: 15px 0 0 0 !important; text-align: left;"></td>`;
+                tr.querySelector('td').appendChild(printLegend);
+                tbody.appendChild(tr);
+            } else {
+                container.appendChild(printLegend);
+            }
         }
 
         window.print();
