@@ -1,0 +1,152 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset="utf-8">
+    <title>Manual de Usuario SAGA</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; }
+        h1 { color: #1a252f; font-size: 28pt; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; margin-bottom: 30px; text-align: center;}
+        h2 { color: #2c3e50; font-size: 20pt; border-bottom: 1px solid #bdc3c7; margin-top: 40px; padding-bottom: 5px;}
+        h3 { color: #e74c3c; font-size: 14pt; margin-top: 25px; }
+        h4 { color: #2980b9; font-size: 12pt; }
+        p, li { font-size: 11pt; text-align: justify; margin-bottom: 15px;}
+        .page-break { page-break-before: always; }
+        .note { background-color: #f9fbfd; border-left: 4px solid #3498db; padding: 15px; margin: 15px 0; font-style: italic; }
+        .alert { background-color: #fef9f8; border-left: 4px solid #e74c3c; padding: 15px; margin: 15px 0; }
+        .step { font-weight: bold; color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+    <!-- PORTADA -->
+    <div style="text-align: center; margin-top: 150px;">
+        <h1 style="border:none; font-size: 42pt; color:#2c3e50; margin-bottom:10px;">S.A.G.A.</h1>
+        <h2 style="color: #7f8c8d; border:none; margin-top:0;">Sistema Autónomo de Gestión de Alertas</h2>
+        <br><br><br>
+        <p style="font-size: 22pt; font-weight: bold; color: #e74c3c;">MANUAL DEL USUARIO DETALLADO</p>
+        <br><br><br><br>
+        <p style="font-size: 14pt;">Guía funcional paso a paso para la correcta utilización y gestión de etiquetas químicas mediante Inteligencia Artificial.</p>
+        <br><br><br>
+        <p>Versión 2.0 - 2026</p>
+    </div>
+
+    <div class="page-break"></div>
+
+    <h1>1. Módulo de Autenticación (Inicio de Sesión)</h1>
+    <p>El primer paso para utilizar la plataforma es verificar su identidad. El sistema cuenta con control de accesos basados en roles, lo que significa que dependiendo de su cargo, verá distintas opciones en el menú lateral.</p>
+    
+    <h3>1.1. Cómo ingresar</h3>
+    <ol>
+        <li><span class="step">Abra su navegador web</span> e ingrese a la dirección URL de la plataforma provista por su administrador.</li>
+        <li><span class="step">Formulario de acceso:</span> Visualizará una pantalla de inicio de sesión. Ingrese su <strong>Número de Documento / ID</strong> en el primer campo de texto.</li>
+        <li><span class="step">Contraseña:</span> Escriba su clave secreta. Si es la primera vez que ingresa, utilice la contraseña asignada por su departamento de TI.</li>
+        <li><span class="step">Iniciar Sesión:</span> Haga clic en el botón principal para entrar. Si los datos son correctos, el sistema le dará la bienvenida y le redirigirá al <i>Dashboard</i> principal.</li>
+    </ol>
+
+    <div class="alert">
+        <strong>Atención:</strong> Si introduce una contraseña incorrecta en múltiples ocasiones, el sistema podría restringir temporalmente su acceso por motivos de seguridad.
+    </div>
+
+    <div class="page-break"></div>
+
+    <h1>2. Módulo Generador de Etiquetas SGA (Módulo Central)</h1>
+    <p>Este es el corazón de la plataforma SAGA. En este módulo, usted podrá crear una etiqueta normativa para sus productos químicos sin tener que transcribir manualmente largos documentos.</p>
+
+    <h3>2.1. Funcionalidad de Arrastrar y Soltar (Carga del PDF)</h3>
+    <p>Usted debe disponer de una <strong>Ficha de Datos de Seguridad (FDS o SDS)</strong> del producto químico, en formato PDF.</p>
+    <ol>
+        <li>Seleccione en el menú lateral la opción <strong>"Analizar Ficha de Seguridad (FDS)"</strong> o haga clic en el botón "Nueva Etiqueta".</li>
+        <li>En la pantalla verá una gran área punteada. Usted tiene dos opciones:
+            <ul>
+                <li><strong>Arrastrar y soltar:</strong> Busque el PDF en su computadora, haga clic sobre él sin soltar el ratón y arrástrelo hasta el área punteada de la plataforma, luego suéltelo.</li>
+                <li><strong>Clic para explorar:</strong> Haga un clic izquierdo dentro del área punteada; se abrirá una ventana convencional de Windows para buscar y seleccionar el archivo PDF.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>2.2. El Proceso de Análisis por Inteligencia Artificial</h3>
+    <p>Una vez subido el documento, ocurrirá lo siguiente:</p>
+    <ul>
+        <li>Aparecerá un <strong>Robot Analizador</strong> en la pantalla informándole que el motor de extracción (GPT-4o) está leyendo el papel virtualmente.</li>
+        <li>El sistema ignorará información irrelevante y se centrará en 3 rubros vitales: <i>Identificación del Producto, Frases de Riesgo/Prudencia, y Códigos UN/CAS</i>.</li>
+        <li><span class="step">Tiempo de espera:</span> Este proceso dura entre 5 a 15 segundos dependiendo del volumen de texto del PDF original.</li>
+    </ul>
+
+    <h3>2.3. Vista Previa Dinámica</h3>
+    <p>Inmediatamente después del análisis, el sistema construirá y dibujará una tarjeta visual idéntica a la etiqueta final. Esta sección actúa como su monitor de confirmación y está dividida en componentes normativos:</p>
+    <ul>
+        <li><strong>Cabecera:</strong> Muestra el <i>Nombre Comercial</i> en grande y el cuadro de validación en la esquina derecha que dirá <i>CAS:</i>, <i>UN:</i>, o <i>CAS / UN:</i> seguido de los códigos industriales identificados.</li>
+        <li><strong>Facciones Centrales:</strong> Se dividen las <i>Indicaciones de Peligro (Frases H)</i> a la izquierda, y los <i>Consejos de Prudencia (Frases P)</i> justo debajo.</li>
+        <li><strong>Facciones Derechas:</strong> La <i>Palabra de Advertencia</i> (PELIGRO o ATENCIÓN) y la parrilla interactiva con los rombos rojos ilustrados (los <strong>Pictogramas</strong>).</li>
+        <li><strong>Pie de Página:</strong> El cuadro conteniendo el contacto de emergencias estándar y al fabricante original del químico (Ej. <i>Fabricante / Proveedor: PVC GERFOR SA</i>).</li>
+    </ul>
+
+    <h3>2.4. Ajuste y Corrección Manual</h3>
+    <p>Puesto que los FDS pueden ser confusos, justo bajo la vista previa se encuentra el cuadro <strong>"Ajustar Información"</strong>. Esto sirve por si la Inteligencia artificial omitió algo o agregó algo por error.</p>
+    <ol>
+        <li><span class="step">Edición en Tiempo Real:</span> Verá las cajas de texto de los componentes (Nombre, Palabra, CAS, Fabricante). Si usted borra una letra en ese cajón de texto, verá cómo se borra mágicamente en la etiqueta de vista previa de arriba.</li>
+        <li><span class="step">Campos Largos:</span> Las frases de advertencia se muestran en cajas grandes. Cada salto de línea que usted haga representa un punto o "bullet" diferente en la etiqueta impresa final.</li>
+    </ol>
+    <div class="note">Nota: Este formulario de "Ajuste de información" estará deshabilitado o bloqueado en modo "solo-lectura" para aquellos usuarios que tengan un rol básico (como "Colaborador"), con el fin de proteger la integridad del sistema.</div>
+
+    <h3>2.5. Herramientas de Dimensionamiento y Bordeados</h3>
+    <p>Antes de imprimir, note que en la esquina superior derecha del visualizador existen una serie de botones y opciones:</p>
+    <ul>
+        <li><strong>Casilla "Borde Negro (Art. 12 / Uso Interno)":</strong> Al seleccionarla, la etiqueta cambiará sus contornos al color negro. Esto se utiliza por ley cuando los reactivos se re-envasan únicamente para uso interno dentro del laboratorio y no para uso comercial civil externo.</li>
+        <li><strong>Selectores de Volumen (MINI, S, M, L, XL):</strong> Haga clic sobre cualquiera de las letras.
+            <ul>
+                <li><strong>MINI:</strong> Layout compacto donde se resume drásticamente la estructura, apto para frasquitos analíticos de menos de 30 mililitros.</li>
+                <li><strong>M o L:</strong> Distribución estándar de 2 columnas y márgenes legibles para garrafas o pimpinas convencionales.</li>
+                <li><strong>XL:</strong> Expande superlativamente los pictogramas (rombos) y letras, destinado EXCLUSIVAMENTE a carrotanques o barriles de más de 500 litros industriales.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>2.6. Guardar en Base de Datos e Imprimir</h3>
+    <p>Al final del formulario interactivo existen botones de ejecución final:</p>
+    <ul>
+        <li><strong>Guardar en Base de Datos:</strong> Graba un expediente histórico inmutable para la posteridad y adjunta el PDF a la trazabilidad organizacional de SAGA. Deberá presionar este botón si desea recuperar esta misma etiqueta meses después de su formulación.</li>
+        <li><strong>Imprimir Etiqueta:</strong> Abre la ventana principal de diálogo del sistema operativo bloqueando cualquier otro elemento inservible (barras de controles o menús oscuros) y permite inyectar el trabajo crudo hacia su impresora en mesa.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h1>3. Módulo de Archivo General / Base de Datos</h1>
+    <p>Usted no tiene que depender de su frágil memoria local. Para visualizar trabajos antiquísimos diríjase al listado general de su Dashboard.</p>
+
+    <h3>3.1 Funcionalidades del listado</h3>
+    <p>Bajo la ventana de generación existe una tabla interactiva denominada "Inventario Activo de Etiquetas SGA".</p>
+    <ol>
+        <li><strong>Lectura Rápida:</strong> Observe el nombre del químico, su clave CAS o UN original de factoría, y la fecha de creación original en el sistema SAGA.</li>
+        <li><strong>Edición Posterior:</strong> Pulse el botón del "lápiz". El sistema cargará y simulará instantáneamente en el módulo generador superior todos los datos del químico, listo para una re-impresión ultrarrápida.</li>
+        <li><strong>Revisión PDF Original:</strong> Al hacer clic en el ícono del logo "PDF", se abrirá una ventana nueva con la hoja gubernamental original enviada por el proveedor, asegurando de este modo la trazabilidad fiscal del lote o cargamento.</li>
+    </ol>
+
+    <div class="page-break"></div>
+
+    <h1>4. Módulo de Administración de Empleados</h1>
+    <div class="alert">
+        <strong>Atención:</strong> Este módulo es ultra-privado y estrictamente regulado. Única y exclusivamente será visible para los directores cuyo estatus sea "Administrador".
+    </div>
+    <p>Este módulo le permite administrar el recurso humano y los roles paramétricos de acceso a la operación y manipulación de datos del Laboratorio.</p>
+
+    <h3>4.1. Creación de un Nuevo Usuario</h3>
+    <ol>
+        <li>Dentro del módulo respectivo, seleccione <strong>"Registrar Usuario"</strong> o diríjase a la tabla general de usuarios creados.</li>
+        <li>Llene los campos provistos escrupulosamente.</li>
+        <li>Asegúrese de establecer un <strong>Número de Cédula</strong> válido (el cual será el <i>Usuario</i> del empleado en el ingreso) y escriba debidamente los nombres y correos institucionales asignándole un <strong>Rol</strong> vital en el dropdown:
+            <ul>
+                <li><i>Colaborador/Empleado:</i> Le confiere solo derechos limitados a observar y re-imprimir etiquetas SGA. Queda inhabilitado el borrado masivo documental y la alteración y generación de nuevas placas.</li>
+                <li><i>Administrador:</i> Adquiere derechos omnipotentes de manipulación.</li>
+            </ul>
+        </li>
+        <li>Haga clic en <strong>Crear Usuario</strong>. Tras la confirmación en verde, el empleado estará apto para trabajar.</li>
+    </ol>
+
+    <h3>4.2. Administración Avanzada y Auditoría</h3>
+    <ul>
+        <li><strong>Desactivación y borrado:</strong> En el listado general usted puede purgar del esquema a usuarios ex-empleados haciendo clic en el icono de la Papelera roja. El acceso quedará fulminado en milisegundos inhabilitando el login del empleado.</li>
+        <li><strong>Edición:</strong> Actualice correos electrónicos equivocados o promueva a un "Colaborador" al rol máximo haciendo clic en el pequeño icono de lápiz a la derecha del mismo listado general.</li>
+    </ul>
+
+</body>
+</html>

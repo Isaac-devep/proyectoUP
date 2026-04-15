@@ -130,6 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const formattedData = {
           _id: eti._id,
           nombre_producto: eti.id_producto,
+          fabricante: eti.fabricante,
           palabra_advertencia: eti.p_advertencia,
           cas: eti.inf_cas,
           indicaciones_peligro: eti.frases_h,
@@ -389,11 +390,14 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
 
             <div class="ghs-footer">
-              <div>
+              <div style="flex:1;">
+                <span id="lbl-fabricante" style="display:block; font-size:11px; margin-bottom:4px;">
+                  ${data.fabricante ? `<strong>Fabricante / Proveedor:</strong> ${escapeHtml(getText(data.fabricante))}` : ''}
+                </span>
                 Consultar la Guía de Respuesta en caso de Emergencia <strong>GRE 127</strong> <br>
                 <strong>CONTACTO DE EMERGENCIA:</strong> 123 (Bomberos)
               </div>
-              <div style="text-align: right;">
+              <div style="text-align: right; margin-left:15px; flex:1;">
                 Para mayor información, revisar la Ficha de Datos de Seguridad (FDS) antes de utilizar el producto.
               </div>
             </div>
@@ -410,6 +414,18 @@ document.addEventListener("DOMContentLoaded", function () {
                        ${isColaborador ? 'readonly disabled' : ''}
                        oninput="document.getElementById('lbl-nombre').textContent = this.value">
               </div>
+              <div class="form-group">
+                <label>Fabricante / Proveedor</label>
+                <input name="fabricante" value="${escapeHtml(getText(data.fabricante))}" class="form-control" 
+                       ${isColaborador ? 'readonly disabled' : ''}
+                       oninput="(() => {
+                         const lbl = document.getElementById('lbl-fabricante');
+                         if(!lbl) return;
+                         lbl.innerHTML = this.value.trim() ? '<strong>Fabricante / Proveedor:</strong> ' + escapeHtml(this.value) : '';
+                       })()">
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top: 15px;">
               <div class="form-group">
                 <label>Identificación de Componentes (CAS / Otros)</label>
                 <input name="cas" value="${escapeHtml(getText(data.cas))}" class="form-control" 
@@ -504,6 +520,7 @@ document.addEventListener("DOMContentLoaded", function () {
           bodyPayload.append("p_advertencia", datos.palabra_advertencia);
           bodyPayload.append("inf_cas", datos.cas || "");
           bodyPayload.append("id_producto", datos.nombre_producto);
+          bodyPayload.append("fabricante", datos.fabricante || "");
           bodyPayload.append("frases_h", JSON.stringify((datos.indicaciones_peligro || "").split("\n").filter(x => x.trim())));
           bodyPayload.append("frases_p", JSON.stringify((datos.consejos_prudencia || "").split("\n").filter(x => x.trim())));
           bodyPayload.append("pictogramas", JSON.stringify(pictos));

@@ -10,6 +10,7 @@ const LabelSchema = new mongoose.Schema({
   frases_p: [String],
   pictogramas: [String],
   emergencia: { type: String, default: "En caso de emergencia llame al 123" },
+  fabricante: { type: String, default: "" },
   fds_file: { type: String }
 }, { timestamps: true });
 

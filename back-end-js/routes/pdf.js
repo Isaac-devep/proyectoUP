@@ -78,6 +78,7 @@ async function extraerDatosConIA(texto) {
 
 INSTRUCCIONES:
 - nombre_producto: nombre comercial exacto de la Seccion 1 (NO incluyas "Producto:", "Nombre:", ni el nombre de la empresa).
+- fabricante: Extrae el nombre de la compañía proveedora o fabricante (generalmente en la Sección 1 bajo "Datos del proveedor" o "Fabricante"). Extrae solo el nombre, sin direcciones ni teléfonos. Si no lo encuentras, devuelve "".
 - cas: REGLA DE ORO: Extrae ÚNICAMENTE lo que esté escrito en el PDF. No adivines.
   1. Si hay Números CAS, lístalos (ej: "1310-58-3, 1310-73-2").
   2. Si hay Número UN (Sección 1 o 14), extráelo (ej: "UN 1813").
@@ -90,7 +91,7 @@ INSTRUCCIONES:
 - informacion_emergencia: numeros de telefono de emergencia de la Seccion 1.
 
 FORMATO REQUERIDO:
-{"nombre_producto":"...","cas":"1310-58-3 (UN 1813)","palabra_advertencia":"PELIGRO","indicaciones_peligro":["H225: Liquido y vapores muy inflamables"],"consejos_prudencia":["P210: Mantener alejado de fuentes de ignicion"],"informacion_emergencia":["018000511414"]}`;
+{"nombre_producto":"...","fabricante":"Empresa S.A.S","cas":"1310-58-3 (UN 1813)","palabra_advertencia":"PELIGRO","indicaciones_peligro":["H225: Liquido y vapores muy inflamables"],"consejos_prudencia":["P210: Mantener alejado de fuentes de ignicion"],"informacion_emergencia":["018000511414"]}`;
 
     const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',

@@ -38,6 +38,7 @@ router.post('/', upload.single('fds_pdf'), async (req, res) => {
       inf_cas: req.body.inf_cas,
       fecha: req.body.fecha || Date.now(),
       id_producto: req.body.id_producto,
+      fabricante: req.body.fabricante,
       frases_h: parseField(req.body.frases_h),
       frases_p: parseField(req.body.frases_p),
       pictogramas: parseField(req.body.pictogramas),
@@ -80,6 +81,7 @@ router.put('/:id', upload.single('fds_pdf'), async (req, res) => {
       p_advertencia: req.body.p_advertencia,
       inf_cas: req.body.inf_cas,
       id_producto: req.body.id_producto,
+      fabricante: req.body.fabricante,
       frases_h: parseField(req.body.frases_h),
       frases_p: parseField(req.body.frases_p),
       pictogramas: parseField(req.body.pictogramas)
